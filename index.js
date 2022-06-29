@@ -63,7 +63,7 @@ class Sprite{
     }, 100);
   }
 }
-
+//create player
 const player = new Sprite({
   position: {
     x: 0,
@@ -78,7 +78,7 @@ const player = new Sprite({
     y: 0
   }
 })
-
+//create enemy
 const enemy = new Sprite({
   position: {
     x: 400,
