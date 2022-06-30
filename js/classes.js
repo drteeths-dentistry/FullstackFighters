@@ -84,17 +84,20 @@ class Fighter extends Sprite {
       },
       offset: attackBox.offset,
       width: attackBox.width,
-      height: attackBox.height,
-    };
-    this.color = color;
-    this.isAttacking;
-    this.health = 100;
-    this.framesCurrent = 0;
-    this.framesElapsed = 0;
-    this.framesHold = 10;
-    this.sprites = sprites;
-    this.dead = false;
-    this.attackToggle = true;
+
+      height: attackBox.height
+    }
+    this.color = color
+    this.isAttacking
+    this.isSpecialAttacking
+    this.health = 100
+    this.charge = 0
+    this.framesCurrent = 0
+    this.framesElapsed = 0
+    this.framesHold = 10
+    this.sprites = sprites
+    this.dead = false
+    this.attackToggle = true
 
     //makes fighters current movement his approprite sprite png
     for (const sprite in this.sprites) {
@@ -142,22 +145,41 @@ class Fighter extends Sprite {
 
   attack() {
     //makes hitbox do damage
-    this.isAttacking = true;
+    this.isAttacking = true
     if (this.attackToggle) {
       this.switchSprite('attack1');
       this.attackToggle = !this.attackToggle;
-    } else {
+    } else if(this.attackToggle === false){
       this.switchSprite('attack2');
       this.attackToggle = !this.attackToggle;
+    }
+    if(this.charge >= 100) {
+      this.charge = 0
+    }
+    this.switchSprite('attack1')
+  }
+  specialAttack() {
+    this.isSpecialAttacking = true
+    this.switchSprite('attack1')
+  }
+
+  takeSpecialHit() {
+    this.health -= 25
+    this.charge +=15
+    if(this.health <= 0) {
+      this.switchSprite('death')
+    } else {
+      this.switchSprite('takeHit')
     }
   }
 
   takeHit() {
     //damage per regular hit
-    this.health -= 5;
 
-    if (this.health <= 0) {
-      this.switchSprite('death');
+    this.health -= 5
+    this.charge +=15
+    if(this.health <= 0) {
+      this.switchSprite('death')
     } else {
       this.switchSprite('takeHit');
     }
