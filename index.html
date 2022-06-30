@@ -19,7 +19,10 @@
       <!-- player health bar -->
       <div style="position: relative; width: 100%; display: flex; justify-content: flex-end; border-top: 4px solid white; border-bottom: 4px solid white; border-left: 4px solid white;">
         <div style="background-color: red; height: 30px; width: 100%;"></div>
-        <div id="playerHealth" style="position: absolute; background: #818CF8; top: 0; bottom: 0; right: 0; width: 100%;"></div>
+        <div id="playerHealth" style="position: absolute; background: #818CF8; top: 0 ; right: 0; width: 100%; height:100%;"></div>
+      </div>
+      <div id="playerSABarContainer" style="position: absolute; background: black; bottom: 0; left: 5%; width: 45%; max-width: 400px; height:15%; border-top: 2px solid white; border-bottom: 2px solid white; border-left: 2px solid white; border-right: 2px solid white;">
+        <div id="playerSABar" style="position: absolute; background: #fbbf24; top: 0 ; right: 0; width: 0%; max-width: 396px; height:100%;"></div>
       </div>
       <!-- Timer -->
       <div
@@ -41,6 +44,10 @@
         <div style="background-color: red; height: 30px;"></div>
         <div id="enemyHealth" style="position: absolute; background: #818CF8; top: 0; bottom: 0; left: 0; right: 0;"></div>
       </div>
+      <!-- enemy Special Attack bar -->
+      <div id="enemySABarContainer" style="position: absolute; background: black; bottom: 0; right: 5%; width: 45%; max-width: 400px; height:15%; border-top: 2px solid white; border-bottom: 2px solid white; border-left: 2px solid white; border-right: 2px solid white;">
+        <div id="enemySABar" style="position: absolute; background: #fbbf24; top: 0 ; left: 0; width: 0%; max-width: 396px; height:100%;"></div>
+      </div>
     </div>
     <!-- displays winner, and countdown timer -->
     <div id="displayText" style="position: absolute; color: white; display: flex; align-items: center; justify-content: center; top: 0; bottom: 0; left: 0; right: 0; display: none; font-size: 60px; -webkit-text-stroke: 2px black;"></div>
@@ -53,3 +60,4 @@
   <script src="js/classes.js"></script>
   <script src="index.js"></script>
 </body>
+<!-- <div id="playerSABar" style="position: absolute; background: black; bottom: 0; right: 0; width: 100%; height:20%; border-top: 2px solid white"></div> -->

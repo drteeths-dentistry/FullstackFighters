@@ -216,8 +216,21 @@ function animate() {
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (rectangularCollision({rectangle1: player, rectangle2: enemy}) && player.isAttacking && player.framesCurrent === 4) {
-    enemy.takeHit()
-    player.isAttacking = false
+    if(player.isSpecialAttacking === true) {
+      enemy.takeSpecialHit()
+      player.charge = 0
+      gsap.to('#playerSABar', {
+        width: '0%'
+      })
+      player.isSpecialAttacking = false
+    }
+    if(player.isAttacking === true){
+      enemy.takeHit()
+      player.isAttacking = false
+      gsap.to('#enemySABar', {
+        width: enemy.charge + '%'
+      })
+    }
     gsap.to('#enemyHealth', {
       width: enemy.health + '%'
     })
@@ -229,8 +242,21 @@ function animate() {
 
   //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
   if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking) {
-    player.takeHit()
-    enemy.isAttacking = false
+    if(enemy.isSpecialAttacking === true) {
+      player.takeSpecialHit()
+      enemy.charge = 0
+      gsap.to('#enemySABar', {
+        width: '0%'
+      })
+      enemy.isSpecialAttacking = false
+    }
+    if(enemy.isAttacking === true){
+      player.takeHit()
+      enemy.isAttacking = false
+      gsap.to('#playerSABar', {
+        width: player.charge + '%'
+      })
+    }
     gsap.to('#playerHealth', {
       width: player.health + '%'
     })
@@ -269,6 +295,18 @@ window.addEventListener('keydown', (event) => {
         player.attack()
       }
       break;
+    case 'x':
+      if(player.health > 0 && countdown < 0 && player.charge >= 100) {
+        player.specialAttack()
+        player.attack()
+      }
+      break;
+
+
+
+
+
+
     case 'ArrowRight':
       keys.ArrowRight.pressed = true
       enemy.lastKey = 'ArrowRight'
@@ -284,6 +322,12 @@ window.addEventListener('keydown', (event) => {
       break;
     case 'ArrowDown':
       if(enemy.health > 0 && countdown < 0) {
+        enemy.attack()
+      }
+      break;
+    case '0':
+      if(enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
+        enemy.specialAttack()
         enemy.attack()
       }
       break;

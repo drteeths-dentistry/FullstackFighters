@@ -63,7 +63,9 @@ class Fighter extends Sprite {
     }
     this.color = color
     this.isAttacking
+    this.isSpecialAttacking
     this.health = 100
+    this.charge = 0
     this.framesCurrent = 0
     this.framesElapsed = 0
     this.framesHold = 10
@@ -119,13 +121,30 @@ class Fighter extends Sprite {
   attack() {
     //makes hitbox do damage
     this.isAttacking = true
+    if(this.charge >= 100) {
+      this.charge = 0
+    }
     this.switchSprite('attack1')
+  }
+  specialAttack() {
+    this.isSpecialAttacking = true
+    this.switchSprite('attack1')
+  }
+
+  takeSpecialHit() {
+    this.health -= 25
+    this.charge +=15
+    if(this.health <= 0) {
+      this.switchSprite('death')
+    } else {
+      this.switchSprite('takeHit')
+    }
   }
 
   takeHit() {
     //damage per regular hit
     this.health -= 5
-
+    this.charge +=15
     if(this.health <= 0) {
       this.switchSprite('death')
     } else {
