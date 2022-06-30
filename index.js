@@ -1,72 +1,33 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const gravity = 0.2
+
 canvas.width = 1024
 canvas.height = 576
 
-c.fillRect(0,0,canvas.width,canvas.height)
-
-
-
-class Sprite{
-  constructor({position, velocity, color = 'red', offset}) {
-    this.position = position
-    this.velocity = velocity
-    this.width = 50
-    this.height = 150
-    this.lastKey
-    this.attackBox = {
-      position: {
-        x: this.position.x,
-        y: this.position.y
-      }
-    ,
-      offset,
-      width: 100,
-      height: 50
-    }
-    this.color = color
-    this.isAttacking
-    this.health = 100
-  }
-
-  draw() {
-    c.fillStyle = this.color
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
-
-    if(this.isAttacking) {
-      c.fillStyle = 'green'
-      c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
-    }
-  }
-
-  update() {
-    this.draw()
-    this.attackBox.position.x = this.position.x + this.attackBox.offset.x
-    this.attackBox.position.y = this.position.y
-
-    this.position.x += this.velocity.x
-    this.position.y += this.velocity.y
-
-    if(this.position.y + this.height + this.velocity.y >= canvas.height) {
-      this.velocity.y = 0
-    }
-    else{
-      this.velocity.y += gravity
-    }
-  }
-
-  attack() {
-    this.isAttacking = true
-    setTimeout(() => {
-      this.isAttacking = false
-    }, 100);
-  }
-}
-//create player
-const player = new Sprite({
+//create background
+const background = new Sprite({
   position: {
     x: 0,
+    y: 0,
+  },
+  imageSrc: './img/background.png'
+})
+//create shop
+const shop = new Sprite({
+  position: {
+    x: 628,
+    y: 128,
+  },
+  imageSrc: './img/shop.png',
+  scale: 2.75,
+  framesMax: 6
+})
+
+//create player
+const player = new Fighter({
+  position: {
+    x: 100,
     y: 0
   },
   velocity: {
@@ -76,13 +37,58 @@ const player = new Sprite({
   offset: {
     x: 0,
     y: 0
+  },
+  imageSrc: './img/samuraiMack/Idle.png',
+  framesMax: 8,
+  scale: 2.5,
+  offset: {
+    x: 215,
+    y: 155
+  },
+  sprites: {
+    idle: {
+      imageSrc: './img/samuraiMack/Idle.png',
+      framesMax: 8
+    },
+    run: {
+      imageSrc: './img/samuraiMack/Run.png',
+      framesMax: 8
+    },
+    jump: {
+      imageSrc: './img/samuraiMack/Jump.png',
+      framesMax: 2
+    },
+    fall: {
+      imageSrc: './img/samuraiMack/Fall.png',
+      framesMax: 2
+    },
+    attack1: {
+      imageSrc: './img/samuraiMack/Attack1.png',
+      framesMax: 6
+    },
+    takeHit: {
+      imageSrc: './img/samuraiMack/Take Hit.png',
+      framesMax: 4
+    },
+    death: {
+      imageSrc: './img/samuraiMack/Death.png',
+      framesMax: 6
+    }
+  },
+  attackBox: {
+    offset: {
+      x: 50,
+      y: 50
+    },
+    width: 210,
+    height: 50
   }
 })
 //create enemy
-const enemy = new Sprite({
+const enemy = new Fighter({
   position: {
-    x: 400,
-    y: 100
+    x: 874,
+    y: 0
   },
   velocity: {
     x: 0,
@@ -92,9 +98,54 @@ const enemy = new Sprite({
     x: -50,
     y: 0
   },
-  color: 'blue'
+  imageSrc: './img/kenji/Idle.png',
+  framesMax: 4,
+  scale: 2.5,
+  offset: {
+    x: 215,
+    y: 170
+  },
+  sprites: {
+    idle: {
+      imageSrc: './img/kenji/Idle.png',
+      framesMax: 4
+    },
+    run: {
+      imageSrc: './img/kenji/Run.png',
+      framesMax: 8
+    },
+    jump: {
+      imageSrc: './img/kenji/Jump.png',
+      framesMax: 2
+    },
+    fall: {
+      imageSrc: './img/kenji/Fall.png',
+      framesMax: 2
+    },
+    attack1: {
+      imageSrc: './img/kenji/Attack1.png',
+      framesMax: 4
+    },
+    takeHit: {
+      imageSrc: './img/kenji/Take Hit.png',
+      framesMax: 3
+    },
+    death: {
+      imageSrc: './img/kenji/Death.png',
+      framesMax: 7
+    }
+  },
+  attackBox: {
+    offset: {
+      x: -173,
+      y: 50
+    },
+    width: 173,
+    height: 50
+  }
 })
 
+//helps to tell what keys are being pressed
 const keys = {
   a: {
     pressed: false
@@ -110,51 +161,94 @@ const keys = {
   }
 }
 
-function rectangularCollision({rectangle1, rectangle2}) {
-  return(
-    rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x && rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width && rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y && rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
-  )
-}
+//self explanatory
+decreaseTimer()
 
 function animate() {
   window.requestAnimationFrame(animate)
-  c.fillStyle = 'black'
-  c.fillRect(0,0,canvas.width, canvas.height)
+  background.update()
+  shop.update()
+  //lays a faint white background infront of our png, so it can make the players look more vibrant
+  c.fillStyle = 'rgba(255,255,255,0.15)'
+  c.fillRect(0, 0, canvas.width, canvas.height)
   player.update()
   enemy.update()
 
+  //players start off not moving
   player.velocity.x = 0
   enemy.velocity.x = 0
 
-  if (keys.a.pressed && player.lastKey === 'a') {
+  //key inputs and logic for player1, the if statements usually check that the countdown hasnt finished and the player isnt dead
+  if (keys.a.pressed && player.lastKey === 'a' && player.health > 0 && countdown < 0) {
     player.velocity.x = -5
+    player.switchSprite('run')
   }
-  else if (keys.d.pressed && player.lastKey === 'd') {
+  else if (keys.d.pressed && player.lastKey === 'd' && player.health > 0 && countdown < 0) {
     player.velocity.x = 5
+    player.switchSprite('run')
+  } else {
+    player.switchSprite('idle')
   }
 
-  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
+  if (player.velocity.y < 0 && player.health > 0 && countdown < 0) {
+    player.switchSprite('jump')
+  }else if (player.velocity.y > 0 && player.health > 0 && countdown < 0) {
+    player.switchSprite('fall')
+  }
+
+  //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
+  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.health > 0 && countdown < 0) {
     enemy.velocity.x = -5
+    enemy.switchSprite('run')
   }
-  else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
+  else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.health > 0 && countdown < 0) {
     enemy.velocity.x = 5
+    enemy.switchSprite('run')
+  } else {
+    enemy.switchSprite('idle')
   }
 
-  if (rectangularCollision({rectangle1: player, rectangle2: enemy})&& player.isAttacking) {
+  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0) {
+    enemy.switchSprite('jump')
+  }else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0) {
+    enemy.switchSprite('fall')
+  }
+
+  //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
+  if (rectangularCollision({rectangle1: player, rectangle2: enemy}) && player.isAttacking && player.framesCurrent === 4) {
+    enemy.takeHit()
     player.isAttacking = false
-    enemy.health -= 20
-    document.querySelector('#enemyHealth').style.width = enemy.health + '%'
+    gsap.to('#enemyHealth', {
+      width: enemy.health + '%'
+    })
+  }
+  //resets attackbox to none damaging for player1
+  if(player.isAttacking && player.framesCurrent === 4) {
+    player.isAttacking = false
   }
 
-  if (rectangularCollision({rectangle1: enemy, rectangle2: player})&& enemy.isAttacking) {
+  //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
+  if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking) {
+    player.takeHit()
     enemy.isAttacking = false
-    player.health -= 20
-    document.querySelector('#playerHealth').style.width = player.health + '%'
+    gsap.to('#playerHealth', {
+      width: player.health + '%'
+    })
+  }
+  //resets attackbox to none damaging for player 2
+  if(enemy.isAttacking && enemy.framesCurrent === 2) {
+    enemy.isAttacking = false
+  }
+
+  //displays text, if one player dies
+  if(enemy.health <= 0 || player.health <= 0) {
+    determineWinner({player, enemy, timerId})
   }
 }
 
 animate()
 
+// all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
 window.addEventListener('keydown', (event) => {
   switch (event.key) {
     case 'd':
@@ -166,10 +260,14 @@ window.addEventListener('keydown', (event) => {
       player.lastKey = 'a'
       break;
     case 'w':
-      player.velocity.y = -10
+      if(player.velocity.y === 0 && player.health > 0 && countdown < 0) {
+        player.velocity.y = -10
+      }
       break;
     case ' ':
-      player.attack()
+      if(player.health > 0 && countdown < 0) {
+        player.attack()
+      }
       break;
     case 'ArrowRight':
       keys.ArrowRight.pressed = true
@@ -180,15 +278,23 @@ window.addEventListener('keydown', (event) => {
       enemy.lastKey = 'ArrowLeft'
       break;
     case 'ArrowUp':
-      enemy.velocity.y = -10
+      if(enemy.velocity.y === 0 && enemy.health > 0 && countdown < 0) {
+        enemy.velocity.y = -10
+      }
       break;
     case 'ArrowDown':
-      enemy.attack()
+      if(enemy.health > 0 && countdown < 0) {
+        enemy.attack()
+      }
       break;
   }
 })
 
+// all event listeners for letting go of a button, usually updates the current key pressed
 window.addEventListener('keyup', (event) => {
+  if(this.dead) {
+    return
+  }
   switch (event.key) {
     case 'd':
       keys.d.pressed = false
