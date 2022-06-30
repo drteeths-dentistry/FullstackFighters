@@ -1,8 +1,11 @@
 <head>
   <!-- video game font  -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
   <style>
     * {
       box-sizing: border-box;
@@ -11,11 +14,28 @@
   </style>
 </head>
 
-<body>
+<body style="text-align: center">
+  <div style="justify-content: center">
+    <button onclick="playAgain()" style="padding: 10px; margin: 15px">
+      Play Again
+    </button>
+    <audio id="audio" src="/audio/backgroundMusic.mp3" autoplay></audio>
+    <button onclick="ppAudio()" style="padding: 10px; margin: 15px; outline: none;">
+      Play / Pause Music
+    </button>
+  </div>
   <!-- big container -->
-  <div style="position: relative; display: inline-block;">
+  <div style="position: relative; display: inline-block">
     <!-- smaller container -->
-    <div style="position: absolute; display:flex; width: 100%; align-items: center; padding: 20px;">
+    <div
+      style="
+        position: absolute;
+        display: flex;
+        width: 100%;
+        align-items: center;
+        padding: 20px;
+      "
+    >
       <!-- player health bar -->
       <div style="position: relative; width: 100%; display: flex; justify-content: flex-end; border-top: 4px solid white; border-bottom: 4px solid white; border-left: 4px solid white;">
         <div style="background-color: red; height: 30px; width: 100%;"></div>
@@ -29,8 +49,8 @@
         id="timer"
         style="
           background-color: black;
-          width:100px;
-          height:50px;
+          width: 100px;
+          height: 50px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
@@ -38,11 +58,31 @@
           color: white;
           border: 4px solid white;
         "
-      >90</div>
+      >
+        90
+      </div>
       <!-- enemy health bar -->
-      <div style="position: relative; width: 100%; border-top: 4px solid white; border-bottom: 4px solid white; border-right: 4px solid white;">
-        <div style="background-color: red; height: 30px;"></div>
-        <div id="enemyHealth" style="position: absolute; background: #818CF8; top: 0; bottom: 0; left: 0; right: 0;"></div>
+      <div
+        style="
+          position: relative;
+          width: 100%;
+          border-top: 4px solid white;
+          border-bottom: 4px solid white;
+          border-right: 4px solid white;
+        "
+      >
+        <div style="background-color: red; height: 30px"></div>
+        <div
+          id="enemyHealth"
+          style="
+            position: absolute;
+            background: #818cf8;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+          "
+        ></div>
       </div>
       <!-- enemy Special Attack bar -->
       <div id="enemySABarContainer" style="position: absolute; background: black; bottom: 0; right: 5%; width: 45%; max-width: 400px; height:15%; border-top: 2px solid white; border-bottom: 2px solid white; border-left: 2px solid white; border-right: 2px solid white;">
@@ -50,12 +90,32 @@
       </div>
     </div>
     <!-- displays winner, and countdown timer -->
-    <div id="displayText" style="position: absolute; color: white; display: flex; align-items: center; justify-content: center; top: 0; bottom: 0; left: 0; right: 0; display: none; font-size: 60px; -webkit-text-stroke: 2px black;"></div>
-
+    <div
+      id="displayText"
+      style="
+        position: absolute;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: none;
+        font-size: 60px;
+        -webkit-text-stroke: 2px black;
+      "
+    ></div>
     <canvas></canvas>
   </div>
   <!-- imported animations for health bar reduction -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+    integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
   <script src="js/utils.js"></script>
   <script src="js/classes.js"></script>
   <script src="index.js"></script>
