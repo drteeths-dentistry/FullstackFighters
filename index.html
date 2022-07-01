@@ -3,6 +3,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0"
+  />
+  <link
     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
     rel="stylesheet"
   />
@@ -11,19 +15,66 @@
       box-sizing: border-box;
       font-family: 'Press Start 2P', cursive;
     }
+    #audiobutton:active {
+      transform: translateY(4px);
+    }
+    #volume_down:active {
+      transform: translateY(4px);
+    }
+    #volume_up:active {
+      transform: translateY(4px);
+    }
   </style>
 </head>
-
+<div>
+  <audio id="audio" src="/audio/backgroundMusic.mp3" autoplay></audio>
+  <button
+    class="material-symbols-rounded"
+    id="audiobutton"
+    style="
+      position: relative;
+      right: -450px;
+      cursor: pointer;
+      border: none;
+      background-color: white;
+      padding: 5px;
+    "
+    onclick="ppAudio(), this.blur()"
+  >
+    pause
+  </button>
+  <button
+    class="material-symbols-rounded"
+    id="volume_down"
+    style="
+      position: relative;
+      right: -450px;
+      cursor: pointer;
+      border: none;
+      background-color: white;
+      padding: 5px;
+    "
+    onclick="volDown(), this.blur()"
+  >
+    volume_down
+  </button>
+  <button
+    class="material-symbols-rounded"
+    id="volume_up"
+    style="
+      position: relative;
+      right: -450px;
+      cursor: pointer;
+      border: none;
+      background-color: white;
+      padding: 5px;
+    "
+    onclick="volUp(), this.blur()"
+  >
+    volume_up
+  </button>
+</div>
 <body style="text-align: center">
-  <div style="justify-content: center">
-    <button onclick="playAgain()" style="padding: 10px; margin: 15px">
-      Play Again
-    </button>
-    <audio id="audio" src="/audio/backgroundMusic.mp3" autoplay></audio>
-    <button onclick="ppAudio()" style="padding: 10px; margin: 15px; outline: none;">
-      Play / Pause Music
-    </button>
-  </div>
   <!-- big container -->
   <div style="position: relative; display: inline-block">
     <!-- smaller container -->
@@ -37,12 +88,58 @@
       "
     >
       <!-- player health bar -->
-      <div style="position: relative; width: 100%; display: flex; justify-content: flex-end; border-top: 4px solid white; border-bottom: 4px solid white; border-left: 4px solid white;">
-        <div style="background-color: red; height: 30px; width: 100%;"></div>
-        <div id="playerHealth" style="position: absolute; background: #818CF8; top: 0 ; right: 0; width: 100%; height:100%;"></div>
+      <div
+        style="
+          position: relative;
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          border-top: 4px solid white;
+          border-bottom: 4px solid white;
+          border-left: 4px solid white;
+        "
+      >
+        <div style="background-color: red; height: 30px; width: 100%"></div>
+        <div
+          id="playerHealth"
+          style="
+            position: absolute;
+            background: #818cf8;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+          "
+        ></div>
       </div>
-      <div id="playerSABarContainer" style="position: absolute; background: black; bottom: 0; left: 5%; width: 45%; max-width: 400px; height:15%; border-top: 2px solid white; border-bottom: 2px solid white; border-left: 2px solid white; border-right: 2px solid white;">
-        <div id="playerSABar" style="position: absolute; background: #fbbf24; top: 0 ; right: 0; width: 0%; max-width: 396px; height:100%;"></div>
+      <div
+        id="playerSABarContainer"
+        style="
+          position: absolute;
+          background: black;
+          bottom: 0;
+          left: 5%;
+          width: 45%;
+          max-width: 400px;
+          height: 15%;
+          border-top: 2px solid white;
+          border-bottom: 2px solid white;
+          border-left: 2px solid white;
+          border-right: 2px solid white;
+        "
+      >
+        <div
+          id="playerSABar"
+          style="
+            position: absolute;
+            background: #fbbf24;
+            top: 0;
+            right: 0;
+            width: 0%;
+            max-width: 396px;
+            height: 100%;
+          "
+        ></div>
       </div>
       <!-- Timer -->
       <div
@@ -85,8 +182,34 @@
         ></div>
       </div>
       <!-- enemy Special Attack bar -->
-      <div id="enemySABarContainer" style="position: absolute; background: black; bottom: 0; right: 5%; width: 45%; max-width: 400px; height:15%; border-top: 2px solid white; border-bottom: 2px solid white; border-left: 2px solid white; border-right: 2px solid white;">
-        <div id="enemySABar" style="position: absolute; background: #fbbf24; top: 0 ; left: 0; width: 0%; max-width: 396px; height:100%;"></div>
+      <div
+        id="enemySABarContainer"
+        style="
+          position: absolute;
+          background: black;
+          bottom: 0;
+          right: 5%;
+          width: 45%;
+          max-width: 400px;
+          height: 15%;
+          border-top: 2px solid white;
+          border-bottom: 2px solid white;
+          border-left: 2px solid white;
+          border-right: 2px solid white;
+        "
+      >
+        <div
+          id="enemySABar"
+          style="
+            position: absolute;
+            background: #fbbf24;
+            top: 0;
+            left: 0;
+            width: 0%;
+            max-width: 396px;
+            height: 100%;
+          "
+        ></div>
       </div>
     </div>
     <!-- displays winner, and countdown timer -->
@@ -95,7 +218,6 @@
       style="
         position: absolute;
         color: white;
-        display: flex;
         align-items: center;
         justify-content: center;
         top: 0;
@@ -107,6 +229,27 @@
         -webkit-text-stroke: 2px black;
       "
     ></div>
+    <div
+      id="displayButton"
+      style="
+        position: absolute;
+        align-items: center;
+        justify-content: center;
+        top: 150;
+        bottom: 0;
+        display: none;
+        left: 0;
+        right: 0;
+      "
+    >
+      <button
+        id="playagainbtn"
+        onclick="playAgain()"
+        style="padding: 10px; margin: 15px; cursor: pointer"
+      >
+        Play Again?
+      </button>
+    </div>
     <canvas></canvas>
   </div>
   <!-- imported animations for health bar reduction -->
