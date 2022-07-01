@@ -20,9 +20,12 @@
       Play Again
     </button>
     <audio id="audio" src="/audio/backgroundMusic.mp3" autoplay></audio>
-    <button onclick="ppAudio()" style="padding: 10px; margin: 15px; outline: none;">
+    <button
+      onclick="ppAudio(), this.blur()"
+      style="padding: 10px; margin: 15px"
+    >
       Play / Pause Music
-    </button>
+  </button>
   </div>
   <!-- big container -->
   <div style="position: relative; display: inline-block">
