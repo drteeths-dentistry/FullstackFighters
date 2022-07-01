@@ -249,9 +249,10 @@ function animate() {
         enemy.takeHit(3)
       }
       player.isAttacking = false
+
       gsap.to('#enemySABar', {
-        width: enemy.charge + '%'
-      })
+        width: enemy.charge + '%',
+      });
     }
     gsap.to('#enemyHealth', {
       width: enemy.health + '%',
@@ -272,8 +273,8 @@ function animate() {
       }
       enemy.isAttacking = false
       gsap.to('#playerSABar', {
-        width: player.charge + '%'
-      })
+        width: player.charge + '%',
+      });
     }
     gsap.to('#playerHealth', {
       width: player.health + '%',
@@ -329,14 +330,6 @@ window.addEventListener('keydown', (event) => {
         })
       }
       break;
-
-
-
-
-
-
-
-
     case 'arrowright':
       keys.ArrowRight.pressed = true;
       enemy.lastKey = 'arrowright';
