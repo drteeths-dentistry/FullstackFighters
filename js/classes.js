@@ -63,6 +63,7 @@ class Fighter extends Sprite {
     }
     this.color = color
     this.isAttacking
+    this.isBlocking = false
     this.health = 100
     this.framesCurrent = 0
     this.framesElapsed = 0
@@ -122,9 +123,18 @@ class Fighter extends Sprite {
     this.switchSprite('attack1')
   }
 
+  block(){
+    //shield appears and prevents damage
+    this.isBlocking = true
+    this.switchSprite('block')
+  }
+
   takeHit() {
     //damage per regular hit
-    this.health -= 5
+    if(this.isBlocking == true){
+      this.health -= 0
+    }
+    this.health -= 1
 
     if(this.health <= 0) {
       this.switchSprite('death')
@@ -187,6 +197,13 @@ class Fighter extends Sprite {
         if(this.image !== this.sprites.takeHit.image) {
           this.image = this.sprites.takeHit.image
           this.framesMax = this.sprites.takeHit.framesMax
+          this.framesCurrent = 0
+        }
+        break
+      case 'block':
+        if(this.image !== this.sprites.block.image){
+          this.image = this.sprites.block.image
+          this.framesMax = this.sprites.block.framesMax
           this.framesCurrent = 0
         }
         break

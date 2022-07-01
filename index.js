@@ -73,6 +73,10 @@ const player = new Fighter({
     death: {
       imageSrc: './img/samuraiMack/Death.png',
       framesMax: 6
+    },
+    block: {
+      imageSrc: './img/blueShield.png',
+      framesMax: 1
     }
   },
   attackBox: {
@@ -133,6 +137,10 @@ const enemy = new Fighter({
     death: {
       imageSrc: './img/kenji/Death.png',
       framesMax: 7
+    },
+    block: {
+      imageSrc: './img/redShield.png',
+      framesMax: 1
     }
   },
   attackBox: {
@@ -151,6 +159,9 @@ const keys = {
     pressed: false
   },
   d: {
+    pressed: false
+  },
+  j: {
     pressed: false
   },
   ArrowRight: {
@@ -195,6 +206,11 @@ function animate() {
   }else if (player.velocity.y > 0 && player.health > 0 && countdown < 0) {
     player.switchSprite('fall')
   }
+  if (keys.j.pressed && player.lastKey === 'j' && player.health > 0 && countdown < 0) {
+    player.velocity.x = 0
+    player.velocity.y = 0
+    player.switchSprite('block')
+  }
 
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.health > 0 && countdown < 0) {
@@ -216,6 +232,7 @@ function animate() {
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (rectangularCollision({rectangle1: player, rectangle2: enemy}) && player.isAttacking && player.framesCurrent === 4) {
+
     enemy.takeHit()
     player.isAttacking = false
     gsap.to('#enemyHealth', {
@@ -229,11 +246,25 @@ function animate() {
 
   //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
   if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking) {
+    // console.log('enemy attacking',enemy.isAttacking)
+    // console.log('pre-block', player.isBlocking)
+    // if(player.isBlocking == true){
+    //   player.isBlocking == false
+    //   console.log('post-block', player.isBlocking)
+    //   gsap.to('#playerHealth', {
+    //   })
+
+    // }
+
+    // else{
     player.takeHit()
+    console.log('enemy attacking',enemy.isAttacking)
     enemy.isAttacking = false
+
     gsap.to('#playerHealth', {
       width: player.health + '%'
     })
+    // }
   }
   //resets attackbox to none damaging for player 2
   if(enemy.isAttacking && enemy.framesCurrent === 2) {
@@ -267,6 +298,22 @@ window.addEventListener('keydown', (event) => {
     case ' ':
       if(player.health > 0 && countdown < 0) {
         player.attack()
+
+      }
+      break;
+    case 'j':
+      if (player.velocity.y === 0 && player.velocity.x === 0 && player.health > 0 && countdown < 0){
+        player.block()
+        if (rectangularCollision({rectangle1: enemy, rectangle2: player})){
+          console.log('player pre-block', player.isBlocking)
+          if(player.isBlocking){
+            setTimeout(() => {gsap.to('#playerHealth', {
+              }),10000})
+             player.isBlocking = !player.isBlocking
+
+            console.log('player post-block', player.isBlocking)
+          }
+        }
       }
       break;
     case 'ArrowRight':
@@ -287,6 +334,11 @@ window.addEventListener('keydown', (event) => {
         enemy.attack()
       }
       break;
+      case '0':
+        if (enemy.velocity.y === 0 && enemy.velocity.x === 0 && enemy.health > 0 && countdown < 0){
+          enemy.block()
+        }
+        break;
   }
 })
 
@@ -302,6 +354,9 @@ window.addEventListener('keyup', (event) => {
     case 'a':
       keys.a.pressed = false
       break;
+    case 'j':
+      keys.j.pressed = false
+      break;
     }
   switch (event.key) {
     case 'ArrowRight':
@@ -312,3 +367,5 @@ window.addEventListener('keyup', (event) => {
       break;
     }
 })
+
+
