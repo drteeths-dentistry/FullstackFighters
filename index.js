@@ -38,7 +38,7 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/samuraiMack/Idle.png',
+  imageSrc: './img/king/Idle.png',
   framesMax: 8,
   scale: 2.5,
   offset: {
@@ -248,7 +248,7 @@ function animate() {
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
     player.isAttacking &&
-    player.framesCurrent === 4
+    player.framesCurrent === 2
   ) {
     if (player.isAttacking === true) {
       if (player.velocity.y !== 0) {
