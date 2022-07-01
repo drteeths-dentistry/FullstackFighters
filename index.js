@@ -106,17 +106,17 @@ const enemy = new Fighter({
     x: -50,
     y: 0,
   },
-  imageSrc: './img/kenji/Idle.png',
-  framesMax: 4,
-  scale: 2.5,
+  // imageSrc: './img/ghost/Idle.png',
+  // framesMax: 10,
+  scale: 2.25,
   offset: {
     x: 215,
     y: 170,
   },
   sprites: {
     idle: {
-      imageSrc: './img/kenji/Idle.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Idle 3.png',
+      framesMax: 10,
     },
     run: {
       imageSrc: './img/kenji/Run.png',
