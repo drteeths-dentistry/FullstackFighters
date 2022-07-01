@@ -242,16 +242,12 @@ function animate() {
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (rectangularCollision({rectangle1: player, rectangle2: enemy}) && player.isAttacking && player.framesCurrent === 4) {
-    if(player.isSpecialAttacking === true) {
-      enemy.takeSpecialHit()
-      player.charge = 0
-      gsap.to('#playerSABar', {
-        width: '0%'
-      })
-      player.isSpecialAttacking = false
-    }
     if(player.isAttacking === true){
-      enemy.takeHit()
+      if(player.velocity.y !== 0){
+        enemy.takeHit(8)
+      }else{
+        enemy.takeHit(3)
+      }
       player.isAttacking = false
       gsap.to('#enemySABar', {
         width: enemy.charge + '%'
@@ -267,17 +263,13 @@ function animate() {
   }
 
   //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
-  if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking) {
-    if(enemy.isSpecialAttacking === true) {
-      player.takeSpecialHit()
-      enemy.charge = 0
-      gsap.to('#enemySABar', {
-        width: '0%'
-      })
-      enemy.isSpecialAttacking = false
-    }
+  if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking && enemy.framesCurrent === 2) {
     if(enemy.isAttacking === true){
-      player.takeHit()
+      if(enemy.velocity.y !== 0){
+        player.takeHit(8)
+      }else{
+        player.takeHit(3)
+      }
       enemy.isAttacking = false
       gsap.to('#playerSABar', {
         width: player.charge + '%'
@@ -324,7 +316,17 @@ window.addEventListener('keydown', (event) => {
     case 'x':
       if(player.health > 0 && countdown < 0 && player.charge >= 100) {
         player.specialAttack()
-        player.attack()
+        if (rectangularCollision({rectangle1: player, rectangle2: enemy})) {
+          if(player.isSpecialAttacking === true) {
+            enemy.takeHit(22)
+            player.attack()
+          }
+        }
+        player.charge = 0
+        player.isSpecialAttacking = false
+        gsap.to('#playerSABar', {
+          width: '0%'
+        })
       }
       break;
 
@@ -353,10 +355,20 @@ window.addEventListener('keydown', (event) => {
         enemy.attack();
       }
       break;
-    case '0':
+    case 'm':
       if(enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
         enemy.specialAttack()
-        enemy.attack()
+        if (rectangularCollision({rectangle1: enemy, rectangle2: player})) {
+          if(enemy.isSpecialAttacking === true) {
+            player.takeHit(22)
+            enemy.attack()
+          }
+        }
+        enemy.charge = 0
+        enemy.isSpecialAttacking = false
+        gsap.to('#enemySABar', {
+          width: '0%'
+        })
       }
       break;
   }

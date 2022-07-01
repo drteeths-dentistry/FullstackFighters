@@ -153,9 +153,6 @@ class Fighter extends Sprite {
       this.switchSprite('attack2');
       this.attackToggle = !this.attackToggle;
     }
-    if(this.charge >= 100) {
-      this.charge = 0
-    }
     this.switchSprite('attack1')
   }
   specialAttack() {
@@ -163,20 +160,9 @@ class Fighter extends Sprite {
     this.switchSprite('attack1')
   }
 
-  takeSpecialHit() {
-    this.health -= 25
-    this.charge +=15
-    if(this.health <= 0) {
-      this.switchSprite('death')
-    } else {
-      this.switchSprite('takeHit')
-    }
-  }
-
-  takeHit() {
+  takeHit(damage) {
     //damage per regular hit
-
-    this.health -= 5
+    this.health -= damage
     this.charge +=15
     if(this.health <= 0) {
       this.switchSprite('death')
