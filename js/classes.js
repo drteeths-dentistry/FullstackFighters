@@ -223,6 +223,13 @@ class Fighter extends Sprite {
           this.framesCurrent = 0;
         }
         break;
+      case 'moveBack':
+        if (this.image !== this.sprites.moveBack.image) {
+          this.image = this.sprites.moveBack.image;
+          this.framesMax = this.sprites.moveBack.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
       case 'jump':
         if (this.image !== this.sprites.jump.image) {
           this.image = this.sprites.jump.image;

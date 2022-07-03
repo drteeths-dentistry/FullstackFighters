@@ -119,20 +119,24 @@ const enemy = new Fighter({
       framesMax: 10,
     },
     run: {
-      imageSrc: './img/ghost/Move2.png',
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
+    },
+    moveBack: {
+      imageSrc: './img/ghost/MoveBack.png',
       framesMax: 8,
     },
     jump: {
-      imageSrc: './img/kenji/Jump.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     fall: {
-      imageSrc: './img/kenji/Fall.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     attack1: {
-      imageSrc: './img/kenji/Attack1.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Attack1Test.png',
+      framesMax: 10,
     },
     attack2: {
       imageSrc: './img/kenji/Attack2.png',
@@ -233,7 +237,7 @@ function animate() {
     countdown < 0
   ) {
     enemy.velocity.x = 5;
-    enemy.switchSprite('run');
+    enemy.switchSprite('moveBack');
   } else {
     enemy.switchSprite('idle');
   }
