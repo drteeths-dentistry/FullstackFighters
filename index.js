@@ -241,14 +241,18 @@ function animate() {
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
-  if (rectangularCollision({rectangle1: player, rectangle2: enemy}) && player.isAttacking && player.framesCurrent === 4) {
-    if(player.isAttacking === true){
-      if(player.velocity.y !== 0){
-        enemy.takeHit(8)
-      }else{
-        enemy.takeHit(3)
+  if (
+    rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
+    player.isAttacking &&
+    player.framesCurrent === 4
+  ) {
+    if (player.isAttacking === true) {
+      if (player.velocity.y !== 0) {
+        enemy.takeHit(8);
+      } else {
+        enemy.takeHit(3);
       }
-      player.isAttacking = false
+      player.isAttacking = false;
 
       gsap.to('#enemySABar', {
         width: enemy.charge + '%',
@@ -264,14 +268,18 @@ function animate() {
   }
 
   //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
-  if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking && enemy.framesCurrent === 2) {
-    if(enemy.isAttacking === true){
-      if(enemy.velocity.y !== 0){
-        player.takeHit(8)
-      }else{
-        player.takeHit(3)
+  if (
+    rectangularCollision({ rectangle1: enemy, rectangle2: player }) &&
+    enemy.isAttacking &&
+    enemy.framesCurrent === 2
+  ) {
+    if (enemy.isAttacking === true) {
+      if (enemy.velocity.y !== 0) {
+        player.takeHit(8);
+      } else {
+        player.takeHit(3);
       }
-      enemy.isAttacking = false
+      enemy.isAttacking = false;
       gsap.to('#playerSABar', {
         width: player.charge + '%',
       });
@@ -301,7 +309,7 @@ window.addEventListener('keydown', (event) => {
       player.lastKey = 'd';
       break;
     case 'a':
-      keys.a.pressed = true;
+      keys.a.pressed = true; 
       player.lastKey = 'a';
       break;
     case 'w':
@@ -315,19 +323,19 @@ window.addEventListener('keydown', (event) => {
       }
       break;
     case 'x':
-      if(player.health > 0 && countdown < 0 && player.charge >= 100) {
-        player.specialAttack()
-        if (rectangularCollision({rectangle1: player, rectangle2: enemy})) {
-          if(player.isSpecialAttacking === true) {
-            enemy.takeHit(22)
-            player.attack()
+      if (player.health > 0 && countdown < 0 && player.charge >= 100) {
+        player.specialAttack();
+        if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+          if (player.isSpecialAttacking === true) {
+            enemy.takeHit(22);
+            player.attack();
           }
         }
-        player.charge = 0
-        player.isSpecialAttacking = false
+        player.charge = 0;
+        player.isSpecialAttacking = false;
         gsap.to('#playerSABar', {
-          width: '0%'
-        })
+          width: '0%',
+        });
       }
       break;
     case 'arrowright':
@@ -349,19 +357,19 @@ window.addEventListener('keydown', (event) => {
       }
       break;
     case 'm':
-      if(enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
-        enemy.specialAttack()
-        if (rectangularCollision({rectangle1: enemy, rectangle2: player})) {
-          if(enemy.isSpecialAttacking === true) {
-            player.takeHit(22)
-            enemy.attack()
+      if (enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
+        enemy.specialAttack();
+        if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+          if (enemy.isSpecialAttacking === true) {
+            player.takeHit(22);
+            enemy.attack();
           }
         }
-        enemy.charge = 0
-        enemy.isSpecialAttacking = false
+        enemy.charge = 0;
+        enemy.isSpecialAttacking = false;
         gsap.to('#enemySABar', {
-          width: '0%'
-        })
+          width: '0%',
+        });
       }
       break;
   }
