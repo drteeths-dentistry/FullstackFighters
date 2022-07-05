@@ -85,19 +85,20 @@ class Fighter extends Sprite {
       offset: attackBox.offset,
       width: attackBox.width,
 
-      height: attackBox.height,
-    };
-    this.color = color;
-    this.isAttacking;
-    this.isSpecialAttacking;
-    this.health = 100;
-    this.charge = 0;
-    this.framesCurrent = 0;
-    this.framesElapsed = 0;
-    this.framesHold = 10;
-    this.sprites = sprites;
-    this.dead = false;
-    this.attackToggle = true;
+      height: attackBox.height
+    }
+    this.color = color
+    this.isAttacking
+    this.isBlocking = false
+    this.isSpecialAttacking
+    this.health = 100
+    this.charge = 0
+    this.framesCurrent = 0
+    this.framesElapsed = 0
+    this.framesHold = 10
+    this.sprites = sprites
+    this.dead = false
+    this.attackToggle = true
 
     //makes fighters current movement his approprite sprite png
     for (const sprite in this.sprites) {
@@ -170,15 +171,27 @@ class Fighter extends Sprite {
     this.switchSprite('attack3');
   }
 
+  block(){
+    //shield appears and prevents damage
+    this.isBlocking = true
+    this.switchSprite('block')
+  }
+
   takeHit(damage) {
     //damage per regular hit
-    this.health -= damage;
-    this.charge += 15;
-    if (this.health <= 0) {
-      this.switchSprite('death');
+    if (this.isBlocking == true){
+      // this.switchSprite('block')
+      this.health -= 0
+    }
+    else{
+    this.health -= damage
+    this.charge +=15
+    if(this.health <= 0) {
+      this.switchSprite('death')
     } else {
       this.switchSprite('takeHit');
     }
+   }
   }
 
   switchSprite(sprite) {
@@ -213,6 +226,12 @@ class Fighter extends Sprite {
       this.framesCurrent < this.sprites.takeHit.framesMax - 1
     )
       return;
+
+      if (
+        this.image === this.sprites.block.image &&
+        this.framesCurrent < this.sprites.block.framesMax - 1
+      )
+        return;
 
     //switches between sprites, and makes sure the action starts at the right frame, and shows all of it
     switch (sprite) {
@@ -278,7 +297,14 @@ class Fighter extends Sprite {
           this.framesMax = this.sprites.takeHit.framesMax;
           this.framesCurrent = 0;
         }
-        break;
+        break
+      case 'block':
+        if(this.image !== this.sprites.block.image){
+          this.image = this.sprites.block.image
+          this.framesMax = this.sprites.block.framesMax
+          this.framesCurrent = 0
+        }
+        break
       case 'death':
         if (this.image !== this.sprites.death.image) {
           this.image = this.sprites.death.image;
