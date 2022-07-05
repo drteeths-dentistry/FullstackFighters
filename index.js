@@ -135,11 +135,11 @@ const enemy = new Fighter({
       framesMax: 8,
     },
     attack1: {
-      imageSrc: './img/ghost/Attack1Test.png',
-      framesMax: 10,
+      imageSrc: './img/ghost/Attack1.png',
+      framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/kenji/Attack2.png',
+      imageSrc: './img/ghost/Attack2.png',
       framesMax: 4,
     },
     takeHit: {
