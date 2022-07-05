@@ -63,11 +63,11 @@ const player = new Fighter({
       framesMax: 2,
     },
     attack1: {
-      imageSrc: './img/king/Attack3.png',
+      imageSrc: './img/king/Attack1.png',
       framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/king/Attack3.png',
+      imageSrc: './img/king/Attack2.png',
       framesMax: 4,
     },
     attack3: {
@@ -142,13 +142,17 @@ const enemy = new Fighter({
       imageSrc: './img/ghost/Attack2.png',
       framesMax: 4,
     },
+    attack3: {
+      imageSrc: './img/ghost/Attack3.png',
+      framesMax: 6,
+    },
     takeHit: {
-      imageSrc: './img/kenji/Take Hit.png',
-      framesMax: 3,
+      imageSrc: './img/ghost/Take Hit.png',
+      framesMax: 4,
     },
     death: {
-      imageSrc: './img/kenji/Death.png',
-      framesMax: 7,
+      imageSrc: './img/ghost/Death.png',
+      framesMax: 16,
     },
   },
   attackBox: {
