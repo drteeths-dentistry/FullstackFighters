@@ -11,7 +11,7 @@ const background = new Sprite({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/background.png',
+  imageSrc: './img/castleBackground.png',
 });
 //create shop
 const shop = new Sprite({
@@ -38,7 +38,7 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/samuraiMack/Idle.png',
+  imageSrc: './img/king/Idle.png',
   framesMax: 8,
   scale: 2.5,
   offset: {
@@ -47,39 +47,43 @@ const player = new Fighter({
   },
   sprites: {
     idle: {
-      imageSrc: './img/samuraiMack/Idle.png',
+      imageSrc: './img/king/Idle.png',
       framesMax: 8,
     },
     run: {
-      imageSrc: './img/samuraiMack/Run.png',
+      imageSrc: './img/king/Run.png',
       framesMax: 8,
     },
     jump: {
-      imageSrc: './img/samuraiMack/Jump.png',
+      imageSrc: './img/king/Jump.png',
       framesMax: 2,
     },
     fall: {
-      imageSrc: './img/samuraiMack/Fall.png',
+      imageSrc: './img/king/Fall.png',
       framesMax: 2,
     },
     attack1: {
-      imageSrc: './img/samuraiMack/Attack1.png',
-      framesMax: 6,
+      imageSrc: './img/king/Attack1.png',
+      framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/samuraiMack/Attack2.png',
-      framesMax: 6,
+      imageSrc: './img/king/Attack2.png',
+      framesMax: 4,
+    },
+    attack3: {
+      imageSrc: './img/king/Attack3.png',
+      framesMax: 4,
     },
     takeHit: {
-      imageSrc: './img/samuraiMack/Take Hit.png',
+      imageSrc: './img/king/Take Hit.png',
       framesMax: 4,
     },
     death: {
-      imageSrc: './img/samuraiMack/Death.png',
-      framesMax: 6
+      imageSrc: './img/king/Death.png',
+      framesMax: 6,
     },
     block: {
-      imageSrc: './img/samuraiMack/Shield2.png',
+      imageSrc: './img/king/Shielding.png',
       framesMax: 8
     }
   },
@@ -106,49 +110,57 @@ const enemy = new Fighter({
     x: -50,
     y: 0,
   },
-  imageSrc: './img/kenji/Idle.png',
-  framesMax: 4,
-  scale: 2.5,
+  // imageSrc: './img/ghost/Idle.png',
+  // framesMax: 10,
+  scale: 2.25,
   offset: {
     x: 215,
     y: 170,
   },
   sprites: {
     idle: {
-      imageSrc: './img/kenji/Idle.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Idle.png',
+      framesMax: 10,
     },
     run: {
-      imageSrc: './img/kenji/Run.png',
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
+    },
+    moveBack: {
+      imageSrc: './img/ghost/MoveBack.png',
       framesMax: 8,
     },
     jump: {
-      imageSrc: './img/kenji/Jump.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     fall: {
-      imageSrc: './img/kenji/Fall.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     attack1: {
-      imageSrc: './img/kenji/Attack1.png',
+      imageSrc: './img/ghost/Attack1.png',
       framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/kenji/Attack2.png',
+      imageSrc: './img/ghost/Attack2.png',
       framesMax: 4,
     },
+    attack3: {
+      imageSrc: './img/ghost/Attack3.png',
+      framesMax: 6,
+    },
     takeHit: {
-      imageSrc: './img/kenji/Take Hit.png',
-      framesMax: 3,
+      imageSrc: './img/ghost/Take Hit.png',
+      framesMax: 4,
     },
     death: {
-      imageSrc: './img/kenji/Death.png',
-      framesMax: 7
+      imageSrc: './img/ghost/Death.png',
+      framesMax: 16,
     },
     block: {
-      imageSrc: './img/kenji/Shielding.png',
-      framesMax: 4
+      imageSrc: './img/ghost/Shielding.png',
+      framesMax: 10
     }
   },
   attackBox: {
@@ -189,7 +201,7 @@ decreaseTimer();
 function animate() {
   window.requestAnimationFrame(animate);
   background.update();
-  shop.update();
+  // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
@@ -229,9 +241,11 @@ function animate() {
   if (player.velocity.y < 0 && player.health > 0 && countdown < 0) {
     player.switchSprite('jump');
   } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0) {
+    console.log('falling')
     player.switchSprite('fall');
   }
-  
+
+
   if (keys.j.pressed && player.lastKey === 'j' && player.health > 0 && countdown < 0) {
     player.velocity.x = 0
     player.velocity.y = 0
@@ -254,7 +268,7 @@ function animate() {
     countdown < 0
   ) {
     enemy.velocity.x = 5;
-    enemy.switchSprite('run');
+    enemy.switchSprite('moveBack');
   } else {
     if(enemy.isBlocking){
       enemy.switchSprite('blocking')
@@ -267,18 +281,23 @@ function animate() {
   if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0) {
     enemy.switchSprite('jump');
   } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0) {
+    console.log('falling')
     enemy.switchSprite('fall');
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
-  if (rectangularCollision({rectangle1: player, rectangle2: enemy}) && player.isAttacking && player.framesCurrent === 4) {
-    if(player.isAttacking === true){
-      if(player.velocity.y !== 0){
-        enemy.takeHit(8)
-      }else{
-        enemy.takeHit(3)
+  if (
+    rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
+    player.isAttacking &&
+    player.framesCurrent === 2
+  ) {
+    if (player.isAttacking === true) {
+      if (player.velocity.y !== 0) {
+        enemy.takeHit(8);
+      } else {
+        enemy.takeHit(3);
       }
-      player.isAttacking = false
+      player.isAttacking = false;
 
       gsap.to('#enemySABar', {
         width: enemy.charge + '%',
@@ -302,7 +321,7 @@ function animate() {
       }else{
         player.takeHit(3)
       }
-      enemy.isAttacking = false
+      enemy.isAttacking = false;
       gsap.to('#playerSABar', {
         width: player.charge + '%',
       });
@@ -378,19 +397,19 @@ window.addEventListener('keydown', (event) => {
       }
       break;
     case 'x':
-      if(player.health > 0 && countdown < 0 && player.charge >= 100) {
-        player.specialAttack()
-        if (rectangularCollision({rectangle1: player, rectangle2: enemy})) {
-          if(player.isSpecialAttacking === true) {
-            enemy.takeHit(22)
-            player.attack()
+      if (player.health > 0 && countdown < 0 && player.charge >= 100) {
+        player.specialAttack();
+        if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+          if (player.isSpecialAttacking === true) {
+            enemy.takeHit(22);
+            player.attack();
           }
         }
-        player.charge = 0
-        player.isSpecialAttacking = false
+        player.charge = 0;
+        player.isSpecialAttacking = false;
         gsap.to('#playerSABar', {
-          width: '0%'
-        })
+          width: '0%',
+        });
       }
       break;
     case 'arrowright':
@@ -413,28 +432,30 @@ window.addEventListener('keydown', (event) => {
       }
       break;
     case 'm':
-      if(enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
-        enemy.specialAttack()
-        if (rectangularCollision({rectangle1: enemy, rectangle2: player})) {
-          if(enemy.isSpecialAttacking === true) {
-            player.takeHit(22)
-            enemy.attack()
+      if (enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
+        enemy.specialAttack();
+        if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+          if (enemy.isSpecialAttacking === true) {
+            player.takeHit(22);
+            enemy.attack();
           }
         }
-        enemy.charge = 0
-        enemy.isSpecialAttacking = false
+        enemy.charge = 0;
+        enemy.isSpecialAttacking = false;
         gsap.to('#enemySABar', {
-          width: '0%'
-        })
+          width: '0%',
+        });
       }
       break;
       case 'n':
       if (enemy.velocity.y === 0 && enemy.velocity.x === 0 && enemy.health > 0 && countdown < 0){
+        counter += 1
+        console.log(counter)
         enemy.block()
         nDown = true
         setTimeout(() => {
         enemy.isBlocking = !enemy.isBlocking
-        },2000)
+        },3000)
         nDown = false
         if(nDown == true){
           return
