@@ -63,11 +63,11 @@ const player = new Fighter({
       framesMax: 2,
     },
     attack1: {
-      imageSrc: './img/king/Attack3.png',
+      imageSrc: './img/king/Attack1.png',
       framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/king/Attack3.png',
+      imageSrc: './img/king/Attack2.png',
       framesMax: 4,
     },
     attack3: {
@@ -135,6 +135,10 @@ const enemy = new Fighter({
       framesMax: 4,
     },
     attack2: {
+      imageSrc: './img/kenji/Attack2.png',
+      framesMax: 4,
+    },
+    attack3: {
       imageSrc: './img/kenji/Attack2.png',
       framesMax: 4,
     },
@@ -248,7 +252,7 @@ function animate() {
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
     player.isAttacking &&
-    player.framesCurrent === 4
+    player.framesCurrent === 2
   ) {
     if (player.isAttacking === true) {
       if (player.velocity.y !== 0) {

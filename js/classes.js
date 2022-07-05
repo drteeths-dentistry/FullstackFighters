@@ -151,6 +151,10 @@ class Fighter extends Sprite {
   attack() {
     //makes hitbox do damage
     this.isAttacking = true;
+    if (this.isSpecialAttacking === true) {
+      this.switchSprite('attack3');
+      return
+    }
     if (this.attackToggle) {
       this.switchSprite('attack1');
       this.attackToggle = !this.attackToggle;
@@ -158,12 +162,9 @@ class Fighter extends Sprite {
       this.switchSprite('attack2');
       this.attackToggle = !this.attackToggle;
     }
-    if (this.specialAttack === true) {
-      this.switchSprite('attack3');
-      return;
-    }
     this.switchSprite('attack1');
   }
+
   specialAttack() {
     this.isSpecialAttacking = true;
     this.switchSprite('attack3');
@@ -198,6 +199,12 @@ class Fighter extends Sprite {
     if (
       this.image === this.sprites.attack2.image &&
       this.framesCurrent < this.sprites.attack2.framesMax - 1
+    )
+      return;
+
+    if (
+      this.image === this.sprites.attack3.image &&
+      this.framesCurrent < this.sprites.attack3.framesMax - 1
     )
       return;
 
