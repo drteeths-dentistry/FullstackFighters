@@ -38,7 +38,7 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/samuraiMack/Idle.png',
+  imageSrc: './img/king/Idle.png',
   framesMax: 8,
   scale: 2.5,
   offset: {
@@ -106,49 +106,57 @@ const enemy = new Fighter({
     x: -50,
     y: 0,
   },
-  imageSrc: './img/kenji/Idle.png',
-  framesMax: 4,
-  scale: 2.5,
+  // imageSrc: './img/ghost/Idle.png',
+  // framesMax: 10,
+  scale: 2.25,
   offset: {
     x: 215,
     y: 170,
   },
   sprites: {
     idle: {
-      imageSrc: './img/kenji/Idle.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Idle.png',
+      framesMax: 10,
     },
     run: {
-      imageSrc: './img/kenji/Run.png',
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
+    },
+    moveBack: {
+      imageSrc: './img/ghost/MoveBack.png',
       framesMax: 8,
     },
     jump: {
-      imageSrc: './img/kenji/Jump.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     fall: {
-      imageSrc: './img/kenji/Fall.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     attack1: {
-      imageSrc: './img/kenji/Attack1.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Attack1.png',
+      framesMax: 6,
     },
     attack2: {
-      imageSrc: './img/kenji/Attack2.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Attack2.png',
+      framesMax: 6,
+    },
+    attack3: {
+      imageSrc: './img/ghost/Attack3.png',
+      framesMax: 6,
     },
     attack3: {
       imageSrc: './img/kenji/Attack2.png',
       framesMax: 4,
     },
     takeHit: {
-      imageSrc: './img/kenji/Take Hit.png',
-      framesMax: 3,
+      imageSrc: './img/ghost/Take Hit.png',
+      framesMax: 4,
     },
     death: {
-      imageSrc: './img/kenji/Death.png',
-      framesMax: 7,
+      imageSrc: './img/ghost/Death.png',
+      framesMax: 16,
     },
   },
   attackBox: {
@@ -237,7 +245,7 @@ function animate() {
     countdown < 0
   ) {
     enemy.velocity.x = 5;
-    enemy.switchSprite('run');
+    enemy.switchSprite('moveBack');
   } else {
     enemy.switchSprite('idle');
   }
