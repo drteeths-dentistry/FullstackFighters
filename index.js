@@ -231,6 +231,7 @@ function animate() {
   } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0) {
     player.switchSprite('fall');
   }
+  
   if (keys.j.pressed && player.lastKey === 'j' && player.health > 0 && countdown < 0) {
     player.velocity.x = 0
     player.velocity.y = 0
@@ -325,6 +326,8 @@ animate();
 
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
 let counter = 0
+let jDown = false
+let nDown = false
 window.addEventListener('keydown', (event) => {
   switch (event.key.toLowerCase()) {
     case 'd':
@@ -349,16 +352,29 @@ window.addEventListener('keydown', (event) => {
 
     case 'j':
       if (player.velocity.y === 0 && player.velocity.x === 0 && player.health > 0 && countdown < 0){
-        player.block()
-        if (rectangularCollision({rectangle1: enemy, rectangle2: player})){
-          if(player.isBlocking){
-            counter += 1
-            console.log('player pre-block',player.isBlocking )
-             setTimeout(() => {player.isBlocking = !player.isBlocking},2000)
-          }
-
-        }
+        counter += 1
         console.log(counter)
+        player.block()
+        jDown = true
+        setTimeout(() => {
+        player.isBlocking = !player.isBlocking
+        },2000)
+        jDown = false
+        if(jDown == true){
+          return
+        }
+
+        // if (rectangularCollision({rectangle1: enemy, rectangle2: player})){
+        //   if(player.isBlocking && enemy.isAttacking){
+        //     player.isBlocking = !player.isBlocking
+        //     }
+            // counter += 1
+        //     // console.log('player pre-block',player.isBlocking )
+        //     setTimeout(() => {player.isBlocking = !player.isBlocking},2000)
+        //   }
+        // }
+        console.log(counter)
+
       }
       break;
     case 'x':
@@ -415,11 +431,21 @@ window.addEventListener('keydown', (event) => {
       case 'n':
       if (enemy.velocity.y === 0 && enemy.velocity.x === 0 && enemy.health > 0 && countdown < 0){
         enemy.block()
-        if (rectangularCollision({rectangle1: player, rectangle2: enemy})){
-          if(enemy.isBlocking){
-             setTimeout(() => {enemy.isBlocking = !enemy.isBlocking},3000)
-          }
+        nDown = true
+        setTimeout(() => {
+        enemy.isBlocking = !enemy.isBlocking
+        },2000)
+        nDown = false
+        if(nDown == true){
+          return
         }
+
+
+        // if (rectangularCollision({rectangle1: player, rectangle2: enemy})){
+        //   if(enemy.isBlocking){
+        //      setTimeout(() => {enemy.isBlocking = !enemy.isBlocking},3000)
+        //   }
+        // }
       }
       break;
   }

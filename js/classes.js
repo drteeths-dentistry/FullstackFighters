@@ -170,7 +170,7 @@ class Fighter extends Sprite {
   takeHit(damage) {
     //damage per regular hit
     if (this.isBlocking == true){
-      this.switchSprite('block')
+      // this.switchSprite('block')
       this.health -= 0
     }
     else{
