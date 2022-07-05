@@ -85,19 +85,19 @@ class Fighter extends Sprite {
       offset: attackBox.offset,
       width: attackBox.width,
 
-      height: attackBox.height
-    }
-    this.color = color
-    this.isAttacking
-    this.isSpecialAttacking
-    this.health = 100
-    this.charge = 0
-    this.framesCurrent = 0
-    this.framesElapsed = 0
-    this.framesHold = 10
-    this.sprites = sprites
-    this.dead = false
-    this.attackToggle = true
+      height: attackBox.height,
+    };
+    this.color = color;
+    this.isAttacking;
+    this.isSpecialAttacking;
+    this.health = 100;
+    this.charge = 0;
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 10;
+    this.sprites = sprites;
+    this.dead = false;
+    this.attackToggle = true;
 
     //makes fighters current movement his approprite sprite png
     for (const sprite in this.sprites) {
@@ -118,8 +118,13 @@ class Fighter extends Sprite {
 
     //hit boxes and attack boxes for fighters
 
-    // c.fillRect(this.attackBox.position.x,this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
-    // c.fillRect(this.position.x,this.position.y, this.width, this.height)
+    c.fillRect(
+      this.attackBox.position.x,
+      this.attackBox.position.y,
+      this.attackBox.width,
+      this.attackBox.height
+    );
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
 
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
@@ -145,27 +150,32 @@ class Fighter extends Sprite {
 
   attack() {
     //makes hitbox do damage
-    this.isAttacking = true
+    this.isAttacking = true;
+    if (this.isSpecialAttacking === true) {
+      this.switchSprite('attack3');
+      return
+    }
     if (this.attackToggle) {
       this.switchSprite('attack1');
       this.attackToggle = !this.attackToggle;
-    } else if(this.attackToggle === false){
+    } else if (this.attackToggle === false) {
       this.switchSprite('attack2');
       this.attackToggle = !this.attackToggle;
     }
-    this.switchSprite('attack1')
+    this.switchSprite('attack1');
   }
+
   specialAttack() {
-    this.isSpecialAttacking = true
-    this.switchSprite('attack1')
+    this.isSpecialAttacking = true;
+    this.switchSprite('attack3');
   }
 
   takeHit(damage) {
     //damage per regular hit
-    this.health -= damage
-    this.charge +=15
-    if(this.health <= 0) {
-      this.switchSprite('death')
+    this.health -= damage;
+    this.charge += 15;
+    if (this.health <= 0) {
+      this.switchSprite('death');
     } else {
       this.switchSprite('takeHit');
     }
@@ -193,6 +203,12 @@ class Fighter extends Sprite {
       return;
 
     if (
+      this.image === this.sprites.attack3.image &&
+      this.framesCurrent < this.sprites.attack3.framesMax - 1
+    )
+      return;
+
+    if (
       this.image === this.sprites.takeHit.image &&
       this.framesCurrent < this.sprites.takeHit.framesMax - 1
     )
@@ -211,6 +227,13 @@ class Fighter extends Sprite {
         if (this.image !== this.sprites.run.image) {
           this.image = this.sprites.run.image;
           this.framesMax = this.sprites.run.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
+      case 'moveBack':
+        if (this.image !== this.sprites.moveBack.image) {
+          this.image = this.sprites.moveBack.image;
+          this.framesMax = this.sprites.moveBack.framesMax;
           this.framesCurrent = 0;
         }
         break;
@@ -239,6 +262,13 @@ class Fighter extends Sprite {
         if (this.image !== this.sprites.attack2.image) {
           this.image = this.sprites.attack2.image;
           this.framesMax = this.sprites.attack2.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
+      case 'attack3':
+        if (this.image !== this.sprites.attack3.image) {
+          this.image = this.sprites.attack3.image;
+          this.framesMax = this.sprites.attack3.framesMax;
           this.framesCurrent = 0;
         }
         break;

@@ -11,7 +11,7 @@ const background = new Sprite({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/background.png',
+  imageSrc: './img/castleBackground.png',
 });
 //create shop
 const shop = new Sprite({
@@ -38,7 +38,7 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/samuraiMack/Idle.png',
+  imageSrc: './img/king/Idle.png',
   framesMax: 8,
   scale: 2.5,
   offset: {
@@ -47,35 +47,39 @@ const player = new Fighter({
   },
   sprites: {
     idle: {
-      imageSrc: './img/samuraiMack/Idle.png',
+      imageSrc: './img/king/Idle.png',
       framesMax: 8,
     },
     run: {
-      imageSrc: './img/samuraiMack/Run.png',
+      imageSrc: './img/king/Run.png',
       framesMax: 8,
     },
     jump: {
-      imageSrc: './img/samuraiMack/Jump.png',
+      imageSrc: './img/king/Jump.png',
       framesMax: 2,
     },
     fall: {
-      imageSrc: './img/samuraiMack/Fall.png',
+      imageSrc: './img/king/Fall.png',
       framesMax: 2,
     },
     attack1: {
-      imageSrc: './img/samuraiMack/Attack1.png',
-      framesMax: 6,
+      imageSrc: './img/king/Attack1.png',
+      framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/samuraiMack/Attack2.png',
-      framesMax: 6,
+      imageSrc: './img/king/Attack2.png',
+      framesMax: 4,
+    },
+    attack3: {
+      imageSrc: './img/king/Attack3.png',
+      framesMax: 4,
     },
     takeHit: {
-      imageSrc: './img/samuraiMack/Take Hit.png',
+      imageSrc: './img/king/Take Hit.png',
       framesMax: 4,
     },
     death: {
-      imageSrc: './img/samuraiMack/Death.png',
+      imageSrc: './img/king/Death.png',
       framesMax: 6,
     },
   },
@@ -102,45 +106,53 @@ const enemy = new Fighter({
     x: -50,
     y: 0,
   },
-  imageSrc: './img/kenji/Idle.png',
-  framesMax: 4,
-  scale: 2.5,
+  // imageSrc: './img/ghost/Idle.png',
+  // framesMax: 10,
+  scale: 2.25,
   offset: {
     x: 215,
     y: 170,
   },
   sprites: {
     idle: {
-      imageSrc: './img/kenji/Idle.png',
-      framesMax: 4,
+      imageSrc: './img/ghost/Idle.png',
+      framesMax: 10,
     },
     run: {
-      imageSrc: './img/kenji/Run.png',
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
+    },
+    moveBack: {
+      imageSrc: './img/ghost/MoveBack.png',
       framesMax: 8,
     },
     jump: {
-      imageSrc: './img/kenji/Jump.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     fall: {
-      imageSrc: './img/kenji/Fall.png',
-      framesMax: 2,
+      imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
     },
     attack1: {
-      imageSrc: './img/kenji/Attack1.png',
+      imageSrc: './img/ghost/Attack1.png',
       framesMax: 4,
     },
     attack2: {
-      imageSrc: './img/kenji/Attack2.png',
+      imageSrc: './img/ghost/Attack2.png',
       framesMax: 4,
     },
+    attack3: {
+      imageSrc: './img/ghost/Attack3.png',
+      framesMax: 6,
+    },
     takeHit: {
-      imageSrc: './img/kenji/Take Hit.png',
-      framesMax: 3,
+      imageSrc: './img/ghost/Take Hit.png',
+      framesMax: 4,
     },
     death: {
-      imageSrc: './img/kenji/Death.png',
-      framesMax: 7,
+      imageSrc: './img/ghost/Death.png',
+      framesMax: 16,
     },
   },
   attackBox: {
@@ -175,7 +187,7 @@ decreaseTimer();
 function animate() {
   window.requestAnimationFrame(animate);
   background.update();
-  shop.update();
+  // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
@@ -229,7 +241,7 @@ function animate() {
     countdown < 0
   ) {
     enemy.velocity.x = 5;
-    enemy.switchSprite('run');
+    enemy.switchSprite('moveBack');
   } else {
     enemy.switchSprite('idle');
   }
@@ -244,7 +256,7 @@ function animate() {
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
     player.isAttacking &&
-    player.framesCurrent === 4
+    player.framesCurrent === 2
   ) {
     if (player.isAttacking === true) {
       if (player.velocity.y !== 0) {
@@ -309,7 +321,7 @@ window.addEventListener('keydown', (event) => {
       player.lastKey = 'd';
       break;
     case 'a':
-      keys.a.pressed = true; 
+      keys.a.pressed = true;
       player.lastKey = 'a';
       break;
     case 'w':
