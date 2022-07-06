@@ -54,12 +54,24 @@ const player = new Fighter({
       imageSrc: './img/king/Run.png',
       framesMax: 8,
     },
+    runback: {
+      imageSrc: './img/king/runback.png',
+      framesMax: 8,
+    },
     jump: {
       imageSrc: './img/king/Jump.png',
       framesMax: 2,
     },
+    jumpback: {
+      imageSrc: './img/king/jumpback.png',
+      framesMax: 2,
+    },
     fall: {
       imageSrc: './img/king/Fall.png',
+      framesMax: 2,
+    },
+    fallback: {
+      imageSrc: './img/king/fallback.png',
       framesMax: 2,
     },
     attack1: {
@@ -92,7 +104,7 @@ const player = new Fighter({
       x: 50,
       y: 50,
     },
-    width: 210,
+    width: 190,
     height: 50,
   },
 });
@@ -134,8 +146,16 @@ const enemy = new Fighter({
       imageSrc: './img/ghost/Move.png',
       framesMax: 8,
     },
+    jumpback: {
+      imageSrc: './img/ghost/MoveBack.png',
+      framesMax: 8,
+    },
     fall: {
       imageSrc: './img/ghost/Move.png',
+      framesMax: 8,
+    },
+    fallback: {
+      imageSrc: './img/ghost/MoveBack.png',
       framesMax: 8,
     },
     attack1: {
@@ -219,15 +239,15 @@ function animate() {
     player.health > 0 &&
     countdown < 0
   ) {
-    player.velocity.x = -5;
-    player.switchSprite('run');
+    player.velocity.x = -3.5;
+    player.switchSprite('runback');
   } else if (
     keys.d.pressed &&
     player.lastKey === 'd' &&
     player.health > 0 &&
     countdown < 0
   ) {
-    player.velocity.x = 5;
+    player.velocity.x = 3.5;
     player.switchSprite('run');
   } else {
     if(player.isBlocking){
@@ -238,11 +258,17 @@ function animate() {
     }
   }
 
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0) {
+  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0) {
     player.switchSprite('jump');
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0) {
+  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0) {
     console.log('falling')
     player.switchSprite('fall');
+  }
+  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x < 0) {
+    player.switchSprite('jumpback')
+  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x < 0) {
+    console.log('fallingback')
+    player.switchSprite('fallback');
   }
 
 
@@ -259,7 +285,7 @@ function animate() {
     enemy.health > 0 &&
     countdown < 0
   ) {
-    enemy.velocity.x = -5;
+    enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
   } else if (
     keys.ArrowRight.pressed &&
@@ -267,7 +293,7 @@ function animate() {
     enemy.health > 0 &&
     countdown < 0
   ) {
-    enemy.velocity.x = 5;
+    enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
   } else {
     if(enemy.isBlocking){
@@ -278,10 +304,16 @@ function animate() {
     }
   }
 
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0) {
-    enemy.switchSprite('jump');
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0) {
+  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x > 0) {
+    enemy.switchSprite('jumpback');
+  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x > 0) {
     console.log('falling')
+    enemy.switchSprite('fallback');
+  }
+  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0) {
+    enemy.switchSprite('jump')
+  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0) {
+    console.log('fallingback')
     enemy.switchSprite('fall');
   }
 
@@ -359,7 +391,7 @@ window.addEventListener('keydown', (event) => {
       break;
     case 'w':
       if (player.velocity.y === 0 && player.health > 0 && countdown < 0) {
-        player.velocity.y = -10;
+        player.velocity.y = -9;
       }
       break;
     case ' ':
@@ -422,7 +454,7 @@ window.addEventListener('keydown', (event) => {
       break;
     case 'arrowup':
       if (enemy.velocity.y === 0 && enemy.health > 0 && countdown < 0) {
-        enemy.velocity.y = -10;
+        enemy.velocity.y = -9;
       }
       break;
     case 'arrowdown':
