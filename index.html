@@ -26,54 +26,7 @@
     }
   </style>
 </head>
-<div>
-  <audio id="audio" src="/audio/backgroundMusic.mp3"></audio>
-  <button
-    class="material-symbols-rounded"
-    id="audiobutton"
-    style="
-      position: relative;
-      right: -450px;
-      cursor: pointer;
-      border: none;
-      background-color: white;
-      padding: 5px;
-    "
-    onclick="ppAudio(), this.blur()"
-  >
-    pause
-  </button>
-  <button
-    class="material-symbols-rounded"
-    id="volume_down"
-    style="
-      position: relative;
-      right: -450px;
-      cursor: pointer;
-      border: none;
-      background-color: white;
-      padding: 5px;
-    "
-    onclick="volDown(), this.blur()"
-  >
-    volume_down
-  </button>
-  <button
-    class="material-symbols-rounded"
-    id="volume_up"
-    style="
-      position: relative;
-      right: -450px;
-      cursor: pointer;
-      border: none;
-      background-color: white;
-      padding: 5px;
-    "
-    onclick="volUp(), this.blur()"
-  >
-    volume_up
-  </button>
-</div>
+
 <body style="text-align: center">
   <!-- big container -->
   <div style="position: relative; display: inline-block">
@@ -85,6 +38,7 @@
         width: 100%;
         align-items: center;
         padding: 20px;
+        margin-top: 15px;
       "
     >
       <!-- player health bar -->
@@ -248,6 +202,57 @@
         style="padding: 10px; margin: 15px; cursor: pointer"
       >
         Play Again?
+      </button>
+    </div>
+    <div>
+      <audio id="audio" src="/audio/backgroundMusic.mp3" autoplay></audio>
+      <button
+        class="material-symbols-rounded"
+        id="audiobutton"
+        style="
+          position: relative;
+          right: -420px;
+          bottom: -550px;
+          cursor: pointer;
+          border: none;
+          background-color: Transparent;
+          color: white;
+        "
+        onclick="ppAudio(), this.blur()"
+      >
+        pause
+      </button>
+      <button
+        class="material-symbols-rounded"
+        id="volume_down"
+        style="
+          position: relative;
+          right: -425px;
+          bottom: -550px;
+          cursor: pointer;
+          border: none;
+          background-color: Transparent;
+          color: white;
+        "
+        onclick="volDown(), this.blur()"
+      >
+        volume_down
+      </button>
+      <button
+        class="material-symbols-rounded"
+        id="volume_up"
+        style="
+          position: relative;
+          right: -430px;
+          bottom: -550px;
+          cursor: pointer;
+          border: none;
+          background-color: Transparent;
+          color: white;
+        "
+        onclick="volUp(), this.blur()"
+      >
+        volume_up
       </button>
     </div>
     <canvas></canvas>
