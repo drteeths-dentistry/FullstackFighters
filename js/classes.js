@@ -227,11 +227,11 @@ class Fighter extends Sprite {
     )
       return;
 
-      if (
-        this.image === this.sprites.block.image &&
-        this.framesCurrent < this.sprites.block.framesMax - 1
-      )
-        return;
+    if (
+      this.image === this.sprites.block.image &&
+      this.framesCurrent < this.sprites.block.framesMax - 1
+    )
+      return;
 
     //switches between sprites, and makes sure the action starts at the right frame, and shows all of it
     switch (sprite) {
@@ -249,6 +249,13 @@ class Fighter extends Sprite {
           this.framesCurrent = 0;
         }
         break;
+      case 'runback':
+        if (this.image !== this.sprites.runback.image) {
+          this.image = this.sprites.runback.image;
+          this.framesMax = this.sprites.runback.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
       case 'moveBack':
         if (this.image !== this.sprites.moveBack.image) {
           this.image = this.sprites.moveBack.image;
@@ -263,10 +270,24 @@ class Fighter extends Sprite {
           this.framesCurrent = 0;
         }
         break;
+      case 'jumpback':
+        if (this.image !== this.sprites.jumpback.image) {
+          this.image = this.sprites.jumpback.image;
+          this.framesMax = this.sprites.jumpback.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
       case 'fall':
         if (this.image !== this.sprites.fall.image) {
           this.image = this.sprites.fall.image;
           this.framesMax = this.sprites.fall.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
+      case 'fallback':
+        if (this.image !== this.sprites.fallback.image) {
+          this.image = this.sprites.fallback.image;
+          this.framesMax = this.sprites.fallback.framesMax;
           this.framesCurrent = 0;
         }
         break;
