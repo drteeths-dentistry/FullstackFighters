@@ -96,8 +96,8 @@ const player = new Fighter({
     },
     block: {
       imageSrc: './img/king/Shielding.png',
-      framesMax: 8
-    }
+      framesMax: 8,
+    },
   },
   attackBox: {
     offset: {
@@ -180,8 +180,8 @@ const enemy = new Fighter({
     },
     block: {
       imageSrc: './img/ghost/Shielding.png',
-      framesMax: 10
-    }
+      framesMax: 10,
+    },
   },
   attackBox: {
     offset: {
@@ -202,10 +202,10 @@ const keys = {
     pressed: false,
   },
   j: {
-    pressed: false
+    pressed: false,
   },
   n: {
-    pressed: false
+    pressed: false,
   },
   ArrowRight: {
     pressed: false,
@@ -250,32 +250,55 @@ function animate() {
     player.velocity.x = 3.5;
     player.switchSprite('run');
   } else {
-    if(player.isBlocking){
-      player.switchSprite('blocking')
-    }
-    else{
+    if (player.isBlocking) {
+      player.switchSprite('blocking');
+    } else {
       player.switchSprite('idle');
     }
   }
 
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0) {
+  if (
+    player.velocity.y < 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x >= 0
+  ) {
     player.switchSprite('jump');
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0) {
-    console.log('falling')
+  } else if (
+    player.velocity.y > 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x >= 0
+  ) {
+    console.log('falling');
     player.switchSprite('fall');
   }
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x < 0) {
-    player.switchSprite('jumpback')
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x < 0) {
-    console.log('fallingback')
+  if (
+    player.velocity.y < 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x < 0
+  ) {
+    player.switchSprite('jumpback');
+  } else if (
+    player.velocity.y > 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x < 0
+  ) {
+    console.log('fallingback');
     player.switchSprite('fallback');
   }
 
-
-  if (keys.j.pressed && player.lastKey === 'j' && player.health > 0 && countdown < 0) {
-    player.velocity.x = 0
-    player.velocity.y = 0
-    player.switchSprite('block')
+  if (
+    keys.j.pressed &&
+    player.lastKey === 'j' &&
+    player.health > 0 &&
+    countdown < 0
+  ) {
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+    player.switchSprite('block');
   }
 
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
@@ -296,24 +319,43 @@ function animate() {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
   } else {
-    if(enemy.isBlocking){
-      enemy.switchSprite('blocking')
-    }
-    else{
+    if (enemy.isBlocking) {
+      enemy.switchSprite('blocking');
+    } else {
       enemy.switchSprite('idle');
     }
   }
 
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x > 0) {
+  if (
+    enemy.velocity.y < 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x > 0
+  ) {
     enemy.switchSprite('jumpback');
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x > 0) {
-    console.log('falling')
+  } else if (
+    enemy.velocity.y > 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x > 0
+  ) {
+    console.log('falling');
     enemy.switchSprite('fallback');
   }
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0) {
-    enemy.switchSprite('jump')
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0) {
-    console.log('fallingback')
+  if (
+    enemy.velocity.y < 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x <= 0
+  ) {
+    enemy.switchSprite('jump');
+  } else if (
+    enemy.velocity.y > 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x <= 0
+  ) {
+    console.log('fallingback');
     enemy.switchSprite('fall');
   }
 
@@ -346,12 +388,16 @@ function animate() {
 
   //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
 
-  if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking && enemy.framesCurrent === 2) {
-    if(enemy.isAttacking === true){
-      if(enemy.velocity.y !== 0){
-        player.takeHit(8)
-      }else{
-        player.takeHit(3)
+  if (
+    rectangularCollision({ rectangle1: enemy, rectangle2: player }) &&
+    enemy.isAttacking &&
+    enemy.framesCurrent === 2
+  ) {
+    if (enemy.isAttacking === true) {
+      if (enemy.velocity.y !== 0) {
+        player.takeHit(8);
+      } else {
+        player.takeHit(3);
       }
       enemy.isAttacking = false;
       gsap.to('#playerSABar', {
@@ -376,9 +422,9 @@ function animate() {
 animate();
 
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
-let counter = 0
-let jDown = false
-let nDown = false
+let counter = 0;
+let jDown = false;
+let nDown = false;
 window.addEventListener('keydown', (event) => {
   switch (event.key.toLowerCase()) {
     case 'd':
@@ -395,37 +441,40 @@ window.addEventListener('keydown', (event) => {
       }
       break;
     case ' ':
-      if(player.health > 0 && countdown < 0) {
-        player.attack()
-
+      if (player.health > 0 && countdown < 0) {
+        player.attack();
       }
       break;
 
     case 'j':
-      if (player.velocity.y === 0 && player.velocity.x === 0 && player.health > 0 && countdown < 0){
-        counter += 1
-        console.log(counter)
-        player.block()
-        jDown = true
+      if (
+        player.velocity.y === 0 &&
+        player.velocity.x === 0 &&
+        player.health > 0 &&
+        countdown < 0
+      ) {
+        counter += 1;
+        console.log(counter);
+        player.block();
+        jDown = true;
         setTimeout(() => {
-        player.isBlocking = !player.isBlocking
-        },2000)
-        jDown = false
-        if(jDown == true){
-          return
+          player.isBlocking = !player.isBlocking;
+        }, 2000);
+        jDown = false;
+        if (jDown == true) {
+          return;
         }
 
         // if (rectangularCollision({rectangle1: enemy, rectangle2: player})){
         //   if(player.isBlocking && enemy.isAttacking){
         //     player.isBlocking = !player.isBlocking
         //     }
-            // counter += 1
+        // counter += 1
         //     // console.log('player pre-block',player.isBlocking )
         //     setTimeout(() => {player.isBlocking = !player.isBlocking},2000)
         //   }
         // }
-        console.log(counter)
-
+        console.log(counter);
       }
       break;
     case 'x':
@@ -459,7 +508,6 @@ window.addEventListener('keydown', (event) => {
       break;
     case 'arrowdown':
       if (enemy.health > 0 && countdown < 0) {
-
         enemy.attack();
       }
       break;
@@ -479,20 +527,24 @@ window.addEventListener('keydown', (event) => {
         });
       }
       break;
-      case 'n':
-      if (enemy.velocity.y === 0 && enemy.velocity.x === 0 && enemy.health > 0 && countdown < 0){
-        counter += 1
-        console.log(counter)
-        enemy.block()
-        nDown = true
+    case 'n':
+      if (
+        enemy.velocity.y === 0 &&
+        enemy.velocity.x === 0 &&
+        enemy.health > 0 &&
+        countdown < 0
+      ) {
+        counter += 1;
+        console.log(counter);
+        enemy.block();
+        nDown = true;
         setTimeout(() => {
-        enemy.isBlocking = !enemy.isBlocking
-        },3000)
-        nDown = false
-        if(nDown == true){
-          return
+          enemy.isBlocking = !enemy.isBlocking;
+        }, 3000);
+        nDown = false;
+        if (nDown == true) {
+          return;
         }
-
 
         // if (rectangularCollision({rectangle1: player, rectangle2: enemy})){
         //   if(enemy.isBlocking){
@@ -517,12 +569,12 @@ window.addEventListener('keyup', (event) => {
       keys.a.pressed = false;
       break;
     case 'j':
-      keys.j.pressed = false
+      keys.j.pressed = false;
       break;
     case 'n':
-      keys.n.pressed = false
+      keys.n.pressed = false;
       break;
-    }
+  }
 
   switch (event.key.toLowerCase()) {
     case 'arrowright':
@@ -531,7 +583,84 @@ window.addEventListener('keyup', (event) => {
     case 'arrowleft':
       keys.ArrowLeft.pressed = false;
       break;
+  }
+});
+
+// More API functions here:
+// https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
+
+// the link to your model provided by Teachable Machine export panel
+const URL = './my-pose-model/';
+let model, webcam, ctx, labelContainer, maxPredictions;
+
+async function init() {
+  const modelURL = URL + 'model.json';
+  const metadataURL = URL + 'metadata.json';
+
+  // load the model and metadata
+  // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+  // Note: the pose library adds a tmPose object to your window (window.tmPose)
+  model = await tmPose.load(modelURL, metadataURL);
+  maxPredictions = model.getTotalClasses();
+
+  // Convenience function to setup a webcam
+  const size = 200;
+  const flip = true; // whether to flip the webcam
+  webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
+  await webcam.setup(); // request access to the webcam
+  await webcam.play();
+  window.requestAnimationFrame(loop);
+
+  // append/get elements to the DOM
+  const canvas = document.getElementById('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  ctx = canvas.getContext('2d');
+  labelContainer = document.getElementById('label-container');
+  for (let i = 0; i < maxPredictions; i++) {
+    // and class labels
+    labelContainer.appendChild(document.createElement('div'));
+  }
+}
+
+async function loop(timestamp) {
+  webcam.update(); // update the webcam frame
+  await predict();
+
+  window.requestAnimationFrame(loop);
+}
+
+let test;
+
+async function predict() {
+  // Prediction #1: run input through posenet
+  // estimatePose can take in an image, video or canvas html element
+  const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+  // Prediction 2: run input through teachable machine classification model
+  const prediction = await model.predict(posenetOutput);
+
+  for (let i = 0; i < maxPredictions; i++) {
+    const classPrediction =
+      prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
+    labelContainer.childNodes[i].innerHTML = classPrediction;
+    // console.log(prediction);
+  }
+
+  test = prediction.filter((move) => {
+    return move.probability > 0.85;
+  });
+
+  drawPose(pose);
+}
+
+function drawPose(pose) {
+  if (webcam.canvas) {
+    ctx.drawImage(webcam.canvas, 0, 0);
+    // draw the keypoints and skeleton
+    if (pose) {
+      const minPartConfidence = 0.5;
+      tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+      tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
     }
-})
-
-
+  }
+}
