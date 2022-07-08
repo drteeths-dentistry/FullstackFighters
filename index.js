@@ -38,7 +38,7 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/king/Idle.png',
+  imageSrc: './img/king/IdleRight.png',
   framesMax: 8,
   scale: 2.5,
   offset: {
@@ -46,8 +46,12 @@ const player = new Fighter({
     y: 155,
   },
   sprites: {
-    idle: {
-      imageSrc: './img/king/Idle.png',
+    idleLeft: {
+      imageSrc: './img/king/IdleLeft.png',
+      framesMax: 8,
+    },
+    idleRight: {
+      imageSrc: './img/king/IdleRight.png',
       framesMax: 8,
     },
     run: {
@@ -74,20 +78,36 @@ const player = new Fighter({
       imageSrc: './img/king/fallback.png',
       framesMax: 2,
     },
-    attack1: {
-      imageSrc: './img/king/Attack1.png',
+    attackLeft1: {
+      imageSrc: './img/king/AttackLeft1.png',
       framesMax: 4,
     },
-    attack2: {
-      imageSrc: './img/king/Attack2.png',
+    attackLeft2: {
+      imageSrc: './img/king/AttackLeft2.png',
       framesMax: 4,
     },
-    attack3: {
-      imageSrc: './img/king/Attack3.png',
+    attackLeft3: {
+      imageSrc: './img/king/AttackLeft3.png',
       framesMax: 4,
     },
-    takeHit: {
-      imageSrc: './img/king/Take Hit.png',
+    attackRight1: {
+      imageSrc: './img/king/AttackRight1.png',
+      framesMax: 4,
+    },
+    attackRight2: {
+      imageSrc: './img/king/AttackRight2.png',
+      framesMax: 4,
+    },
+    attackRight3: {
+      imageSrc: './img/king/AttackRight3.png',
+      framesMax: 4,
+    },
+    takeHitLeft: {
+      imageSrc: './img/king/Take Hit Left.png',
+      framesMax: 4,
+    },
+    takeHitRight: {
+      imageSrc: './img/king/Take Hit Right.png',
       framesMax: 4,
     },
     death: {
@@ -122,16 +142,20 @@ const enemy = new Fighter({
     x: -50,
     y: 0,
   },
-  // imageSrc: './img/ghost/Idle.png',
-  // framesMax: 10,
+  imageSrc: './img/ghost/IdleLeft.png',
+  framesMax: 10,
   scale: 2.25,
   offset: {
     x: 215,
     y: 170,
   },
   sprites: {
-    idle: {
-      imageSrc: './img/ghost/Idle.png',
+    idleLeft: {
+      imageSrc: './img/ghost/IdleLeft.png',
+      framesMax: 10,
+    },
+    idleRight: {
+      imageSrc: './img/ghost/IdleRight.png',
       framesMax: 10,
     },
     run: {
@@ -158,20 +182,36 @@ const enemy = new Fighter({
       imageSrc: './img/ghost/MoveBack.png',
       framesMax: 8,
     },
-    attack1: {
-      imageSrc: './img/ghost/Attack1.png',
+    attackLeft1: {
+      imageSrc: './img/ghost/AttackLeft1.png',
       framesMax: 4,
     },
-    attack2: {
-      imageSrc: './img/ghost/Attack2.png',
+    attackLeft2: {
+      imageSrc: './img/ghost/AttackLeft2.png',
       framesMax: 4,
     },
-    attack3: {
-      imageSrc: './img/ghost/Attack3.png',
+    attackLeft3: {
+      imageSrc: './img/ghost/AttackLeft3.png',
       framesMax: 6,
     },
-    takeHit: {
-      imageSrc: './img/ghost/Take Hit.png',
+    attackRight1: {
+      imageSrc: './img/ghost/AttackRight1.png',
+      framesMax: 4,
+    },
+    attackRight2: {
+      imageSrc: './img/ghost/AttackRight2.png',
+      framesMax: 4,
+    },
+    attackRight3: {
+      imageSrc: './img/ghost/AttackRight3.png',
+      framesMax: 6,
+    },
+    takeHitLeft: {
+      imageSrc: './img/ghost/Take Hit Left.png',
+      framesMax: 4,
+    },
+    takeHitRight: {
+      imageSrc: './img/ghost/Take Hit Right.png',
       framesMax: 4,
     },
     death: {
@@ -241,6 +281,7 @@ function animate() {
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
+    player.attackBox.offset.x = -190
   } else if (
     keys.d.pressed &&
     player.lastKey === 'd' &&
@@ -249,24 +290,30 @@ function animate() {
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
+    player.attackBox.offset.x = 50
   } else {
     if(player.isBlocking){
       player.switchSprite('blocking')
     }
     else{
-      player.switchSprite('idle');
+      if(player.lastKey === 'a'){
+        player.switchSprite('idleLeft');
+      }
+      else(
+        player.switchSprite('idleRight')
+      )
     }
   }
 
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0) {
+  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0 && player.lastKey === 'd') {
     player.switchSprite('jump');
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0) {
+  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0 && player.lastKey === 'd') {
     console.log('falling')
     player.switchSprite('fall');
   }
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x < 0) {
+  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x <= 0 && player.lastKey === 'a') {
     player.switchSprite('jumpback')
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x < 0) {
+  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x <= 0 && player.lastKey === 'a') {
     console.log('fallingback')
     player.switchSprite('fallback');
   }
@@ -287,6 +334,7 @@ function animate() {
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
+    enemy.attackBox.offset.x = -175
   } else if (
     keys.ArrowRight.pressed &&
     enemy.lastKey === 'arrowright' &&
@@ -295,24 +343,30 @@ function animate() {
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
+    enemy.attackBox.offset.x = 50
   } else {
     if(enemy.isBlocking){
       enemy.switchSprite('blocking')
     }
     else{
-      enemy.switchSprite('idle');
+      if(enemy.lastKey === 'arrowright'){
+        enemy.switchSprite('idleRight');
+      }
+      else(
+        enemy.switchSprite('idleLeft')
+      )
     }
   }
 
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x > 0) {
+  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x >= 0 && enemy.lastKey === 'arrowright') {
     enemy.switchSprite('jumpback');
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x > 0) {
+  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x >= 0 && enemy.lastKey === 'arrowright') {
     console.log('falling')
     enemy.switchSprite('fallback');
   }
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0) {
+  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0 && enemy.lastKey === 'arrowleft') {
     enemy.switchSprite('jump')
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0) {
+  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0 && enemy.lastKey === 'arrowleft') {
     console.log('fallingback')
     enemy.switchSprite('fall');
   }
@@ -534,4 +588,6 @@ window.addEventListener('keyup', (event) => {
     }
 })
 
-
+function handleInit(msg) {
+  console.log(msg)
+}
