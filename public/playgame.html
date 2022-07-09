@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/4334/4334081.png"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>FSA Fighters</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: 'Press Start 2P', cursive;
+      }
+      #audiobutton:active {
+        transform: translateY(4px);
+      }
+      #volume_down:active {
+        transform: translateY(4px);
+      }
+      #volume_up:active {
+        transform: translateY(4px);
+      }
+    </style>
+  </head>
+
+  <body style="text-align: center; background-color: #282c34">
+    <a href="./index.html"
+      ><img src="./img/FFLogo.png" style="height: 15vmin"
+    /></a>
+    <nav style="color: white; font-size: large">
+      <a class="game-button" href="./about.html">About</a>
+      <a class="game-button orange" href="./control.html">Control</a>
+      <a class="game-button red" href="./system.html">System</a>
+      <a class="game-button green" href="./devInfo.html">Devs</a>
+    </nav>
+    <div style="position: relative; display: inline-block; margin-top: 30px">
+      <div
+        style="
+          position: absolute;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          padding: 20px;
+          margin-top: 15px;
+        "
+      >
+        <div
+          style="
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 4px solid white;
+            border-bottom: 4px solid white;
+            border-left: 4px solid white;
+          "
+        >
+          <div style="background-color: red; height: 30px; width: 100%"></div>
+          <div
+            id="playerHealth"
+            style="
+              position: absolute;
+              background: #818cf8;
+              top: 0;
+              right: 0;
+              width: 100%;
+              height: 100%;
+            "
+          ></div>
+        </div>
+        <div
+          id="playerSABarContainer"
+          style="
+            position: absolute;
+            background: black;
+            bottom: 0;
+            left: 5%;
+            width: 45%;
+            max-width: 400px;
+            height: 15%;
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+            border-left: 2px solid white;
+            border-right: 2px solid white;
+          "
+        >
+          <div
+            id="playerSABar"
+            style="
+              position: absolute;
+              background: #fbbf24;
+              top: 0;
+              right: 0;
+              width: 0%;
+              max-width: 396px;
+              height: 100%;
+            "
+          ></div>
+        </div>
+
+        <div
+          id="timer"
+          style="
+            background-color: black;
+            width: 100px;
+            height: 50px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 4px solid white;
+          "
+        >
+          90
+        </div>
+
+        <div
+          style="
+            position: relative;
+            width: 100%;
+            border-top: 4px solid white;
+            border-bottom: 4px solid white;
+            border-right: 4px solid white;
+          "
+        >
+          <div style="background-color: red; height: 30px"></div>
+          <div
+            id="enemyHealth"
+            style="
+              position: absolute;
+              background: #818cf8;
+              top: 0;
+              bottom: 0;
+              left: 0;
+              right: 0;
+            "
+          ></div>
+        </div>
+
+        <div
+          id="enemySABarContainer"
+          style="
+            position: absolute;
+            background: black;
+            bottom: 0;
+            right: 5%;
+            width: 45%;
+            max-width: 400px;
+            height: 15%;
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+            border-left: 2px solid white;
+            border-right: 2px solid white;
+          "
+        >
+          <div
+            id="enemySABar"
+            style="
+              position: absolute;
+              background: #fbbf24;
+              top: 0;
+              left: 0;
+              width: 0%;
+              max-width: 396px;
+              height: 100%;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <div
+        id="displayText"
+        style="
+          position: absolute;
+          color: white;
+          align-items: center;
+          justify-content: center;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          display: none;
+          font-size: 60px;
+          -webkit-text-stroke: 2px black;
+        "
+      ></div>
+      <div
+        id="displayButton"
+        style="
+          position: absolute;
+          align-items: center;
+          justify-content: center;
+          top: 200px;
+          bottom: 0;
+          display: none;
+          left: 0;
+          right: 0;
+        "
+      >
+        <button
+          class="btn"
+          id="playagainbtn"
+          onclick="playAgain()"
+          style="padding: 10px; margin: 15px; cursor: pointer"
+        >
+          Play Again?
+        </button>
+      </div>
+      <div>
+        <audio id="audio" src="./audio/backgroundMusic.mp3" autoplay></audio>
+        <button
+          class="material-symbols-rounded"
+          id="audiobutton"
+          style="
+            position: relative;
+            right: -420px;
+            bottom: -550px;
+            cursor: pointer;
+            border: none;
+            background-color: Transparent;
+            color: white;
+          "
+          onclick="ppAudio(), this.blur()"
+        >
+          pause
+        </button>
+        <button
+          class="material-symbols-rounded"
+          id="volume_down"
+          style="
+            position: relative;
+            right: -425px;
+            bottom: -550px;
+            cursor: pointer;
+            border: none;
+            background-color: Transparent;
+            color: white;
+          "
+          onclick="volDown(), this.blur()"
+        >
+          volume_down
+        </button>
+        <button
+          class="material-symbols-rounded"
+          id="volume_up"
+          style="
+            position: relative;
+            right: -430px;
+            bottom: -550px;
+            cursor: pointer;
+            border: none;
+            background-color: Transparent;
+            color: white;
+          "
+          onclick="volUp(), this.blur()"
+        >
+          volume_up
+        </button>
+      </div>
+      <canvas></canvas>
+      <footer
+        style="
+          position: fixed;
+          left: 0px;
+          bottom: 10px;
+          right: 0px;
+          width: 100%;
+          background-color: black;
+          color: white;
+          text-align: center;
+          padding: 10px;
+        "
+      >
+        © Copyright Drteeths-Dentistry-2204 FSA-Capstone
+      </footer>
+    </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+      integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./client/utils.js"></script>
+    <script src="./client/classes.js"></script>
+    <script src="./client/game.js"></script>
+  </body>
+</html>
