@@ -1,10 +1,23 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 const gravity = 0.2;
-let socket = io();
 
 canvas.width = 1024;
 canvas.height = 576;
+
+const socket = io();
+
+const actionBtn = document.querySelector('#actionbtn');
+const playAgainBtn = document.querySelector('#playagainbtn');
+
+actionBtn.addEventListener('click', () => {
+  socket.emit('startGame');
+});
+
+socket.on('startGame', () => {
+  actionButton();
+  decreaseTimer();
+});
 
 //create background
 const background = new Sprite({
@@ -13,16 +26,6 @@ const background = new Sprite({
     y: 0,
   },
   imageSrc: './img/castleBackground.png',
-});
-//create shop
-const shop = new Sprite({
-  position: {
-    x: 628,
-    y: 128,
-  },
-  imageSrc: './img/shop.png',
-  scale: 2.75,
-  framesMax: 6,
 });
 
 //create player
@@ -216,13 +219,9 @@ const keys = {
   },
 };
 
-//self explanatory
-decreaseTimer();
-
 function animate() {
   window.requestAnimationFrame(animate);
   background.update();
-  // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
@@ -426,6 +425,7 @@ animate();
 let counter = 0;
 let jDown = false;
 let nDown = false;
+
 window.addEventListener('keydown', (event) => {
   switch (event.key.toLowerCase()) {
     case 'd':
@@ -465,16 +465,6 @@ window.addEventListener('keydown', (event) => {
         if (jDown == true) {
           return;
         }
-
-        // if (rectangularCollision({rectangle1: enemy, rectangle2: player})){
-        //   if(player.isBlocking && enemy.isAttacking){
-        //     player.isBlocking = !player.isBlocking
-        //     }
-        // counter += 1
-        //     // console.log('player pre-block',player.isBlocking )
-        //     setTimeout(() => {player.isBlocking = !player.isBlocking},2000)
-        //   }
-        // }
         console.log(counter);
       }
       break;
@@ -546,12 +536,6 @@ window.addEventListener('keydown', (event) => {
         if (nDown == true) {
           return;
         }
-
-        // if (rectangularCollision({rectangle1: player, rectangle2: enemy})){
-        //   if(enemy.isBlocking){
-        //      setTimeout(() => {enemy.isBlocking = !enemy.isBlocking},3000)
-        //   }
-        // }
       }
       break;
   }

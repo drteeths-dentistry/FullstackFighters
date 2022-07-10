@@ -18,6 +18,14 @@ server.listen(port, () => {
 io.on('connection', (socket) => {
   console.log('A user just connected.');
 
+  socket.on('startGame', () => {
+    io.emit('startGame');
+  });
+
+  socket.on('keyup', (event) => {
+    io.emit('keyup', event);
+  });
+
   socket.on('disconnect', () => {
     console.log('A user has disconnected.');
   });

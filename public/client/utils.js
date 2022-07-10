@@ -85,3 +85,9 @@ function ppAudio() {
     isAudioPlaying = !isAudioPlaying;
   }
 }
+
+function actionButton() {
+  document.querySelector('#mainpage').style.display = 'none';
+  document.querySelector('#gameplay').style.display = 'inline-block';
+  document.querySelector('#audio').play();
+}
