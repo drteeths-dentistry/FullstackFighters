@@ -38,7 +38,7 @@
   </head>
 
   <body style="text-align: center; background-color: #282c34">
-    <a id='tomain' href="./index.html"
+    <a id="tomain" href="./index.html"
       ><img src="./img/FFLogo.png" style="height: 15vmin"
     /></a>
     <nav style="color: white; font-size: large">
@@ -53,14 +53,7 @@
         style="width: 70%; margin-top: 50px"
       />
       <div>
-        <button
-          type="button"
-          id="actionbtn"
-          class="btn"
-          onclick="actionButton()"
-        >
-          action
-        </button>
+        <button type="button" id="actionbtn" class="btn">action</button>
       </div>
     </div>
     <div
@@ -219,27 +212,21 @@
         "
       ></div>
       <div
-        id="displayButton"
+        id="displaybtn"
         style="
           position: absolute;
+          color: white;
           align-items: center;
           justify-content: center;
-          top: 200px;
+          top: 0;
           bottom: 0;
-          display: none;
           left: 0;
           right: 0;
+          display: fixed;
+          font-size: 60px;
+          -webkit-text-stroke: 2px black;
         "
-      >
-        <button
-          class="btn"
-          id="playagainbtn"
-          onclick="playAgain()"
-          style="padding: 10px; margin: 15px; cursor: pointer"
-        >
-          Play Again?
-        </button>
-      </div>
+      ></div>
       <div>
         <audio id="audio" src="./audio/backgroundMusic.mp3"></audio>
         <button
@@ -292,6 +279,11 @@
         </button>
       </div>
       <canvas></canvas>
+    </div>
+    <div>
+      <button type="button" id="playagainbtn" class="btn" style="display: none">
+        Play Again?
+      </button>
     </div>
     <footer
       style="
