@@ -22,12 +22,16 @@ io.on('connection', (socket) => {
     io.emit('startGame');
   });
 
-  socket.on('keydown', (event) => {
-    io.emit('keydown', event);
+  socket.on('replay', () => {
+    io.emit('replay');
   });
 
-  socket.on('keyup', (event) => {
-    io.emit('keyup', event);
+  socket.on('keydown', (data) => {
+    io.emit('keydown', data);
+  });
+
+  socket.on('keyup', (data) => {
+    io.emit('keyup', data);
   });
 
   socket.on('disconnect', () => {
