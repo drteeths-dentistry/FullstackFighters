@@ -22,6 +22,10 @@ io.on('connection', (socket) => {
     io.emit('startGame');
   });
 
+  socket.on('keydown', (event) => {
+    io.emit('keydown', event);
+  });
+
   socket.on('keyup', (event) => {
     io.emit('keyup', event);
   });

@@ -270,7 +270,6 @@ function animate() {
     countdown < 0 &&
     player.velocity.x >= 0
   ) {
-    console.log('falling');
     player.switchSprite('fall');
   }
   if (
@@ -286,7 +285,7 @@ function animate() {
     countdown < 0 &&
     player.velocity.x < 0
   ) {
-    console.log('fallingback');
+    // console.log('fallingback');
     player.switchSprite('fallback');
   }
 
@@ -339,7 +338,7 @@ function animate() {
     countdown < 0 &&
     enemy.velocity.x > 0
   ) {
-    console.log('falling');
+    // console.log('falling');
     enemy.switchSprite('fallback');
   }
   if (
@@ -355,7 +354,7 @@ function animate() {
     countdown < 0 &&
     enemy.velocity.x <= 0
   ) {
-    console.log('fallingback');
+    // console.log('fallingback');
     enemy.switchSprite('fall');
   }
 
@@ -427,6 +426,16 @@ let jDown = false;
 let nDown = false;
 
 window.addEventListener('keydown', (event) => {
+  socket.emit('keydown', event.key);
+  keyDown(event);
+});
+
+window.addEventListener('keyup', (event) => {
+  socket.emit('keyup', event.key);
+  keyUp(event);
+});
+
+function keyDown(event) {
   switch (event.key.toLowerCase()) {
     case 'd':
       keys.d.pressed = true;
@@ -455,7 +464,6 @@ window.addEventListener('keydown', (event) => {
         countdown < 0
       ) {
         counter += 1;
-        console.log(counter);
         player.block();
         jDown = true;
         setTimeout(() => {
@@ -465,7 +473,6 @@ window.addEventListener('keydown', (event) => {
         if (jDown == true) {
           return;
         }
-        console.log(counter);
       }
       break;
     case 'x':
@@ -526,7 +533,6 @@ window.addEventListener('keydown', (event) => {
         countdown < 0
       ) {
         counter += 1;
-        console.log(counter);
         enemy.block();
         nDown = true;
         setTimeout(() => {
@@ -539,10 +545,9 @@ window.addEventListener('keydown', (event) => {
       }
       break;
   }
-});
+}
 
-// all event listeners for letting go of a button, usually updates the current key pressed
-window.addEventListener('keyup', (event) => {
+function keyUp(event) {
   if (this.dead) {
     return;
   }
@@ -569,4 +574,4 @@ window.addEventListener('keyup', (event) => {
       keys.ArrowLeft.pressed = false;
       break;
   }
-});
+}
