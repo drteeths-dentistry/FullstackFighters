@@ -218,9 +218,14 @@ const keys = {
 //self explanatory
 decreaseTimer();
 
-function animate() {
+async function animate() {
   window.requestAnimationFrame(animate);
   background.update();
+
+  let test2 = document.getElementById('topMove').innerHTML;
+
+  console.log(test2);
+
   // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
@@ -234,18 +239,20 @@ function animate() {
 
   //key inputs and logic for player1, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
-    keys.a.pressed &&
-    player.lastKey === 'a' &&
-    player.health > 0 &&
-    countdown < 0
+    (keys.a.pressed &&
+      player.lastKey === 'a' &&
+      player.health > 0 &&
+      countdown < 0) ||
+    test2 === 'LeftMove'
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
   } else if (
-    keys.d.pressed &&
-    player.lastKey === 'd' &&
-    player.health > 0 &&
-    countdown < 0
+    (keys.d.pressed &&
+      player.lastKey === 'd' &&
+      player.health > 0 &&
+      countdown < 0) ||
+    test2 === 'RightMove'
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
@@ -257,12 +264,24 @@ function animate() {
     }
   }
 
+  // OLD CODE
+  // if (
+  //   player.velocity.y < 0 &&
+  //   player.health > 0 &&
+  //   countdown < 0 &&
+  //   player.velocity.x >= 0
+  // ) {
+  //   player.switchSprite('jump');
+  // }
+
   if (
-    player.velocity.y < 0 &&
+    // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
+    player.velocity.y === 0 &&
     player.health > 0 &&
     countdown < 0 &&
-    player.velocity.x >= 0
+    test2 === 'Jump'
   ) {
+    player.velocity.y = -9;
     player.switchSprite('jump');
   } else if (
     player.velocity.y > 0 &&
@@ -270,7 +289,7 @@ function animate() {
     countdown < 0 &&
     player.velocity.x >= 0
   ) {
-    console.log('falling');
+    // console.log('falling');
     player.switchSprite('fall');
   }
   if (
@@ -291,10 +310,11 @@ function animate() {
   }
 
   if (
-    keys.j.pressed &&
-    player.lastKey === 'j' &&
-    player.health > 0 &&
-    countdown < 0
+    (keys.j.pressed &&
+      player.lastKey === 'j' &&
+      player.health > 0 &&
+      countdown < 0) ||
+    test2 === 'Block'
   ) {
     player.velocity.x = 0;
     player.velocity.y = 0;
@@ -357,6 +377,12 @@ function animate() {
   ) {
     console.log('fallingback');
     enemy.switchSprite('fall');
+  }
+
+  if (test2 === 'Attack1') {
+    player.isAttacking = true;
+    player.attack();
+    player.framesCurrent = 2;
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
@@ -425,6 +451,7 @@ animate();
 let counter = 0;
 let jDown = false;
 let nDown = false;
+
 window.addEventListener('keydown', (event) => {
   switch (event.key.toLowerCase()) {
     case 'd':
@@ -617,6 +644,7 @@ async function init() {
   canvas.height = size;
   ctx = canvas.getContext('2d');
   labelContainer = document.getElementById('label-container');
+  topMoveContainer = document.getElementById('topMove');
   for (let i = 0; i < maxPredictions; i++) {
     // and class labels
     labelContainer.appendChild(document.createElement('div'));
@@ -643,15 +671,21 @@ async function predict() {
     const classPrediction =
       prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
     labelContainer.childNodes[i].innerHTML = classPrediction;
-    // console.log(prediction);
   }
 
-  test = prediction.filter((move) => {
-    return move.probability > 0.85;
+  topMove = prediction.filter((move) => {
+    return move.probability > 0.95;
   });
+
+  // console.log(test[0] !== undefined ? test[0].className : 'Idle');
+  topMoveContainer.innerHTML =
+    topMove[0] !== undefined ? topMove[0].className : 'Idle';
+
+  // console.log('FLAG1', test[0]);
 
   drawPose(pose);
 }
+// console.log('flaggg', test);
 
 function drawPose(pose) {
   if (webcam.canvas) {
