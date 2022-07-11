@@ -1,0 +1,26 @@
+{
+  "name": "fullstackfighters",
+  "version": "1.0.0",
+  "description": "Our goal is to build a dual player fighting game implementing machine learning to allow for an interactive fighting experience.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drteeths-dentistry/FullstackFighters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drteeths-dentistry/FullstackFighters/issues"
+  },
+  "homepage": "https://github.com/drteeths-dentistry/FullstackFighters#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19",
+    "socket.io": "^4.5.1"
+  }
+}
