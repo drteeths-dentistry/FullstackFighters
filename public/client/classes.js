@@ -389,10 +389,17 @@ class Fighter extends Sprite {
           this.framesCurrent = 0;
         }
         break;
-      case 'block':
-        if (this.image !== this.sprites.block.image) {
-          this.image = this.sprites.block.image;
-          this.framesMax = this.sprites.block.framesMax;
+      case 'blockLeft':
+        if (this.image !== this.sprites.blockLeft.image) {
+          this.image = this.sprites.blockLeft.image;
+          this.framesMax = this.sprites.blockLeft.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
+      case 'blockRight':
+        if (this.image !== this.sprites.blockRight.image) {
+          this.image = this.sprites.blockRight.image;
+          this.framesMax = this.sprites.blockRight.framesMax;
           this.framesCurrent = 0;
         }
         break;
