@@ -38,6 +38,7 @@
   </head>
 
   <body style="text-align: center; background-color: #282c34">
+    <!-- navbar -->
     <a id="tomain" href="./index.html"
       ><img src="./img/FFLogo.png" style="height: 15vmin"
     /></a>
@@ -47,6 +48,7 @@
       <a class="game-button red" href="./system.html">System</a>
       <a class="game-button green" href="./devInfo.html">Devs</a>
     </nav>
+    <!-- mainpage -->
     <div id="mainpage" style="display: fixed">
       <img
         src="https://i.pinimg.com/originals/f8/15/eb/f815eb14aed1bfaa9a1b3104346e35c9.gif"
@@ -56,6 +58,27 @@
         <button type="button" id="actionbtn" class="btn">action</button>
       </div>
     </div>
+    <!-- pick player -->
+    <div
+      id="pickplayer"
+      style="
+        display: none;
+        justify-content: center;
+        margin: 40px;
+        padding: 40px;
+        color: white;
+        font-size: 30px;
+      "
+    >
+      Choose your fighters !!
+      <div>
+        <button type="button" id="kingBtn" class="btn">King</button>
+      </div>
+      <div>
+        <button type="button" id="ghostBtn" class="btn">Ghost</button>
+      </div>
+    </div>
+    <!-- gamepage -->
     <div
       id="gameplay"
       style="position: relative; display: none; margin-top: 30px"

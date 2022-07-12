@@ -181,11 +181,7 @@ class Fighter extends Sprite {
   block() {
     //shield appears and prevents damage
     this.isBlocking = true;
-    if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
-      this.switchSprite('blockRight');
-    } else {
-      this.switchSprite('blockLeft');
-    }
+    this.switchSprite('block');
   }
   takeHit(damage) {
     //damage per regular hit
@@ -393,17 +389,10 @@ class Fighter extends Sprite {
           this.framesCurrent = 0;
         }
         break;
-      case 'blockLeft':
-        if (this.image !== this.sprites.blockLeft.image) {
-          this.image = this.sprites.blockLeft.image;
-          this.framesMax = this.sprites.blockLeft.framesMax;
-          this.framesCurrent = 0;
-        }
-        break;
-      case 'blockRight':
-        if (this.image !== this.sprites.blockRight.image) {
-          this.image = this.sprites.blockRight.image;
-          this.framesMax = this.sprites.blockRight.framesMax;
+      case 'block':
+        if (this.image !== this.sprites.block.image) {
+          this.image = this.sprites.block.image;
+          this.framesMax = this.sprites.block.framesMax;
           this.framesCurrent = 0;
         }
         break;

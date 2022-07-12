@@ -57,11 +57,6 @@ function decreaseTimer() {
   }
 }
 
-// Function for play again btn
-function playAgain() {
-  document.querySelector('#tomain').click();
-}
-
 // Function for audio btn
 const audio = document.querySelector('#audio');
 audio.volume = 0.4;
@@ -86,8 +81,17 @@ function ppAudio() {
   }
 }
 
+function playAgain() {
+  document.querySelector('#tomain').click();
+}
+
 function actionButton() {
   document.querySelector('#mainpage').style.display = 'none';
+  document.querySelector('#pickplayer').style.display = '';
+}
+
+function fightReady() {
+  document.querySelector('#pickplayer').style.display = 'none';
   document.querySelector('#gameplay').style.display = 'inline-block';
   document.querySelector('#audio').play();
 }

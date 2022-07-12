@@ -9,6 +9,8 @@ const socket = io();
 
 const actionBtn = document.querySelector('#actionbtn');
 const playAgainBtn = document.querySelector('#playagainbtn');
+const kingBtn = document.querySelector('#kingBtn');
+const ghostBtn = document.querySelector('#ghostBtn');
 
 actionBtn.addEventListener('click', () => {
   socket.emit('startGame');
@@ -17,8 +19,21 @@ actionBtn.addEventListener('click', () => {
 playAgainBtn.addEventListener('click', () => {
   socket.emit('replay');
 });
+
+kingBtn.addEventListener('click', () => {
+  socket.emit('select');
+});
+
+ghostBtn.addEventListener('click', () => {
+  socket.emit('select');
+});
+
 socket.on('startGame', () => {
   actionButton();
+});
+
+socket.on('select', () => {
+  fightReady();
   decreaseTimer();
 });
 
@@ -38,7 +53,7 @@ const background = new Sprite({
 //create player
 //create player
 const player = new Fighter({
-  position: {
+position: {
     x: 100,
     y: 0,
   },
@@ -370,9 +385,7 @@ function animate() {
     enemy.attackBox.offset.x = 50;
   } else {
     if (enemy.isBlocking) {
-      if (enemy.lastKey === 'arrowright') {
-        enemy.switchSprite('blockRight');
-      } else enemy.switchSprite('blockLeft')
+      enemy.switchSprite('blocking');
     } else {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('idleRight');
