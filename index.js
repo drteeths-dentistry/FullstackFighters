@@ -245,7 +245,7 @@ async function animate() {
       player.lastKey === 'a' &&
       player.health > 0 &&
       countdown < 0) ||
-    test2 === 'LeftMove'
+    test2 === 'Left'
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
@@ -254,7 +254,7 @@ async function animate() {
       player.lastKey === 'd' &&
       player.health > 0 &&
       countdown < 0) ||
-    test2 === 'RightMove'
+    test2 === 'Right'
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
@@ -265,16 +265,6 @@ async function animate() {
       player.switchSprite('idle');
     }
   }
-
-  // OLD CODE
-  // if (
-  //   player.velocity.y < 0 &&
-  //   player.health > 0 &&
-  //   countdown < 0 &&
-  //   player.velocity.x >= 0
-  // ) {
-  //   player.switchSprite('jump');
-  // }
 
   if (
     // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
@@ -381,7 +371,8 @@ async function animate() {
     enemy.switchSprite('fall');
   }
 
-  if (test2 === 'Attack1') {
+  //Regular Attack
+  if (test2 === 'Attack') {
     attackCounter++;
     if (attackCounter < 2) {
       player.isAttacking = true;
@@ -389,9 +380,30 @@ async function animate() {
       player.framesCurrent = 2;
     }
     // If we need to attack more decrease number below
-    if (attackCounter > 40) {
+    if (attackCounter > 35) {
       attackCounter = 0;
     }
+  }
+  // Special Attack
+  if (
+    player.health > 0 &&
+    countdown < 0 &&
+    player.charge >= 100 &&
+    test2 === 'SpecialAttack'
+  ) {
+    player.isSpecialAttacking = true;
+    player.specialAttack();
+    if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+      if (player.isSpecialAttacking === true) {
+        enemy.takeHit(22);
+        player.attack();
+      }
+    }
+    player.charge = 0;
+    player.isSpecialAttacking = false;
+    gsap.to('#playerSABar', {
+      width: '0%',
+    });
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
