@@ -22,6 +22,10 @@ io.on('connection', (socket) => {
     io.emit('startGame');
   });
 
+  socket.on('select', () => {
+    io.emit('select');
+  });
+
   socket.on('replay', () => {
     io.emit('replay');
   });
