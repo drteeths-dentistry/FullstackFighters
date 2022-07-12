@@ -181,7 +181,12 @@ class Fighter extends Sprite {
   block() {
     //shield appears and prevents damage
     this.isBlocking = true;
-    this.switchSprite('block');
+    if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
+      this.switchSprite('blockRight');
+    } else {
+      this.switchSprite('blockLeft');
+    }
+    return;
   }
   takeHit(damage) {
     //damage per regular hit

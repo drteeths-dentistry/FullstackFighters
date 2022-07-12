@@ -385,7 +385,9 @@ function animate() {
     enemy.attackBox.offset.x = 50;
   } else {
     if (enemy.isBlocking) {
-      enemy.switchSprite('blocking');
+      if (enemy.lastKey === 'arrowright') {
+        enemy.switchSprite('blockRight');
+      } else enemy.switchSprite('blockLeft')
     } else {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('idleRight');
