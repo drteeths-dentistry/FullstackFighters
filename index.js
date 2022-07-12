@@ -218,6 +218,8 @@ const keys = {
 //self explanatory
 decreaseTimer();
 
+let attackCounter = 0;
+
 async function animate() {
   window.requestAnimationFrame(animate);
   background.update();
@@ -380,9 +382,16 @@ async function animate() {
   }
 
   if (test2 === 'Attack1') {
-    player.isAttacking = true;
-    player.attack();
-    player.framesCurrent = 2;
+    attackCounter++;
+    if (attackCounter < 2) {
+      player.isAttacking = true;
+      player.attack();
+      player.framesCurrent = 2;
+    }
+    // If we need to attack more decrease number below
+    if (attackCounter > 40) {
+      attackCounter = 0;
+    }
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
