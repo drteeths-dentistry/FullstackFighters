@@ -18,7 +18,6 @@ class Sprite {
     this.framesHold = 15;
     this.offset = offset;
   }
-
   draw() {
     // shows images based on frames and width of png
     c.drawImage(
@@ -33,7 +32,6 @@ class Sprite {
       this.image.height * this.scale
     );
   }
-
   animateFrames() {
     //increments and moves where the image is looking and being displayed
     this.framesElapsed++;
@@ -45,14 +43,12 @@ class Sprite {
       }
     }
   }
-
   update() {
     //rerenders
     this.draw();
     this.animateFrames();
   }
 }
-
 class Fighter extends Sprite {
   constructor({
     position,
@@ -84,29 +80,26 @@ class Fighter extends Sprite {
       },
       offset: attackBox.offset,
       width: attackBox.width,
-
-      height: attackBox.height
-    }
-    this.color = color
-    this.isAttacking
-    this.isBlocking = false
-    this.isSpecialAttacking
-    this.health = 100
-    this.charge = 0
-    this.framesCurrent = 0
-    this.framesElapsed = 0
-    this.framesHold = 10
-    this.sprites = sprites
-    this.dead = false
-    this.attackToggle = true
-
+      height: attackBox.height,
+    };
+    this.color = color;
+    this.isAttacking;
+    this.isBlocking = false;
+    this.isSpecialAttacking;
+    this.health = 100;
+    this.charge = 0;
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 10;
+    this.sprites = sprites;
+    this.dead = false;
+    this.attackToggle = true;
     //makes fighters current movement his approprite sprite png
     for (const sprite in this.sprites) {
       sprites[sprite].image = new Image();
       sprites[sprite].image.src = sprites[sprite].imageSrc;
     }
   }
-
   update() {
     this.draw();
     //cant change animation when dead
@@ -116,9 +109,7 @@ class Fighter extends Sprite {
     //animates attack box depending on the fighters position
     this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
     this.attackBox.position.y = this.position.y + this.attackBox.offset.y;
-
     //hit boxes and attack boxes for fighters
-
     // c.fillRect(
     //   this.attackBox.position.x,
     //   this.attackBox.position.y,
@@ -126,10 +117,8 @@ class Fighter extends Sprite {
     //   this.attackBox.height
     // );
     // c.fillRect(this.position.x, this.position.y, this.width, this.height);
-
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
-
     //implements gravity, and makes the players not fall through the floor
     if (this.position.y + this.height + this.velocity.y >= canvas.height - 96) {
       this.velocity.y = 0;
@@ -148,84 +137,76 @@ class Fighter extends Sprite {
       this.position.x = canvas.width - this.width;
     }
   }
-
   attack() {
     //makes hitbox do damage
     this.isAttacking = true;
     if (this.isSpecialAttacking === true) {
-      if(this.lastKey === 'd' ||this.lastKey === 'arrowright'){
+      if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
         this.switchSprite('attackRight3');
-      }
-      else{
+      } else {
         this.switchSprite('attackLeft3');
       }
-      return
+      return;
     }
     if (this.attackToggle) {
-      if(this.lastKey === 'd' ||this.lastKey === 'arrowright'){
+      if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
         this.switchSprite('attackRight1');
-      }
-      else{
+      } else {
         this.switchSprite('attackLeft1');
       }
       this.attackToggle = !this.attackToggle;
     } else if (this.attackToggle === false) {
-      if(this.lastKey === 'd' ||this.lastKey === 'arrowright'){
+      if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
         this.switchSprite('attackRight2');
-      }
-      else{
+      } else {
         this.switchSprite('attackLeft2');
       }
       this.attackToggle = !this.attackToggle;
     }
-    if(this.lastKey === 'd' ||this.lastKey === 'arrowright'){
+    if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
       this.switchSprite('attackRight1');
-    }
-    else{
+    } else {
       this.switchSprite('attackLeft1');
     }
   }
-
   specialAttack() {
     this.isSpecialAttacking = true;
-    if(this.lastKey === 'd' ||this.lastKey === 'arrowright'){
+    if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
       this.switchSprite('attackRight3');
-    }
-    else{
+    } else {
       this.switchSprite('attackLeft3');
     }
-    return
+    return;
   }
-
-  block(){
+  block() {
     //shield appears and prevents damage
-    this.isBlocking = true
-    this.switchSprite('block')
+    this.isBlocking = true;
+    if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
+      this.switchSprite('blockRight');
+    } else {
+      this.switchSprite('blockLeft');
+    }
   }
-
   takeHit(damage) {
     //damage per regular hit
-    if (this.isBlocking == true){
+    if (this.isBlocking == true) {
       // this.switchSprite('block')
-      this.health -= 0
-    }
-    else{
-    this.health -= damage
-    this.charge +=15
-    if(this.health <= 0) {
-      this.switchSprite('death')
+      this.health -= 0;
     } else {
-        if(this.lastKey === 'd' ||this.lastKey === 'arrowright'){
+      this.health -= damage;
+      this.charge += 15;
+      if (this.health <= 0) {
+        this.switchSprite('death');
+      } else {
+        if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
           this.switchSprite('takeHitRight');
-        }
-        else{
+        } else {
           this.switchSprite('takeHitLeft');
         }
-        return
+        return;
+      }
     }
-   }
   }
-
   switchSprite(sprite) {
     //death sprite > all others so it comes first
     if (this.image === this.sprites.death.image) {
@@ -234,61 +215,56 @@ class Fighter extends Sprite {
       }
       return;
     }
-
     if (
       this.image === this.sprites.attackLeft1.image &&
       this.framesCurrent < this.sprites.attackLeft1.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.attackLeft2.image &&
       this.framesCurrent < this.sprites.attackLeft2.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.attackLeft3.image &&
       this.framesCurrent < this.sprites.attackLeft3.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.attackRight1.image &&
       this.framesCurrent < this.sprites.attackRight1.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.attackRight2.image &&
       this.framesCurrent < this.sprites.attackRight2.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.attackRight3.image &&
       this.framesCurrent < this.sprites.attackRight3.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.takeHitLeft.image &&
       this.framesCurrent < this.sprites.takeHitLeft.framesMax - 1
     )
       return;
-
     if (
       this.image === this.sprites.takeHitRight.image &&
       this.framesCurrent < this.sprites.takeHitRight.framesMax - 1
     )
       return;
-
     if (
-      this.image === this.sprites.block.image &&
-      this.framesCurrent < this.sprites.block.framesMax - 1
+      this.image === this.sprites.blockLeft.image &&
+      this.framesCurrent < this.sprites.blockLeft.framesMax - 1
     )
       return;
-
+    if (
+      this.image === this.sprites.blockRight.image &&
+      this.framesCurrent < this.sprites.blockRight.framesMax - 1
+    )
+      return;
     //switches between sprites, and makes sure the action starts at the right frame, and shows all of it
     switch (sprite) {
       case 'idleLeft':
@@ -409,21 +385,28 @@ class Fighter extends Sprite {
           this.framesMax = this.sprites.takeHitLeft.framesMax;
           this.framesCurrent = 0;
         }
-        break
+        break;
       case 'takeHitRight':
         if (this.image !== this.sprites.takeHitRight.image) {
           this.image = this.sprites.takeHitRight.image;
           this.framesMax = this.sprites.takeHitRight.framesMax;
           this.framesCurrent = 0;
         }
-        break
-      case 'block':
-        if(this.image !== this.sprites.block.image){
-          this.image = this.sprites.block.image
-          this.framesMax = this.sprites.block.framesMax
-          this.framesCurrent = 0
+        break;
+      case 'blockLeft':
+        if (this.image !== this.sprites.blockLeft.image) {
+          this.image = this.sprites.blockLeft.image;
+          this.framesMax = this.sprites.blockLeft.framesMax;
+          this.framesCurrent = 0;
         }
-        break
+        break;
+      case 'blockRight':
+        if (this.image !== this.sprites.blockRight.image) {
+          this.image = this.sprites.blockRight.image;
+          this.framesMax = this.sprites.blockRight.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
       case 'death':
         if (this.image !== this.sprites.death.image) {
           this.image = this.sprites.death.image;

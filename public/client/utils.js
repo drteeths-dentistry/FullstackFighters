@@ -20,7 +20,7 @@ function determineWinner({ player, enemy, timerId }) {
   } else if (player.health < enemy.health) {
     document.querySelector('#displayText').innerHTML = 'Player 2 wins';
   }
-  document.querySelector('#displayButton').style.display = 'flex';
+  document.querySelector('#playagainbtn').style.display = '';
 }
 
 let timer = 90;
@@ -59,7 +59,7 @@ function decreaseTimer() {
 
 // Function for play again btn
 function playAgain() {
-  window.location.reload();
+  document.querySelector('#tomain').click();
 }
 
 // Function for audio btn
@@ -84,4 +84,10 @@ function ppAudio() {
     document.querySelector('#audiobutton').innerHTML = 'pause';
     isAudioPlaying = !isAudioPlaying;
   }
+}
+
+function actionButton() {
+  document.querySelector('#mainpage').style.display = 'none';
+  document.querySelector('#gameplay').style.display = 'inline-block';
+  document.querySelector('#audio').play();
 }

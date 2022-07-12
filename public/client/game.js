@@ -5,6 +5,27 @@ const gravity = 0.2;
 canvas.width = 1024;
 canvas.height = 576;
 
+const socket = io();
+
+const actionBtn = document.querySelector('#actionbtn');
+const playAgainBtn = document.querySelector('#playagainbtn');
+
+actionBtn.addEventListener('click', () => {
+  socket.emit('startGame');
+});
+
+playAgainBtn.addEventListener('click', () => {
+  socket.emit('replay');
+});
+socket.on('startGame', () => {
+  actionButton();
+  decreaseTimer();
+});
+
+socket.on('replay', () => {
+  playAgain();
+});
+
 //create background
 const background = new Sprite({
   position: {
@@ -13,17 +34,8 @@ const background = new Sprite({
   },
   imageSrc: './img/castleBackground.png',
 });
-//create shop
-const shop = new Sprite({
-  position: {
-    x: 628,
-    y: 128,
-  },
-  imageSrc: './img/shop.png',
-  scale: 2.75,
-  framesMax: 6,
-});
 
+//create player
 //create player
 const player = new Fighter({
   position: {
@@ -114,10 +126,14 @@ const player = new Fighter({
       imageSrc: './img/king/Death.png',
       framesMax: 6,
     },
-    block: {
-      imageSrc: './img/king/Shielding.png',
-      framesMax: 8
-    }
+    blockLeft: {
+      imageSrc: './img/king/ShieldingLeft.png',
+      framesMax: 8,
+    },
+    blockRight: {
+      imageSrc: './img/king/ShieldingRight.png',
+      framesMax: 8,
+    },
   },
   attackBox: {
     offset: {
@@ -218,10 +234,14 @@ const enemy = new Fighter({
       imageSrc: './img/ghost/Death.png',
       framesMax: 16,
     },
-    block: {
-      imageSrc: './img/ghost/Shielding.png',
-      framesMax: 10
-    }
+    blockLeft: {
+      imageSrc: './img/ghost/ShieldingLeft.png',
+      framesMax: 10,
+    },
+    blockRight: {
+      imageSrc: './img/ghost/ShieldingRight.png',
+      framesMax: 10,
+    },
   },
   attackBox: {
     offset: {
@@ -232,7 +252,6 @@ const enemy = new Fighter({
     height: 50,
   },
 });
-
 //helps to tell what keys are being pressed
 const keys = {
   a: {
@@ -242,10 +261,10 @@ const keys = {
     pressed: false,
   },
   j: {
-    pressed: false
+    pressed: false,
   },
   n: {
-    pressed: false
+    pressed: false,
   },
   ArrowRight: {
     pressed: false,
@@ -254,10 +273,6 @@ const keys = {
     pressed: false,
   },
 };
-
-//self explanatory
-decreaseTimer();
-
 function animate() {
   window.requestAnimationFrame(animate);
   background.update();
@@ -267,11 +282,9 @@ function animate() {
   c.fillRect(0, 0, canvas.width, canvas.height);
   player.update();
   enemy.update();
-
   //players start off not moving
   player.velocity.x = 0;
   enemy.velocity.x = 0;
-
   //key inputs and logic for player1, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
     keys.a.pressed &&
@@ -281,7 +294,7 @@ function animate() {
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
-    player.attackBox.offset.x = -190
+    player.attackBox.offset.x = -190;
   } else if (
     keys.d.pressed &&
     player.lastKey === 'd' &&
@@ -290,41 +303,52 @@ function animate() {
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
-    player.attackBox.offset.x = 50
+    player.attackBox.offset.x = 50;
   } else {
-    if(player.isBlocking){
-      player.switchSprite('blocking')
+      if (player.isBlocking) {
+        if (player.lastKey === 'a') {
+          player.switchSprite('blockLeft');
+        } else player.switchSprite('blockRight')
     }
-    else{
-      if(player.lastKey === 'a'){
+      if (player.lastKey === 'a') {
         player.switchSprite('idleLeft');
-      }
-      else(
-        player.switchSprite('idleRight')
-      )
+      } else player.switchSprite('idleRight');
     }
-  }
 
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0 && player.lastKey === 'd') {
+  if (
+    player.velocity.y < 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x >= 0 &&
+    player.lastKey === 'd'
+  ) {
     player.switchSprite('jump');
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x >= 0 && player.lastKey === 'd') {
-    console.log('falling')
+  } else if (
+    player.velocity.y > 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x >= 0 &&
+    player.lastKey === 'd'
+  ) {
     player.switchSprite('fall');
   }
-  if (player.velocity.y < 0 && player.health > 0 && countdown < 0 && player.velocity.x <= 0 && player.lastKey === 'a') {
-    player.switchSprite('jumpback')
-  } else if (player.velocity.y > 0 && player.health > 0 && countdown < 0 && player.velocity.x <= 0 && player.lastKey === 'a') {
-    console.log('fallingback')
+  if (
+    player.velocity.y < 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x <= 0 &&
+    player.lastKey === 'a'
+  ) {
+    player.switchSprite('jumpback');
+  } else if (
+    player.velocity.y > 0 &&
+    player.health > 0 &&
+    countdown < 0 &&
+    player.velocity.x <= 0 &&
+    player.lastKey === 'a'
+  ) {
     player.switchSprite('fallback');
   }
-
-
-  if (keys.j.pressed && player.lastKey === 'j' && player.health > 0 && countdown < 0) {
-    player.velocity.x = 0
-    player.velocity.y = 0
-    player.switchSprite('block')
-  }
-
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
     keys.ArrowLeft.pressed &&
@@ -334,7 +358,7 @@ function animate() {
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
-    enemy.attackBox.offset.x = -175
+    enemy.attackBox.offset.x = -175;
   } else if (
     keys.ArrowRight.pressed &&
     enemy.lastKey === 'arrowright' &&
@@ -343,34 +367,52 @@ function animate() {
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
-    enemy.attackBox.offset.x = 50
+    enemy.attackBox.offset.x = 50;
   } else {
-    if(enemy.isBlocking){
-      enemy.switchSprite('blocking')
-    }
-    else{
-      if(enemy.lastKey === 'arrowright'){
+    if (enemy.isBlocking) {
+      if (enemy.lastKey === 'arrowright') {
+        enemy.switchSprite('blockRight');
+      } else enemy.switchSprite('blockLeft')
+    } else {
+      if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('idleRight');
-      }
-      else(
-        enemy.switchSprite('idleLeft')
-      )
+      } else enemy.switchSprite('idleLeft');
     }
   }
-
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x >= 0 && enemy.lastKey === 'arrowright') {
+  if (
+    enemy.velocity.y < 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x >= 0 &&
+    enemy.lastKey === 'arrowright'
+  ) {
     enemy.switchSprite('jumpback');
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x >= 0 && enemy.lastKey === 'arrowright') {
-    console.log('falling')
+  } else if (
+    enemy.velocity.y > 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x >= 0 &&
+    enemy.lastKey === 'arrowright'
+  ) {
     enemy.switchSprite('fallback');
   }
-  if (enemy.velocity.y < 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0 && enemy.lastKey === 'arrowleft') {
-    enemy.switchSprite('jump')
-  } else if (enemy.velocity.y > 0 && enemy.health > 0 && countdown < 0 && enemy.velocity.x <= 0 && enemy.lastKey === 'arrowleft') {
-    console.log('fallingback')
+  if (
+    enemy.velocity.y < 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x <= 0 &&
+    enemy.lastKey === 'arrowleft'
+  ) {
+    enemy.switchSprite('jump');
+  } else if (
+    enemy.velocity.y > 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x <= 0 &&
+    enemy.lastKey === 'arrowleft'
+  ) {
     enemy.switchSprite('fall');
   }
-
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
@@ -384,7 +426,6 @@ function animate() {
         enemy.takeHit(3);
       }
       player.isAttacking = false;
-
       gsap.to('#enemySABar', {
         width: enemy.charge + '%',
       });
@@ -397,15 +438,17 @@ function animate() {
   if (player.isAttacking && player.framesCurrent === 4) {
     player.isAttacking = false;
   }
-
   //attackbox detection for player2, activates the attackbox, player1 gets staggered, and health is taken
-
-  if (rectangularCollision({rectangle1: enemy, rectangle2: player}) && enemy.isAttacking && enemy.framesCurrent === 2) {
-    if(enemy.isAttacking === true){
-      if(enemy.velocity.y !== 0){
-        player.takeHit(8)
-      }else{
-        player.takeHit(3)
+  if (
+    rectangularCollision({ rectangle1: enemy, rectangle2: player }) &&
+    enemy.isAttacking &&
+    enemy.framesCurrent === 2
+  ) {
+    if (enemy.isAttacking === true) {
+      if (enemy.velocity.y !== 0) {
+        player.takeHit(8);
+      } else {
+        player.takeHit(3);
       }
       enemy.isAttacking = false;
       gsap.to('#playerSABar', {
@@ -420,7 +463,6 @@ function animate() {
   if (enemy.isAttacking && enemy.framesCurrent === 2) {
     enemy.isAttacking = false;
   }
-
   //displays text, if one player dies
   if (enemy.health <= 0 || player.health <= 0) {
     determineWinner({ player, enemy, timerId });
@@ -430,10 +472,30 @@ function animate() {
 animate();
 
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
-let counter = 0
-let jDown = false
-let nDown = false
+let jDown = false;
+let nDown = false;
+
 window.addEventListener('keydown', (event) => {
+  socket.emit('keydown', {
+    key: event.key,
+  });
+});
+
+socket.on('keydown', (data) => {
+  keyDown(data);
+});
+
+window.addEventListener('keyup', (event) => {
+  socket.emit('keyup', {
+    key: event.key,
+  });
+});
+
+socket.on('keyup', (data) => {
+  keyUp(data);
+});
+
+function keyDown(event) {
   switch (event.key.toLowerCase()) {
     case 'd':
       keys.d.pressed = true;
@@ -449,37 +511,27 @@ window.addEventListener('keydown', (event) => {
       }
       break;
     case ' ':
-      if(player.health > 0 && countdown < 0) {
-        player.attack()
-
+      if (player.health > 0 && countdown < 0) {
+        player.attack();
       }
       break;
 
     case 'j':
-      if (player.velocity.y === 0 && player.velocity.x === 0 && player.health > 0 && countdown < 0){
-        counter += 1
-        console.log(counter)
-        player.block()
-        jDown = true
+      if (
+        player.velocity.y === 0 &&
+        player.velocity.x === 0 &&
+        player.health > 0 &&
+        countdown < 0
+      ) {
+        player.block();
+        jDown = true;
         setTimeout(() => {
-        player.isBlocking = !player.isBlocking
-        },2000)
-        jDown = false
-        if(jDown == true){
-          return
+          player.isBlocking = !player.isBlocking;
+        }, 3000);
+        jDown = false;
+        if (jDown == true) {
+          return;
         }
-
-        // if (rectangularCollision({rectangle1: enemy, rectangle2: player})){
-        //   if(player.isBlocking && enemy.isAttacking){
-        //     player.isBlocking = !player.isBlocking
-        //     }
-            // counter += 1
-        //     // console.log('player pre-block',player.isBlocking )
-        //     setTimeout(() => {player.isBlocking = !player.isBlocking},2000)
-        //   }
-        // }
-        console.log(counter)
-
       }
       break;
     case 'x':
@@ -513,7 +565,6 @@ window.addEventListener('keydown', (event) => {
       break;
     case 'arrowdown':
       if (enemy.health > 0 && countdown < 0) {
-
         enemy.attack();
       }
       break;
@@ -533,33 +584,28 @@ window.addEventListener('keydown', (event) => {
         });
       }
       break;
-      case 'n':
-      if (enemy.velocity.y === 0 && enemy.velocity.x === 0 && enemy.health > 0 && countdown < 0){
-        counter += 1
-        console.log(counter)
-        enemy.block()
-        nDown = true
+    case 'n':
+      if (
+        enemy.velocity.y === 0 &&
+        enemy.velocity.x === 0 &&
+        enemy.health > 0 &&
+        countdown < 0
+      ) {
+        enemy.block();
+        nDown = true;
         setTimeout(() => {
-        enemy.isBlocking = !enemy.isBlocking
-        },3000)
-        nDown = false
-        if(nDown == true){
-          return
+          enemy.isBlocking = !enemy.isBlocking;
+        }, 3000);
+        nDown = false;
+        if (nDown == true) {
+          return;
         }
-
-
-        // if (rectangularCollision({rectangle1: player, rectangle2: enemy})){
-        //   if(enemy.isBlocking){
-        //      setTimeout(() => {enemy.isBlocking = !enemy.isBlocking},3000)
-        //   }
-        // }
       }
       break;
   }
-});
+}
 
-// all event listeners for letting go of a button, usually updates the current key pressed
-window.addEventListener('keyup', (event) => {
+function keyUp(event) {
   if (this.dead) {
     return;
   }
@@ -571,12 +617,12 @@ window.addEventListener('keyup', (event) => {
       keys.a.pressed = false;
       break;
     case 'j':
-      keys.j.pressed = false
+      keys.j.pressed = false;
       break;
     case 'n':
-      keys.n.pressed = false
+      keys.n.pressed = false;
       break;
-    }
+  }
 
   switch (event.key.toLowerCase()) {
     case 'arrowright':
@@ -585,9 +631,5 @@ window.addEventListener('keyup', (event) => {
     case 'arrowleft':
       keys.ArrowLeft.pressed = false;
       break;
-    }
-})
-
-function handleInit(msg) {
-  console.log(msg)
+  }
 }
