@@ -141,8 +141,12 @@ position: {
       imageSrc: './img/king/Death.png',
       framesMax: 6,
     },
-    block: {
-      imageSrc: './img/king/Shielding.png',
+    blockLeft: {
+      imageSrc: './img/king/ShieldingLeft.png',
+      framesMax: 8,
+    },
+    blockRight: {
+      imageSrc: './img/king/ShieldingRight.png',
       framesMax: 8,
     },
   },
@@ -245,8 +249,12 @@ const enemy = new Fighter({
       imageSrc: './img/ghost/Death.png',
       framesMax: 16,
     },
-    block: {
-      imageSrc: './img/ghost/Shielding.png',
+    blockLeft: {
+      imageSrc: './img/ghost/ShieldingLeft.png',
+      framesMax: 10,
+    },
+    blockRight: {
+      imageSrc: './img/ghost/ShieldingRight.png',
       framesMax: 10,
     },
   },
@@ -312,14 +320,16 @@ function animate() {
     player.switchSprite('run');
     player.attackBox.offset.x = 50;
   } else {
-    if (player.isBlocking) {
-      player.switchSprite('blocking');
-    } else {
+      if (player.isBlocking) {
+        if (player.lastKey === 'a') {
+          player.switchSprite('blockLeft');
+        } else player.switchSprite('blockRight')
+    }
       if (player.lastKey === 'a') {
         player.switchSprite('idleLeft');
       } else player.switchSprite('idleRight');
     }
-  }
+
   if (
     player.velocity.y < 0 &&
     player.health > 0 &&
@@ -353,16 +363,6 @@ function animate() {
     player.lastKey === 'a'
   ) {
     player.switchSprite('fallback');
-  }
-  if (
-    keys.j.pressed &&
-    player.lastKey === 'j' &&
-    player.health > 0 &&
-    countdown < 0
-  ) {
-    player.velocity.x = 0;
-    player.velocity.y = 0;
-    player.switchSprite('block');
   }
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
@@ -540,7 +540,7 @@ function keyDown(event) {
         jDown = true;
         setTimeout(() => {
           player.isBlocking = !player.isBlocking;
-        }, 2000);
+        }, 3000);
         jDown = false;
         if (jDown == true) {
           return;
