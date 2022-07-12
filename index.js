@@ -224,9 +224,8 @@ async function animate() {
   window.requestAnimationFrame(animate);
   background.update();
 
-  let test2 = document.getElementById('topMove').innerHTML;
-
-  console.log(test2);
+  //Gets tensorFlow top move
+  let tfTopMove = document.getElementById('topMove').innerHTML;
 
   // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -245,7 +244,7 @@ async function animate() {
       player.lastKey === 'a' &&
       player.health > 0 &&
       countdown < 0) ||
-    test2 === 'Left'
+    tfTopMove === 'Left'
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
@@ -254,7 +253,7 @@ async function animate() {
       player.lastKey === 'd' &&
       player.health > 0 &&
       countdown < 0) ||
-    test2 === 'Right'
+    tfTopMove === 'Right'
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
@@ -265,13 +264,13 @@ async function animate() {
       player.switchSprite('idle');
     }
   }
-
+  //TensorFlow -
   if (
     // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
     player.velocity.y === 0 &&
     player.health > 0 &&
     countdown < 0 &&
-    test2 === 'Jump'
+    tfTopMove === 'Jump'
   ) {
     player.velocity.y = -9;
     player.switchSprite('jump');
@@ -306,7 +305,7 @@ async function animate() {
       player.lastKey === 'j' &&
       player.health > 0 &&
       countdown < 0) ||
-    test2 === 'Block'
+    tfTopMove === 'Block'
   ) {
     player.velocity.x = 0;
     player.velocity.y = 0;
@@ -371,8 +370,8 @@ async function animate() {
     enemy.switchSprite('fall');
   }
 
-  //Regular Attack
-  if (test2 === 'Attack') {
+  //Tensor Flow - Regular Attack
+  if (tfTopMove === 'Attack') {
     attackCounter++;
     if (attackCounter < 2) {
       player.isAttacking = true;
@@ -384,12 +383,12 @@ async function animate() {
       attackCounter = 0;
     }
   }
-  // Special Attack
+  // Tensor Flow - Special Attack
   if (
     player.health > 0 &&
     countdown < 0 &&
     player.charge >= 100 &&
-    test2 === 'SpecialAttack'
+    tfTopMove === 'SpecialAttack'
   ) {
     player.isSpecialAttacking = true;
     player.specialAttack();
