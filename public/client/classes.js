@@ -109,14 +109,14 @@ class Fighter extends Sprite {
     //animates attack box depending on the fighters position
     this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
     this.attackBox.position.y = this.position.y + this.attackBox.offset.y;
-    //hit boxes and attack boxes for fighters
-    // c.fillRect(
-    //   this.attackBox.position.x,
-    //   this.attackBox.position.y,
-    //   this.attackBox.width,
-    //   this.attackBox.height
-    // );
-    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    // hit boxes and attack boxes for fighters
+    c.fillRect(
+      this.attackBox.position.x,
+      this.attackBox.position.y,
+      this.attackBox.width,
+      this.attackBox.height
+    );
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
     //implements gravity, and makes the players not fall through the floor

@@ -38,6 +38,10 @@ io.on('connection', (socket) => {
     io.emit('keyup', data);
   });
 
+  socket.on('animate', () => {
+    io.emit('animate');
+  });
+
   socket.on('disconnect', () => {
     console.log('A user has disconnected.');
   });

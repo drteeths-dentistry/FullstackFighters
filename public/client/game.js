@@ -7,6 +7,8 @@ canvas.height = 576;
 
 const socket = io();
 
+const dataTickRate = 80;
+
 const actionBtn = document.querySelector('#actionbtn');
 const playAgainBtn = document.querySelector('#playagainbtn');
 const kingBtn = document.querySelector('#kingBtn');
@@ -40,6 +42,14 @@ socket.on('select', () => {
 socket.on('replay', () => {
   playAgain();
 });
+
+setInterval(function() {
+  socket.emit('animate');
+}, 1000 / dataTickRate);
+
+socket.on('animate', () => {
+  animate()
+})
 
 //create background
 const background = new Sprite({
@@ -288,8 +298,8 @@ const keys = {
     pressed: false,
   },
 };
+
 function animate() {
-  window.requestAnimationFrame(animate);
   background.update();
   // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -483,8 +493,6 @@ function animate() {
     determineWinner({ player, enemy, timerId });
   }
 }
-
-animate();
 
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
 let jDown = false;
