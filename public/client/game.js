@@ -284,7 +284,26 @@ const keys = {
 //self explanatory
 // decreaseTimer();
 
+// Tensor Flow Variables
+
 let attackCounter = 0;
+let enemyAttackCounter = 0;
+let isPlayer = false;
+// let isNotPlayer = false;
+
+let isEnemy = false;
+// let isNotEnemy = false;
+
+//Event Listeners for Kin/Ghost
+kingBtn.addEventListener('click', () => {
+  isPlayer = true;
+});
+ghostBtn.addEventListener('click', () => {
+  isEnemy = true;
+});
+
+console.log('Outside play', isPlayer);
+console.log('Outside enemy', isEnemy);
 
 async function animate() {
   window.requestAnimationFrame(animate);
@@ -292,6 +311,8 @@ async function animate() {
 
   //Gets tensorFlow top move
   let tfTopMove = document.getElementById('topMove').innerHTML;
+  console.log('inside play', isPlayer);
+  console.log('inside enemy', isEnemy);
 
   // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -307,7 +328,8 @@ async function animate() {
     (keys.a.pressed &&
       player.lastKey === 'a' &&
       player.health > 0 &&
-      countdown < 0) ||
+      countdown < 0 &&
+      isPlayer === true) ||
     tfTopMove === 'Left'
   ) {
     player.velocity.x = -3.5;
@@ -332,14 +354,14 @@ async function animate() {
       } else player.switchSprite('idleRight');
     }
   }
-  //TensorFlow -
+  //TensorFlow - Jump & Block
   if (
     // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
     (player.velocity.y === 0 &&
       player.health > 0 &&
       countdown < 0 &&
       player.velocity.x >= 0 &&
-      player.lastKey === 'd') ||
+      player.lastKey === 'w') ||
     (tfTopMove === 'Jump' &&
       player.velocity.y === 0 &&
       player.health > 0 &&
@@ -385,21 +407,59 @@ async function animate() {
     player.velocity.y = 0;
     player.switchSprite('block');
   }
+
+  //Tensor Flow - Regular Attack - Player
+  if (tfTopMove === 'Attack') {
+    attackCounter++;
+    if (attackCounter < 2) {
+      player.isAttacking = true;
+      player.attack();
+      player.framesCurrent = 2;
+    }
+    // If we need to attack more decrease number below
+    if (attackCounter > 35) {
+      attackCounter = 0;
+    }
+  }
+  // Tensor Flow - Special Attack - Player
+  if (
+    player.health > 0 &&
+    countdown < 0 &&
+    player.charge >= 100 &&
+    tfTopMove === 'SpecialAttack'
+  ) {
+    player.isSpecialAttacking = true;
+    player.specialAttack();
+    if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+      if (player.isSpecialAttacking === true) {
+        enemy.takeHit(22);
+        player.attack();
+      }
+    }
+    player.charge = 0;
+    player.isSpecialAttacking = false;
+    gsap.to('#playerSABar', {
+      width: '0%',
+    });
+  }
+
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
-    keys.ArrowLeft.pressed &&
-    enemy.lastKey === 'arrowleft' &&
-    enemy.health > 0 &&
-    countdown < 0
+    (keys.ArrowLeft.pressed &&
+      enemy.lastKey === 'arrowleft' &&
+      enemy.health > 0 &&
+      countdown < 0) ||
+    tfTopMove === 'Left'
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
     enemy.attackBox.offset.x = -175;
   } else if (
-    keys.ArrowRight.pressed &&
-    enemy.lastKey === 'arrowright' &&
-    enemy.health > 0 &&
-    countdown < 0
+    (keys.ArrowRight.pressed &&
+      enemy.lastKey === 'arrowright' &&
+      enemy.health > 0 &&
+      countdown < 0) ||
+    tfTopMove === 'Right'
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
@@ -430,13 +490,32 @@ async function animate() {
   ) {
     enemy.switchSprite('fallback');
   }
+
   if (
-    enemy.velocity.y < 0 &&
-    enemy.health > 0 &&
-    countdown < 0 &&
-    enemy.velocity.x <= 0 &&
-    enemy.lastKey === 'arrowleft'
+    (keys.n.pressed &&
+      enemy.lastKey === 'n' &&
+      enemy.health > 0 &&
+      countdown < 0) ||
+    tfTopMove === 'Block'
   ) {
+    enemy.velocity.x = 0;
+    enemy.velocity.y = 0;
+    enemy.switchSprite('block');
+  }
+
+  if (
+    (enemy.velocity.y < 0 &&
+      enemy.health > 0 &&
+      countdown < 0 &&
+      enemy.velocity.x <= 0 &&
+      enemy.lastKey === 'arrowup') ||
+    (tfTopMove === 'Jump' &&
+      enemy.velocity.y === 0 &&
+      enemy.health > 0 &&
+      countdown < 0 &&
+      enemy.velocity.x >= 0)
+  ) {
+    enemy.velocity.y = -9;
     enemy.switchSprite('jump');
   } else if (
     enemy.velocity.y > 0 &&
@@ -448,37 +527,38 @@ async function animate() {
     enemy.switchSprite('fall');
   }
 
-  //Tensor Flow - Regular Attack
+  //Tensor Flow - Regular Attack -Enemy
   if (tfTopMove === 'Attack') {
-    attackCounter++;
-    if (attackCounter < 2) {
-      player.isAttacking = true;
-      player.attack();
-      player.framesCurrent = 2;
+    enemyAttackCounter++;
+    if (enemyAttackCounter < 2) {
+      console.log('ENEMY ATTACK');
+      enemy.isAttacking = true;
+      enemy.attack();
+      enemy.framesCurrent = 2;
     }
     // If we need to attack more decrease number below
-    if (attackCounter > 35) {
-      attackCounter = 0;
+    if (enemyAttackCounter > 35) {
+      enemyAttackCounter = 0;
     }
   }
-  // Tensor Flow - Special Attack
+  // Tensor Flow - Special Attack -Enemy
   if (
-    player.health > 0 &&
+    enemy.health > 0 &&
     countdown < 0 &&
-    player.charge >= 100 &&
+    enemy.charge >= 100 &&
     tfTopMove === 'SpecialAttack'
   ) {
-    player.isSpecialAttacking = true;
-    player.specialAttack();
-    if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
-      if (player.isSpecialAttacking === true) {
-        enemy.takeHit(22);
-        player.attack();
+    enemy.isSpecialAttacking = true;
+    enemy.specialAttack();
+    if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+      if (enemy.isSpecialAttacking === true) {
+        player.takeHit(22);
+        enemy.attack();
       }
     }
-    player.charge = 0;
-    player.isSpecialAttacking = false;
-    gsap.to('#playerSABar', {
+    enemy.charge = 0;
+    enemy.isSpecialAttacking = false;
+    gsap.to('#enemySABar', {
       width: '0%',
     });
   }
