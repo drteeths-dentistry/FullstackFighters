@@ -282,7 +282,7 @@ const keys = {
 };
 
 //self explanatory
-decreaseTimer();
+// decreaseTimer();
 
 let attackCounter = 0;
 
@@ -340,7 +340,11 @@ async function animate() {
       countdown < 0 &&
       player.velocity.x >= 0 &&
       player.lastKey === 'd') ||
-    tfTopMove === 'Jump'
+    (tfTopMove === 'Jump' &&
+      player.velocity.y === 0 &&
+      player.health > 0 &&
+      countdown < 0 &&
+      player.velocity.x >= 0)
   ) {
     player.velocity.y = -9;
     player.switchSprite('jump');

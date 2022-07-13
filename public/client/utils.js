@@ -93,5 +93,5 @@ function actionButton() {
 function fightReady() {
   document.querySelector('#pickplayer').style.display = 'none';
   document.querySelector('#gameplay').style.display = 'inline-block';
-  document.querySelector('#audio').play();
+  // document.querySelector('#audio').play();
 }
