@@ -302,8 +302,8 @@ ghostBtn.addEventListener('click', () => {
   isEnemy = true;
 });
 
-console.log('Outside play', isPlayer);
-console.log('Outside enemy', isEnemy);
+// console.log('Outside play', isPlayer);
+// console.log('Outside enemy', isEnemy);
 
 async function animate() {
   window.requestAnimationFrame(animate);
@@ -311,8 +311,8 @@ async function animate() {
 
   //Gets tensorFlow top move
   let tfTopMove = document.getElementById('topMove').innerHTML;
-  console.log('inside play', isPlayer);
-  console.log('inside enemy', isEnemy);
+  // console.log('inside play', isPlayer);
+  // console.log('inside enemy', isEnemy);
 
   // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -407,15 +407,20 @@ async function animate() {
     player.velocity.y = 0;
     player.switchSprite('block');
 
+    // Testing Blocking Tensor Flow -------------------------------------------
     player.block();
-    // jDown = true;
+    player.isBlocking;
+    console.log('blocking!');
+    jDown = true;
     setTimeout(() => {
+      console.log('RUNNING!');
       player.isBlocking = !player.isBlocking;
     }, 2000);
-    // jDown = false;
-    // if (jDown == true) {
-    //   return;
-    // }
+    console.log('after STO');
+    jDown = false;
+    if (jDown == true) {
+      return;
+    }
   }
 
   //Tensor Flow - Regular Attack - Player
@@ -455,21 +460,21 @@ async function animate() {
 
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
-    (keys.ArrowLeft.pressed &&
-      enemy.lastKey === 'arrowleft' &&
-      enemy.health > 0 &&
-      countdown < 0) ||
-    tfTopMove === 'Left'
+    keys.ArrowLeft.pressed &&
+    enemy.lastKey === 'arrowleft' &&
+    enemy.health > 0 &&
+    countdown < 0
+    // tfTopMove === 'Left'
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
     enemy.attackBox.offset.x = -175;
   } else if (
-    (keys.ArrowRight.pressed &&
-      enemy.lastKey === 'arrowright' &&
-      enemy.health > 0 &&
-      countdown < 0) ||
-    tfTopMove === 'Right'
+    keys.ArrowRight.pressed &&
+    enemy.lastKey === 'arrowright' &&
+    enemy.health > 0 &&
+    countdown < 0
+    // tfTopMove === 'Right'
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
@@ -502,11 +507,11 @@ async function animate() {
   }
 
   if (
-    (keys.n.pressed &&
-      enemy.lastKey === 'n' &&
-      enemy.health > 0 &&
-      countdown < 0) ||
-    tfTopMove === 'Block'
+    keys.n.pressed &&
+    enemy.lastKey === 'n' &&
+    enemy.health > 0 &&
+    countdown < 0
+    // tfTopMove === 'Block'
   ) {
     enemy.velocity.x = 0;
     enemy.velocity.y = 0;
@@ -514,16 +519,16 @@ async function animate() {
   }
 
   if (
-    (enemy.velocity.y < 0 &&
-      enemy.health > 0 &&
-      countdown < 0 &&
-      enemy.velocity.x <= 0 &&
-      enemy.lastKey === 'arrowup') ||
-    (tfTopMove === 'Jump' &&
-      enemy.velocity.y === 0 &&
-      enemy.health > 0 &&
-      countdown < 0 &&
-      enemy.velocity.x >= 0)
+    enemy.velocity.y < 0 &&
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.velocity.x <= 0 &&
+    enemy.lastKey === 'arrowup'
+    // (tfTopMove === 'Jump' &&
+    //   enemy.velocity.y === 0 &&
+    //   enemy.health > 0 &&
+    //   countdown < 0 &&
+    //   enemy.velocity.x >= 0)
   ) {
     enemy.velocity.y = -9;
     enemy.switchSprite('jump');
