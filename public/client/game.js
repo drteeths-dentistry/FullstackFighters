@@ -406,6 +406,16 @@ async function animate() {
     player.velocity.x = 0;
     player.velocity.y = 0;
     player.switchSprite('block');
+
+    player.block();
+    // jDown = true;
+    setTimeout(() => {
+      player.isBlocking = !player.isBlocking;
+    }, 2000);
+    // jDown = false;
+    // if (jDown == true) {
+    //   return;
+    // }
   }
 
   //Tensor Flow - Regular Attack - Player
@@ -527,41 +537,41 @@ async function animate() {
     enemy.switchSprite('fall');
   }
 
-  //Tensor Flow - Regular Attack -Enemy
-  if (tfTopMove === 'Attack') {
-    enemyAttackCounter++;
-    if (enemyAttackCounter < 2) {
-      console.log('ENEMY ATTACK');
-      enemy.isAttacking = true;
-      enemy.attack();
-      enemy.framesCurrent = 2;
-    }
-    // If we need to attack more decrease number below
-    if (enemyAttackCounter > 35) {
-      enemyAttackCounter = 0;
-    }
-  }
-  // Tensor Flow - Special Attack -Enemy
-  if (
-    enemy.health > 0 &&
-    countdown < 0 &&
-    enemy.charge >= 100 &&
-    tfTopMove === 'SpecialAttack'
-  ) {
-    enemy.isSpecialAttacking = true;
-    enemy.specialAttack();
-    if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
-      if (enemy.isSpecialAttacking === true) {
-        player.takeHit(22);
-        enemy.attack();
-      }
-    }
-    enemy.charge = 0;
-    enemy.isSpecialAttacking = false;
-    gsap.to('#enemySABar', {
-      width: '0%',
-    });
-  }
+  // //Tensor Flow - Regular Attack -Enemy
+  // if (tfTopMove === 'Attack') {
+  //   enemyAttackCounter++;
+  //   if (enemyAttackCounter < 2) {
+  //     console.log('ENEMY ATTACK');
+  //     enemy.isAttacking = true;
+  //     enemy.attack();
+  //     enemy.framesCurrent = 2;
+  //   }
+  //   // If we need to attack more decrease number below
+  //   if (enemyAttackCounter > 35) {
+  //     enemyAttackCounter = 0;
+  //   }
+  // }
+  // // Tensor Flow - Special Attack -Enemy
+  // if (
+  //   enemy.health > 0 &&
+  //   countdown < 0 &&
+  //   enemy.charge >= 100 &&
+  //   tfTopMove === 'SpecialAttack'
+  // ) {
+  //   enemy.isSpecialAttacking = true;
+  //   enemy.specialAttack();
+  //   if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+  //     if (enemy.isSpecialAttacking === true) {
+  //       player.takeHit(22);
+  //       enemy.attack();
+  //     }
+  //   }
+  //   enemy.charge = 0;
+  //   enemy.isSpecialAttacking = false;
+  //   gsap.to('#enemySABar', {
+  //     width: '0%',
+  //   });
+  // }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (
