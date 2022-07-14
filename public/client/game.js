@@ -285,25 +285,12 @@ const keys = {
 // decreaseTimer();
 
 // Tensor Flow Variables
-
 let attackCounter = 0;
 let enemyAttackCounter = 0;
-let isPlayer = false;
-// let isNotPlayer = false;
+let blockCounter = 0;
 
-let isEnemy = false;
-// let isNotEnemy = false;
-
-//Event Listeners for Kin/Ghost
-kingBtn.addEventListener('click', () => {
-  isPlayer = true;
-});
-ghostBtn.addEventListener('click', () => {
-  isEnemy = true;
-});
-
-// console.log('Outside play', isPlayer);
-// console.log('Outside enemy', isEnemy);
+let jDown = false;
+let nDown = false;
 
 async function animate() {
   window.requestAnimationFrame(animate);
@@ -311,8 +298,6 @@ async function animate() {
 
   //Gets tensorFlow top move
   let tfTopMove = document.getElementById('topMove').innerHTML;
-  // console.log('inside play', isPlayer);
-  // console.log('inside enemy', isEnemy);
 
   // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -328,8 +313,7 @@ async function animate() {
     (keys.a.pressed &&
       player.lastKey === 'a' &&
       player.health > 0 &&
-      countdown < 0 &&
-      isPlayer === true) ||
+      countdown < 0) ||
     tfTopMove === 'Left'
   ) {
     player.velocity.x = -3.5;
@@ -397,33 +381,17 @@ async function animate() {
     player.switchSprite('fallback');
   }
   if (
-    (keys.j.pressed &&
-      player.lastKey === 'j' &&
-      player.health > 0 &&
-      countdown < 0) ||
-    tfTopMove === 'Block'
+    keys.j.pressed &&
+    player.lastKey === 'j' &&
+    player.health > 0 &&
+    countdown < 0
   ) {
     player.velocity.x = 0;
     player.velocity.y = 0;
     player.switchSprite('block');
-
-    // Testing Blocking Tensor Flow -------------------------------------------
-    player.block();
-    player.isBlocking;
-    console.log('blocking!');
-    jDown = true;
-    setTimeout(() => {
-      console.log('RUNNING!');
-      player.isBlocking = !player.isBlocking;
-    }, 2000);
-    console.log('after STO');
-    jDown = false;
-    if (jDown == true) {
-      return;
-    }
   }
 
-  //Tensor Flow - Regular Attack - Player
+  //Tensor Flow - Regular Attack - Player ------------------------------
   if (tfTopMove === 'Attack') {
     attackCounter++;
     if (attackCounter < 2) {
@@ -456,6 +424,24 @@ async function animate() {
     gsap.to('#playerSABar', {
       width: '0%',
     });
+  }
+
+  // Tensor Flow Blocking - Player -----------------------------------------------BLOCKING---------------`
+  if (tfTopMove === 'Block') {
+    blockCounter++;
+    if (blockCounter < 50) {
+      player.block();
+      console.log('please work');
+    } else {
+      player.isBlocking = !player.isBlocking;
+      console.log('NOT BLOCKING');
+    }
+
+    if (blockCounter > 200) {
+      blockCounter = 0;
+      console.log('reset!!!');
+    }
+    console.log(blockCounter);
   }
 
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
@@ -637,8 +623,8 @@ async function animate() {
 animate();
 
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
-let jDown = false;
-let nDown = false;
+// let jDown = false;
+// let nDown = false;
 
 window.addEventListener('keydown', (event) => {
   socket.emit('keydown', {
