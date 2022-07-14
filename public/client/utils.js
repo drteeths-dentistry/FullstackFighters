@@ -114,3 +114,10 @@ function fightReady() {
   document.querySelector('#gameplay').style.display = 'inline-block';
   document.querySelector('#audio').play();
 }
+
+let rc;
+function handlesubmit() {
+  rc = document.getElementById('joinInput').value;
+  document.querySelector('#mainpage').style.display = 'none';
+  document.querySelector('#pickplayer').style.display = '';
+}

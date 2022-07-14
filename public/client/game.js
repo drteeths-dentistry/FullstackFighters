@@ -12,10 +12,22 @@ let didPick = false;
 let isKing = false;
 let isGhost = false;
 
+const actionBtn = document.querySelector('#actionbtn');
 const playAgainBtn = document.querySelector('#playagainbtn');
 const kingBtn = document.querySelector('#kingBtn');
 const ghostBtn = document.querySelector('#ghostBtn');
 const readyBtn = document.querySelector('#ready');
+const submitBtn = document.querySelector('#submitBtn');
+
+console.log(socket)
+
+actionBtn.addEventListener('click', () => {
+  socket.emit('startGame');
+});
+
+submitBtn.addEventListener('click', () => {
+  socket.emit('joinGame', { rc });
+});
 
 playAgainBtn.addEventListener('click', () => {
   socket.emit('replay');
@@ -41,6 +53,10 @@ readyBtn.addEventListener('click', () => {
   socket.emit('ready');
 });
 
+socket.on('startGame', (roomName) => {
+  document.querySelector('#roomName').innerHTML = roomName;
+  actionButton();
+});
 
 socket.on('kingSelect', () => {
   pickKing();
@@ -53,17 +69,13 @@ socket.on('ghostSelect', () => {
 socket.on('ready', () => {
   fightReady();
   decreaseTimer();
-
   setInterval(function () {
-    socket.emit('animate', {
-      player: player,
-      enemy: enemy,
-    });
+    socket.emit('animate');
   }, 1000 / dataTickRate);
+});
 
-  socket.on('animate', (data) => {
-    animate(data.player, data.enemy);
-  });
+socket.on('animate', () => {
+  animate();
 });
 
 socket.on('replay', () => {
