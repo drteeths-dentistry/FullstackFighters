@@ -90,6 +90,25 @@ function actionButton() {
   document.querySelector('#pickplayer').style.display = '';
 }
 
+let isKingPicked = false;
+let isGhostPicked = false;
+
+function pickKing() {
+  document.querySelector('#kingBtn').style.display = 'none';
+  isKingPicked = !isKingPicked;
+  if (isKingPicked && isGhostPicked) {
+    document.querySelector('#ready').style.display = '';
+  }
+}
+
+function pickGhost() {
+  document.querySelector('#ghostBtn').style.display = 'none';
+  isGhostPicked = !isGhostPicked;
+  if (isKingPicked && isGhostPicked) {
+    document.querySelector('#ready').style.display = '';
+  }
+}
+
 function fightReady() {
   document.querySelector('#pickplayer').style.display = 'none';
   document.querySelector('#gameplay').style.display = 'inline-block';

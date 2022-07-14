@@ -18,12 +18,16 @@ server.listen(port, () => {
 io.on('connection', (socket) => {
   console.log('A user just connected.');
 
-  socket.on('startGame', () => {
-    io.emit('startGame');
+  socket.on('kingSelect', () => {
+    io.emit('kingSelect');
   });
 
-  socket.on('select', () => {
-    io.emit('select');
+  socket.on('ghostSelect', () => {
+    io.emit('ghostSelect');
+  });
+
+  socket.on('ready', () => {
+    io.emit('ready');
   });
 
   socket.on('replay', () => {
@@ -38,8 +42,8 @@ io.on('connection', (socket) => {
     io.emit('keyup', data);
   });
 
-  socket.on('animate', () => {
-    io.emit('animate');
+  socket.on('animate', (data) => {
+    io.emit('animate', JSON.stringify(data));
   });
 
   socket.on('disconnect', () => {

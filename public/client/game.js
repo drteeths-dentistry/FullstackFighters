@@ -8,48 +8,67 @@ canvas.height = 576;
 const socket = io();
 
 const dataTickRate = 80;
+let didPick = false;
+let isKing = false;
+let isGhost = false;
 
-const actionBtn = document.querySelector('#actionbtn');
 const playAgainBtn = document.querySelector('#playagainbtn');
 const kingBtn = document.querySelector('#kingBtn');
 const ghostBtn = document.querySelector('#ghostBtn');
-
-actionBtn.addEventListener('click', () => {
-  socket.emit('startGame');
-});
+const readyBtn = document.querySelector('#ready');
 
 playAgainBtn.addEventListener('click', () => {
   socket.emit('replay');
 });
 
 kingBtn.addEventListener('click', () => {
-  socket.emit('select');
+  if (!didPick) {
+    socket.emit('kingSelect');
+    didPick = !didPick;
+    isKing = !isKing;
+  }
 });
 
 ghostBtn.addEventListener('click', () => {
-  socket.emit('select');
+  if (!didPick) {
+    socket.emit('ghostSelect');
+    didPick = !didPick;
+    isGhost = !isGhost;
+  }
 });
 
-socket.on('startGame', () => {
-  actionButton();
+readyBtn.addEventListener('click', () => {
+  socket.emit('ready');
 });
 
-socket.on('select', () => {
+
+socket.on('kingSelect', () => {
+  pickKing();
+});
+
+socket.on('ghostSelect', () => {
+  pickGhost();
+});
+
+socket.on('ready', () => {
   fightReady();
   decreaseTimer();
+
+  setInterval(function () {
+    socket.emit('animate', {
+      player: player,
+      enemy: enemy,
+    });
+  }, 1000 / dataTickRate);
+
+  socket.on('animate', (data) => {
+    animate(data.player, data.enemy);
+  });
 });
 
 socket.on('replay', () => {
   playAgain();
 });
-
-setInterval(function() {
-  socket.emit('animate');
-}, 1000 / dataTickRate);
-
-socket.on('animate', () => {
-  animate()
-})
 
 //create background
 const background = new Sprite({
@@ -61,9 +80,8 @@ const background = new Sprite({
 });
 
 //create player
-//create player
-const player = new Fighter({
-position: {
+let player = new Fighter({
+  position: {
     x: 100,
     y: 0,
   },
@@ -169,8 +187,9 @@ position: {
     height: 50,
   },
 });
+
 //create enemy
-const enemy = new Fighter({
+let enemy = new Fighter({
   position: {
     x: 874,
     y: 0,
@@ -299,14 +318,31 @@ const keys = {
   },
 };
 
-function animate() {
+function animate(newPlayer, newEnemy) {
+  // player.position = newPlayer.position.x;
+  // player.position = newPlayer.position.y;
+  // player.velocity.x = newPlayer.velocity.x;
+  // player.velocity.y = newPlayer.velocity.y;
+  // player.attackBox.offset.x = newPlayer.attackBox.offset.x;
+  // player.attackBox.offset.y = newPlayer.attackBox.offset.y;
+  // player.attackBox.width = newPlayer.attackBox.width;
+  // player.attackBox.height = newPlayer.attackBox.height;
+
+  // enemy.position.x = newEnemy.position.x;
+  // enemy.position.y = newEnemy.position.y;
+  // enemy.velocity.x = newEnemy.velocity.x;
+  // enemy.velocity.y = newEnemy.velocity.y;
+  // enemy.attackBox.offset.x = newEnemy.attackBox.offset.x;
+  // enemy.attackBox.offset.y = newEnemy.attackBox.offset.y;
+  // enemy.attackBox.width = newEnemy.attackBox.width;
+  // enemy.attackBox.height = newEnemy.attackBox.height;
+
   background.update();
-  // shop.update();
+  player.update();
+  enemy.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
-  player.update();
-  enemy.update();
   //players start off not moving
   player.velocity.x = 0;
   enemy.velocity.x = 0;
@@ -320,25 +356,20 @@ function animate() {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
     player.attackBox.offset.x = -190;
-  } else if (
-    keys.d.pressed &&
-    player.lastKey === 'd' &&
-    player.health > 0 &&
-    countdown < 0
-  ) {
+  } else if (keys.d.pressed && player.lastKey === 'd' && countdown < 0) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
     player.attackBox.offset.x = 50;
   } else {
-      if (player.isBlocking) {
-        if (player.lastKey === 'a') {
-          player.switchSprite('blockLeft');
-        } else player.switchSprite('blockRight')
-    }
+    if (player.isBlocking) {
       if (player.lastKey === 'a') {
-        player.switchSprite('idleLeft');
-      } else player.switchSprite('idleRight');
+        player.switchSprite('blockLeft');
+      } else player.switchSprite('blockRight');
     }
+    if (player.lastKey === 'a') {
+      player.switchSprite('idleLeft');
+    } else player.switchSprite('idleRight');
+  }
 
   if (
     player.velocity.y < 0 &&
@@ -397,7 +428,7 @@ function animate() {
     if (enemy.isBlocking) {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('blockRight');
-      } else enemy.switchSprite('blockLeft')
+      } else enemy.switchSprite('blockLeft');
     } else {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('idleRight');
@@ -519,112 +550,117 @@ socket.on('keyup', (data) => {
 });
 
 function keyDown(event) {
-  switch (event.key.toLowerCase()) {
-    case 'd':
-      keys.d.pressed = true;
-      player.lastKey = 'd';
-      break;
-    case 'a':
-      keys.a.pressed = true;
-      player.lastKey = 'a';
-      break;
-    case 'w':
-      if (player.velocity.y === 0 && player.health > 0 && countdown < 0) {
-        player.velocity.y = -9;
-      }
-      break;
-    case ' ':
-      if (player.health > 0 && countdown < 0) {
-        player.attack();
-      }
-      break;
+  if (isKing && !isGhost) {
+    switch (event.key.toLowerCase()) {
+      case 'd':
+        keys.d.pressed = true;
+        player.lastKey = 'd';
+        break;
+      case 'a':
+        keys.a.pressed = true;
+        player.lastKey = 'a';
+        break;
+      case 'w':
+        if (player.velocity.y === 0 && player.health > 0 && countdown < 0) {
+          player.velocity.y = -9;
+        }
+        break;
+      case ' ':
+        if (player.health > 0 && countdown < 0) {
+          player.attack();
+        }
+        break;
 
-    case 'j':
-      if (
-        player.velocity.y === 0 &&
-        player.velocity.x === 0 &&
-        player.health > 0 &&
-        countdown < 0
-      ) {
-        player.block();
-        jDown = true;
-        setTimeout(() => {
-          player.isBlocking = !player.isBlocking;
-        }, 3000);
-        jDown = false;
-        if (jDown == true) {
-          return;
-        }
-      }
-      break;
-    case 'x':
-      if (player.health > 0 && countdown < 0 && player.charge >= 100) {
-        player.specialAttack();
-        if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
-          if (player.isSpecialAttacking === true) {
-            enemy.takeHit(22);
-            player.attack();
+      case 'j':
+        if (
+          player.velocity.y === 0 &&
+          player.velocity.x === 0 &&
+          player.health > 0 &&
+          countdown < 0
+        ) {
+          player.block();
+          jDown = true;
+          setTimeout(() => {
+            player.isBlocking = !player.isBlocking;
+          }, 3000);
+          jDown = false;
+          if (jDown == true) {
+            return;
           }
         }
-        player.charge = 0;
-        player.isSpecialAttacking = false;
-        gsap.to('#playerSABar', {
-          width: '0%',
-        });
-      }
-      break;
-    case 'arrowright':
-      keys.ArrowRight.pressed = true;
-      enemy.lastKey = 'arrowright';
-      break;
-    case 'arrowleft':
-      keys.ArrowLeft.pressed = true;
-      enemy.lastKey = 'arrowleft';
-      break;
-    case 'arrowup':
-      if (enemy.velocity.y === 0 && enemy.health > 0 && countdown < 0) {
-        enemy.velocity.y = -9;
-      }
-      break;
-    case 'arrowdown':
-      if (enemy.health > 0 && countdown < 0) {
-        enemy.attack();
-      }
-      break;
-    case 'm':
-      if (enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
-        enemy.specialAttack();
-        if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
-          if (enemy.isSpecialAttacking === true) {
-            player.takeHit(22);
-            enemy.attack();
+        break;
+      case 'x':
+        if (player.health > 0 && countdown < 0 && player.charge >= 100) {
+          player.specialAttack();
+          if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+            if (player.isSpecialAttacking === true) {
+              enemy.takeHit(22);
+              player.attack();
+            }
+          }
+          player.charge = 0;
+          player.isSpecialAttacking = false;
+          gsap.to('#playerSABar', {
+            width: '0%',
+          });
+        }
+        break;
+    }
+  } else {
+    switch (event.key.toLowerCase()) {
+      case 'arrowright':
+        keys.ArrowRight.pressed = true;
+        enemy.lastKey = 'arrowright';
+        break;
+      case 'arrowleft':
+        keys.ArrowLeft.pressed = true;
+        enemy.lastKey = 'arrowleft';
+        break;
+      case 'arrowup':
+        if (enemy.velocity.y === 0 && enemy.health > 0 && countdown < 0) {
+          enemy.velocity.y = -9;
+        }
+        break;
+      case 'arrowdown':
+        if (enemy.health > 0 && countdown < 0) {
+          enemy.attack();
+        }
+        break;
+      case 'm':
+        if (enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
+          enemy.specialAttack();
+          if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+            if (enemy.isSpecialAttacking === true) {
+              player.takeHit(22);
+              enemy.attack();
+            }
+          }
+          enemy.charge = 0;
+          enemy.isSpecialAttacking = false;
+          gsap.to('#enemySABar', {
+            width: '0%',
+          });
+        }
+        break;
+      case 'n':
+        if (
+          enemy.velocity.y === 0 &&
+          enemy.velocity.x === 0 &&
+          enemy.health > 0 &&
+          countdown < 0
+        ) {
+          enemy.block();
+          nDown = true;
+          setTimeout(() => {
+            enemy.isBlocking = !enemy.isBlocking;
+          }, 3000);
+          nDown = false;
+          if (nDown == true) {
+            return;
           }
         }
-        enemy.charge = 0;
-        enemy.isSpecialAttacking = false;
-        gsap.to('#enemySABar', {
-          width: '0%',
-        });
-      }
-      break;
-    case 'n':
-      if (
-        enemy.velocity.y === 0 &&
-        enemy.velocity.x === 0 &&
-        enemy.health > 0 &&
-        countdown < 0
-      ) {
-        enemy.block();
-        nDown = true;
-        setTimeout(() => {
-          enemy.isBlocking = !enemy.isBlocking;
-        }, 3000);
-        nDown = false;
-        if (nDown == true) {
-          return;
-        }
-      }
-      break;
+        break;
+    }
   }
 }
 
@@ -632,27 +668,29 @@ function keyUp(event) {
   if (this.dead) {
     return;
   }
-  switch (event.key.toLowerCase()) {
-    case 'd':
-      keys.d.pressed = false;
-      break;
-    case 'a':
-      keys.a.pressed = false;
-      break;
-    case 'j':
-      keys.j.pressed = false;
-      break;
-    case 'n':
-      keys.n.pressed = false;
-      break;
-  }
-
-  switch (event.key.toLowerCase()) {
-    case 'arrowright':
-      keys.ArrowRight.pressed = false;
-      break;
-    case 'arrowleft':
-      keys.ArrowLeft.pressed = false;
-      break;
+  if (isKing && !isGhost) {
+    switch (event.key.toLowerCase()) {
+      case 'd':
+        keys.d.pressed = false;
+        break;
+      case 'a':
+        keys.a.pressed = false;
+        break;
+      case 'j':
+        keys.j.pressed = false;
+        break;
+      case 'n':
+        keys.n.pressed = false;
+        break;
+    }
+  } else {
+    switch (event.key.toLowerCase()) {
+      case 'arrowright':
+        keys.ArrowRight.pressed = false;
+        break;
+      case 'arrowleft':
+        keys.ArrowLeft.pressed = false;
+        break;
+    }
   }
 }
