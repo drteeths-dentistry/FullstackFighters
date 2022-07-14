@@ -287,7 +287,7 @@ const keys = {
 // Tensor Flow Variables
 let attackCounter = 0;
 let enemyAttackCounter = 0;
-let blockCounter = 0;
+let checkBlock = true;
 
 let jDown = false;
 let nDown = false;
@@ -427,22 +427,30 @@ async function animate() {
   }
 
   // Tensor Flow Blocking - Player -----------------------------------------------BLOCKING---------------`
-  if (tfTopMove === 'Block') {
-    blockCounter++;
-    if (blockCounter < 50) {
-      player.block();
-      console.log('please work');
-    } else {
-      player.isBlocking = !player.isBlocking;
-      console.log('NOT BLOCKING');
-    }
 
-    if (blockCounter > 200) {
-      blockCounter = 0;
-      console.log('reset!!!');
-    }
-    console.log(blockCounter);
+  if (tfTopMove === 'Block' && checkBlock === true) {
+    player.block();
+    setTimeout(() => {
+      checkBlock = false;
+    }, 2000);
   }
+
+  // if (tfTopMove === 'Block') {
+  //   blockCounter++;
+  //   if (blockCounter < 50) {
+  //     player.block();
+  //     console.log('please work');
+  //   } else {
+  //     player.isBlocking = !player.isBlocking;
+  //     console.log('NOT BLOCKING');
+  //   }
+
+  //   if (blockCounter > 200) {
+  //     blockCounter = 0;
+  //     console.log('reset!!!');
+  //   }
+  //   console.log(blockCounter);
+  // }
 
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
