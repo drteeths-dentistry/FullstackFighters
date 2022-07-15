@@ -74,13 +74,15 @@ socket.on('ready', () => {
   setInterval(function () {
     socket.emit('animate', {
       player,
-      enemy
+      enemy,
     });
   }, 1000 / dataTickRate);
 });
 
-socket.on('animate', () => {
-  animate();
+socket.on('animate', (data) => {
+  let playerdata = JSON.parse(data).player;
+  let enemydata = JSON.parse(data).enemy;
+  animate(playerdata, enemydata);
 });
 
 socket.on('replay', () => {
@@ -97,7 +99,7 @@ const background = new Sprite({
 });
 
 //create player
-let player = new Fighter({
+let playerObj = {
   position: {
     x: 100,
     y: 0,
@@ -203,10 +205,11 @@ let player = new Fighter({
     width: 190,
     height: 50,
   },
-});
+};
+let player = new Fighter(playerObj);
 
 //create enemy
-let enemy = new Fighter({
+let enemyObj = {
   position: {
     x: 874,
     y: 0,
@@ -312,7 +315,9 @@ let enemy = new Fighter({
     width: 173,
     height: 50,
   },
-});
+};
+let enemy = new Fighter(enemyObj);
+
 //helps to tell what keys are being pressed
 const keys = {
   a: {
@@ -336,24 +341,6 @@ const keys = {
 };
 
 function animate(newPlayer, newEnemy) {
-  player.position = newPlayer.position.x;
-  player.position = newPlayer.position.y;
-  player.velocity.x = newPlayer.velocity.x;
-  player.velocity.y = newPlayer.velocity.y;
-  player.attackBox.offset.x = newPlayer.attackBox.offset.x;
-  player.attackBox.offset.y = newPlayer.attackBox.offset.y;
-  player.attackBox.width = newPlayer.attackBox.width;
-  player.attackBox.height = newPlayer.attackBox.height;
-
-  enemy.position.x = newEnemy.position.x;
-  enemy.position.y = newEnemy.position.y;
-  enemy.velocity.x = newEnemy.velocity.x;
-  enemy.velocity.y = newEnemy.velocity.y;
-  enemy.attackBox.offset.x = newEnemy.attackBox.offset.x;
-  enemy.attackBox.offset.y = newEnemy.attackBox.offset.y;
-  enemy.attackBox.width = newEnemy.attackBox.width;
-  enemy.attackBox.height = newEnemy.attackBox.height;
-
   background.update();
   player.update();
   enemy.update();
@@ -567,117 +554,114 @@ socket.on('keyup', (data) => {
 });
 
 function keyDown(event) {
-  if (isKing && !isGhost) {
-    switch (event.key.toLowerCase()) {
-      case 'd':
-        keys.d.pressed = true;
-        player.lastKey = 'd';
-        break;
-      case 'a':
-        keys.a.pressed = true;
-        player.lastKey = 'a';
-        break;
-      case 'w':
-        if (player.velocity.y === 0 && player.health > 0 && countdown < 0) {
-          player.velocity.y = -9;
-        }
-        break;
-      case ' ':
-        if (player.health > 0 && countdown < 0) {
-          player.attack();
-        }
-        break;
+  switch (event.key.toLowerCase()) {
+    case 'd':
+      keys.d.pressed = true;
+      player.lastKey = 'd';
+      break;
+    case 'a':
+      keys.a.pressed = true;
+      player.lastKey = 'a';
+      break;
+    case 'w':
+      if (player.velocity.y === 0 && player.health > 0 && countdown < 0) {
+        player.velocity.y = -9;
+      }
+      break;
+    case ' ':
+      if (player.health > 0 && countdown < 0) {
+        player.attack();
+      }
+      break;
 
-      case 'j':
-        if (
-          player.velocity.y === 0 &&
-          player.velocity.x === 0 &&
-          player.health > 0 &&
-          countdown < 0
-        ) {
-          player.block();
-          jDown = true;
-          setTimeout(() => {
-            player.isBlocking = !player.isBlocking;
-          }, 3000);
-          jDown = false;
-          if (jDown == true) {
-            return;
+    case 'j':
+      if (
+        player.velocity.y === 0 &&
+        player.velocity.x === 0 &&
+        player.health > 0 &&
+        countdown < 0
+      ) {
+        player.block();
+        jDown = true;
+        setTimeout(() => {
+          player.isBlocking = !player.isBlocking;
+        }, 3000);
+        jDown = false;
+        if (jDown == true) {
+          return;
+        }
+      }
+      break;
+    case 'x':
+      if (player.health > 0 && countdown < 0 && player.charge >= 100) {
+        player.specialAttack();
+        if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+          if (player.isSpecialAttacking === true) {
+            enemy.takeHit(22);
+            player.attack();
           }
         }
-        break;
-      case 'x':
-        if (player.health > 0 && countdown < 0 && player.charge >= 100) {
-          player.specialAttack();
-          if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
-            if (player.isSpecialAttacking === true) {
-              enemy.takeHit(22);
-              player.attack();
-            }
-          }
-          player.charge = 0;
-          player.isSpecialAttacking = false;
-          gsap.to('#playerSABar', {
-            width: '0%',
-          });
-        }
-        break;
-    }
-  } else {
-    switch (event.key.toLowerCase()) {
-      case 'arrowright':
-        keys.ArrowRight.pressed = true;
-        enemy.lastKey = 'arrowright';
-        break;
-      case 'arrowleft':
-        keys.ArrowLeft.pressed = true;
-        enemy.lastKey = 'arrowleft';
-        break;
-      case 'arrowup':
-        if (enemy.velocity.y === 0 && enemy.health > 0 && countdown < 0) {
-          enemy.velocity.y = -9;
-        }
-        break;
-      case 'arrowdown':
-        if (enemy.health > 0 && countdown < 0) {
-          enemy.attack();
-        }
-        break;
-      case 'm':
-        if (enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
-          enemy.specialAttack();
-          if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
-            if (enemy.isSpecialAttacking === true) {
-              player.takeHit(22);
-              enemy.attack();
-            }
-          }
-          enemy.charge = 0;
-          enemy.isSpecialAttacking = false;
-          gsap.to('#enemySABar', {
-            width: '0%',
-          });
-        }
-        break;
-      case 'n':
-        if (
-          enemy.velocity.y === 0 &&
-          enemy.velocity.x === 0 &&
-          enemy.health > 0 &&
-          countdown < 0
-        ) {
-          enemy.block();
-          nDown = true;
-          setTimeout(() => {
-            enemy.isBlocking = !enemy.isBlocking;
-          }, 3000);
-          nDown = false;
-          if (nDown == true) {
-            return;
+        player.charge = 0;
+        player.isSpecialAttacking = false;
+        gsap.to('#playerSABar', {
+          width: '0%',
+        });
+      }
+      break;
+  }
+  switch (event.key.toLowerCase()) {
+    case 'arrowright':
+      keys.ArrowRight.pressed = true;
+      enemy.lastKey = 'arrowright';
+      break;
+    case 'arrowleft':
+      keys.ArrowLeft.pressed = true;
+      enemy.lastKey = 'arrowleft';
+      break;
+    case 'arrowup':
+      if (enemy.velocity.y === 0 && enemy.health > 0 && countdown < 0) {
+        enemy.velocity.y = -9;
+      }
+      break;
+    case 'arrowdown':
+      if (enemy.health > 0 && countdown < 0) {
+        enemy.attack();
+      }
+      break;
+    case 'm':
+      if (enemy.health > 0 && countdown < 0 && enemy.charge >= 100) {
+        enemy.specialAttack();
+        if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+          if (enemy.isSpecialAttacking === true) {
+            player.takeHit(22);
+            enemy.attack();
           }
         }
-        break;
-    }
+        enemy.charge = 0;
+        enemy.isSpecialAttacking = false;
+        gsap.to('#enemySABar', {
+          width: '0%',
+        });
+      }
+      break;
+    case 'n':
+      if (
+        enemy.velocity.y === 0 &&
+        enemy.velocity.x === 0 &&
+        enemy.health > 0 &&
+        countdown < 0
+      ) {
+        enemy.block();
+        nDown = true;
+        setTimeout(() => {
+          enemy.isBlocking = !enemy.isBlocking;
+        }, 3000);
+        nDown = false;
+        if (nDown == true) {
+          return;
+        }
+      }
+      break;
   }
 }
 
@@ -685,29 +669,26 @@ function keyUp(event) {
   if (this.dead) {
     return;
   }
-  if (isKing && !isGhost) {
-    switch (event.key.toLowerCase()) {
-      case 'd':
-        keys.d.pressed = false;
-        break;
-      case 'a':
-        keys.a.pressed = false;
-        break;
-      case 'j':
-        keys.j.pressed = false;
-        break;
-      case 'n':
-        keys.n.pressed = false;
-        break;
-    }
-  } else {
-    switch (event.key.toLowerCase()) {
-      case 'arrowright':
-        keys.ArrowRight.pressed = false;
-        break;
-      case 'arrowleft':
-        keys.ArrowLeft.pressed = false;
-        break;
-    }
+  switch (event.key.toLowerCase()) {
+    case 'd':
+      keys.d.pressed = false;
+      break;
+    case 'a':
+      keys.a.pressed = false;
+      break;
+    case 'j':
+      keys.j.pressed = false;
+      break;
+    case 'n':
+      keys.n.pressed = false;
+      break;
+  }
+  switch (event.key.toLowerCase()) {
+    case 'arrowright':
+      keys.ArrowRight.pressed = false;
+      break;
+    case 'arrowleft':
+      keys.ArrowLeft.pressed = false;
+      break;
   }
 }

@@ -9,7 +9,6 @@ let app = express();
 let server = http.createServer(app);
 let io = socketIO(server);
 
-const state = {};
 const clientRooms = {};
 
 const findRoom = (rc) => {
@@ -42,7 +41,7 @@ io.on('connection', (socket) => {
   socket.on('joinGame', (roomName) => {
     clientRooms[socket.id] = roomName.rc;
     socket.join(roomName.rc);
-    io.emit('joinGame', roomName.rc);
+    io.to(socket.id).emit('joinGame', roomName.rc);
   });
 
   socket.on('kingSelect', () => {
@@ -97,7 +96,7 @@ io.on('connection', (socket) => {
     let rc = clientRooms[socket.id];
     let rooms = findRoom(rc);
     rooms.forEach((room) => {
-      io.to(room).emit('animate', data);
+      io.to(room).emit('animate', JSON.stringify(data));
     });
   });
 
@@ -116,45 +115,3 @@ function makeid(length) {
   }
   return result;
 }
-
-// function handleNewGame() {
-//   let roomName = makeid(5);
-//   clientRooms[socket.id] = roomName;
-//   socket.emit('gameCode', roomName);
-
-//   state[roomName] = initGame();
-
-//   socket.join(roomName);
-//   socket.number = 1;
-//   socket.emit('init', 1);
-// }
-
-// function handleJoinGame(roomName) {
-//   const room = io.sockets.adapter.rooms[roomName];
-
-//   let allUsers;
-//   if (room) {
-//     allUsers = room.sockets;
-//   }
-
-//   let numClients = 0;
-//   if (allUsers) {
-//     numClients = Object.keys(allUsers).length;
-//   }
-
-//   if (numClients === 0) {
-//     client.emit('unknownCode');
-//     return;
-//   } else if (numClients > 1) {
-//     client.emit('tooManyPlayers');
-//     return;
-//   }
-
-//   clientRooms[client.id] = roomName;
-
-//   client.join(roomName);
-//   client.number = 2;
-//   client.emit('init', 2);
-
-//   startGameInterval(roomName);
-// }
