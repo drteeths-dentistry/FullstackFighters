@@ -7,13 +7,24 @@ canvas.height = 576;
 
 const socket = io();
 
+const dataTickRate = 80;
+let didPick = false;
+let isKing = false;
+let isGhost = false;
+
 const actionBtn = document.querySelector('#actionbtn');
 const playAgainBtn = document.querySelector('#playagainbtn');
 const kingBtn = document.querySelector('#kingBtn');
 const ghostBtn = document.querySelector('#ghostBtn');
+const readyBtn = document.querySelector('#ready');
+const submitBtn = document.querySelector('#submitBtn');
 
 actionBtn.addEventListener('click', () => {
   socket.emit('startGame');
+});
+
+submitBtn.addEventListener('click', () => {
+  socket.emit('joinGame', { rc });
 });
 
 playAgainBtn.addEventListener('click', () => {
@@ -21,20 +32,57 @@ playAgainBtn.addEventListener('click', () => {
 });
 
 kingBtn.addEventListener('click', () => {
-  socket.emit('select');
+  if (!didPick) {
+    socket.emit('kingSelect');
+    didPick = !didPick;
+    isKing = !isKing;
+  }
 });
 
 ghostBtn.addEventListener('click', () => {
-  socket.emit('select');
+  if (!didPick) {
+    socket.emit('ghostSelect');
+    didPick = !didPick;
+    isGhost = !isGhost;
+  }
 });
 
-socket.on('startGame', () => {
+readyBtn.addEventListener('click', () => {
+  socket.emit('ready');
+});
+
+socket.on('startGame', (roomName) => {
+  document.querySelector('#roomName').innerHTML = roomName;
   actionButton();
 });
 
-socket.on('select', () => {
+socket.on('joinGame', (roomName) => {
+  document.querySelector('#roomName').innerHTML = roomName;
+});
+
+socket.on('kingSelect', () => {
+  pickKing();
+});
+
+socket.on('ghostSelect', () => {
+  pickGhost();
+});
+
+socket.on('ready', () => {
   fightReady();
   decreaseTimer();
+  setInterval(function () {
+    socket.emit('animate', {
+      player,
+      enemy,
+    });
+  }, 1000 / dataTickRate);
+});
+
+socket.on('animate', (data) => {
+  let playerdata = JSON.parse(data).player;
+  let enemydata = JSON.parse(data).enemy;
+  animate(playerdata, enemydata);
 });
 
 socket.on('replay', () => {
@@ -51,8 +99,7 @@ const background = new Sprite({
 });
 
 //create player
-//create player
-const player = new Fighter({
+let playerObj = {
   position: {
     x: 100,
     y: 0,
@@ -141,8 +188,12 @@ const player = new Fighter({
       imageSrc: './img/king/Death.png',
       framesMax: 6,
     },
-    block: {
-      imageSrc: './img/king/Shielding.png',
+    blockLeft: {
+      imageSrc: './img/king/ShieldingLeft.png',
+      framesMax: 8,
+    },
+    blockRight: {
+      imageSrc: './img/king/ShieldingRight.png',
       framesMax: 8,
     },
   },
@@ -154,9 +205,11 @@ const player = new Fighter({
     width: 190,
     height: 50,
   },
-});
+};
+let player = new Fighter(playerObj);
+
 //create enemy
-const enemy = new Fighter({
+let enemyObj = {
   position: {
     x: 874,
     y: 0,
@@ -245,8 +298,12 @@ const enemy = new Fighter({
       imageSrc: './img/ghost/Death.png',
       framesMax: 16,
     },
-    block: {
-      imageSrc: './img/ghost/Shielding.png',
+    blockLeft: {
+      imageSrc: './img/ghost/ShieldingLeft.png',
+      framesMax: 10,
+    },
+    blockRight: {
+      imageSrc: './img/ghost/ShieldingRight.png',
       framesMax: 10,
     },
   },
@@ -258,7 +315,9 @@ const enemy = new Fighter({
     width: 173,
     height: 50,
   },
-});
+};
+let enemy = new Fighter(enemyObj);
+
 //helps to tell what keys are being pressed
 const keys = {
   a: {
@@ -293,18 +352,14 @@ let jDown = false;
 let nDown = false;
 
 async function animate() {
-  window.requestAnimationFrame(animate);
   background.update();
-
-  //Gets tensorFlow top move
+  player.update();
+  enemy.update();
   let tfTopMove = document.getElementById('topMove').innerHTML;
 
-  // shop.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
-  player.update();
-  enemy.update();
   //players start off not moving
   player.velocity.x = 0;
   enemy.velocity.x = 0;
@@ -331,15 +386,14 @@ async function animate() {
     player.attackBox.offset.x = 50;
   } else {
     if (player.isBlocking) {
-      player.switchSprite('blocking');
-    } else {
       if (player.lastKey === 'a') {
-        player.switchSprite('idleLeft');
-      }
-      // else player.switchSprite('idleRight');
+        player.switchSprite('blockLeft');
+      } else player.switchSprite('blockRight');
     }
+    if (player.lastKey === 'a') {
+      player.switchSprite('idleLeft');
+    } else player.switchSprite('idleRight');
   }
-  //TensorFlow - Jump & Block
   if (
     // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
     (player.velocity.y === 0 &&
@@ -481,7 +535,9 @@ async function animate() {
     enemy.attackBox.offset.x = 50;
   } else {
     if (enemy.isBlocking) {
-      enemy.switchSprite('blocking');
+      if (enemy.lastKey === 'arrowright') {
+        enemy.switchSprite('blockRight');
+      } else enemy.switchSprite('blockLeft');
     } else {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('idleRight');
@@ -634,8 +690,6 @@ async function animate() {
   }
 }
 
-animate();
-
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
 // let jDown = false;
 // let nDown = false;
@@ -692,7 +746,7 @@ function keyDown(event) {
         jDown = true;
         setTimeout(() => {
           player.isBlocking = !player.isBlocking;
-        }, 2000);
+        }, 3000);
         jDown = false;
         if (jDown == true) {
           return;
@@ -715,6 +769,8 @@ function keyDown(event) {
         });
       }
       break;
+  }
+  switch (event.key.toLowerCase()) {
     case 'arrowright':
       keys.ArrowRight.pressed = true;
       enemy.lastKey = 'arrowright';
@@ -788,7 +844,6 @@ function keyUp(event) {
       keys.n.pressed = false;
       break;
   }
-
   switch (event.key.toLowerCase()) {
     case 'arrowright':
       keys.ArrowRight.pressed = false;

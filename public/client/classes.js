@@ -109,14 +109,8 @@ class Fighter extends Sprite {
     //animates attack box depending on the fighters position
     this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
     this.attackBox.position.y = this.position.y + this.attackBox.offset.y;
-    //hit boxes and attack boxes for fighters
-    // c.fillRect(
-    //   this.attackBox.position.x,
-    //   this.attackBox.position.y,
-    //   this.attackBox.width,
-    //   this.attackBox.height
-    // );
-    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    // hit boxes and attack boxes for fighters
+
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
     //implements gravity, and makes the players not fall through the floor
@@ -181,7 +175,12 @@ class Fighter extends Sprite {
   block() {
     //shield appears and prevents damage
     this.isBlocking = true;
-    this.switchSprite('block');
+    if (this.lastKey === 'd' || this.lastKey === 'arrowright') {
+      this.switchSprite('blockRight');
+    } else {
+      this.switchSprite('blockLeft');
+    }
+    return;
   }
   takeHit(damage) {
     //damage per regular hit
@@ -252,8 +251,13 @@ class Fighter extends Sprite {
     )
       return;
     if (
-      this.image === this.sprites.block.image &&
-      this.framesCurrent < this.sprites.block.framesMax - 1
+      this.image === this.sprites.blockLeft.image &&
+      this.framesCurrent < this.sprites.blockLeft.framesMax - 1
+    )
+      return;
+    if (
+      this.image === this.sprites.blockRight.image &&
+      this.framesCurrent < this.sprites.blockRight.framesMax - 1
     )
       return;
     //switches between sprites, and makes sure the action starts at the right frame, and shows all of it
@@ -384,10 +388,17 @@ class Fighter extends Sprite {
           this.framesCurrent = 0;
         }
         break;
-      case 'block':
-        if (this.image !== this.sprites.block.image) {
-          this.image = this.sprites.block.image;
-          this.framesMax = this.sprites.block.framesMax;
+      case 'blockLeft':
+        if (this.image !== this.sprites.blockLeft.image) {
+          this.image = this.sprites.blockLeft.image;
+          this.framesMax = this.sprites.blockLeft.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
+      case 'blockRight':
+        if (this.image !== this.sprites.blockRight.image) {
+          this.image = this.sprites.blockRight.image;
+          this.framesMax = this.sprites.blockRight.framesMax;
           this.framesCurrent = 0;
         }
         break;
