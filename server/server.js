@@ -9,6 +9,19 @@ let app = express();
 let server = http.createServer(app);
 let io = socketIO(server);
 
+const clientRooms = {};
+
+const findRoom = (rc) => {
+  let output = [];
+  for (let socketId in clientRooms) {
+    let roomName = clientRooms[socketId];
+    if (roomName === rc) {
+      output.push(socketId);
+    }
+  }
+  return output;
+};
+
 app.use(express.static(publicPath));
 
 server.listen(port, () => {
@@ -19,30 +32,86 @@ io.on('connection', (socket) => {
   console.log('A user just connected.');
 
   socket.on('startGame', () => {
-    io.emit('startGame');
+    let roomName = makeid(5);
+    clientRooms[socket.id] = roomName;
+    socket.join(roomName);
+    io.to(socket.id).emit('startGame', roomName);
   });
 
-  socket.on('select', () => {
-    io.emit('select');
+  socket.on('joinGame', (roomName) => {
+    clientRooms[socket.id] = roomName.rc;
+    socket.join(roomName.rc);
+    io.to(socket.id).emit('joinGame', roomName.rc);
+  });
+
+  socket.on('kingSelect', () => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('kingSelect');
+    });
+  });
+
+  socket.on('ghostSelect', () => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('ghostSelect');
+    });
+  });
+
+  socket.on('ready', () => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('ready');
+    });
   });
 
   socket.on('replay', () => {
-    io.emit('replay');
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('replay');
+    });
   });
 
   socket.on('keydown', (data) => {
-    io.emit('keydown', data);
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('keydown', data);
+    });
   });
 
   socket.on('keyup', (data) => {
-    io.emit('keyup', data);
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('keyup', data);
+    });
   });
 
-  socket.on('animate', () => {
-    io.emit('animate');
+  socket.on('animate', (data) => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('animate', JSON.stringify(data));
+    });
   });
 
   socket.on('disconnect', () => {
     console.log('A user has disconnected.');
   });
 });
+
+function makeid(length) {
+  var result = '';
+  var characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}

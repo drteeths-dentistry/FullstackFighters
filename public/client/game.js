@@ -8,14 +8,23 @@ canvas.height = 576;
 const socket = io();
 
 const dataTickRate = 80;
+let didPick = false;
+let isKing = false;
+let isGhost = false;
 
 const actionBtn = document.querySelector('#actionbtn');
 const playAgainBtn = document.querySelector('#playagainbtn');
 const kingBtn = document.querySelector('#kingBtn');
 const ghostBtn = document.querySelector('#ghostBtn');
+const readyBtn = document.querySelector('#ready');
+const submitBtn = document.querySelector('#submitBtn');
 
 actionBtn.addEventListener('click', () => {
   socket.emit('startGame');
+});
+
+submitBtn.addEventListener('click', () => {
+  socket.emit('joinGame', { rc });
 });
 
 playAgainBtn.addEventListener('click', () => {
@@ -23,33 +32,62 @@ playAgainBtn.addEventListener('click', () => {
 });
 
 kingBtn.addEventListener('click', () => {
-  socket.emit('select');
+  if (!didPick) {
+    socket.emit('kingSelect');
+    didPick = !didPick;
+    isKing = !isKing;
+  }
 });
 
 ghostBtn.addEventListener('click', () => {
-  socket.emit('select');
+  if (!didPick) {
+    socket.emit('ghostSelect');
+    didPick = !didPick;
+    isGhost = !isGhost;
+  }
 });
 
-socket.on('startGame', () => {
+readyBtn.addEventListener('click', () => {
+  socket.emit('ready');
+});
+
+socket.on('startGame', (roomName) => {
+  document.querySelector('#roomName').innerHTML = roomName;
   actionButton();
 });
 
-socket.on('select', () => {
+socket.on('joinGame', (roomName) => {
+  document.querySelector('#roomName').innerHTML = roomName;
+});
+
+socket.on('kingSelect', () => {
+  pickKing();
+});
+
+socket.on('ghostSelect', () => {
+  pickGhost();
+});
+
+socket.on('ready', () => {
   fightReady();
   decreaseTimer();
+  setInterval(function () {
+    socket.emit('animate', {
+      player,
+      enemy,
+    });
+  }, 1000 / dataTickRate);
+});
+
+socket.on('animate', (data) => {
+  let playerdata = JSON.parse(data).player;
+  let enemydata = JSON.parse(data).enemy;
+  animate(playerdata, enemydata);
 });
 
 socket.on('replay', () => {
   playAgain();
 });
-
-setInterval(function() {
-  socket.emit('animate');
-}, 1000 / dataTickRate);
-
-socket.on('animate', () => {
-  animate()
-})
 
 //create background
 const background = new Sprite({
@@ -61,9 +99,8 @@ const background = new Sprite({
 });
 
 //create player
-//create player
-const player = new Fighter({
-position: {
+let playerObj = {
+  position: {
     x: 100,
     y: 0,
   },
@@ -168,9 +205,11 @@ position: {
     width: 190,
     height: 50,
   },
-});
+};
+let player = new Fighter(playerObj);
+
 //create enemy
-const enemy = new Fighter({
+let enemyObj = {
   position: {
     x: 874,
     y: 0,
@@ -276,7 +315,9 @@ const enemy = new Fighter({
     width: 173,
     height: 50,
   },
-});
+};
+let enemy = new Fighter(enemyObj);
+
 //helps to tell what keys are being pressed
 const keys = {
   a: {
@@ -299,14 +340,13 @@ const keys = {
   },
 };
 
-function animate() {
+function animate(newPlayer, newEnemy) {
   background.update();
-  // shop.update();
+  player.update();
+  enemy.update();
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
-  player.update();
-  enemy.update();
   //players start off not moving
   player.velocity.x = 0;
   enemy.velocity.x = 0;
@@ -320,25 +360,20 @@ function animate() {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
     player.attackBox.offset.x = -190;
-  } else if (
-    keys.d.pressed &&
-    player.lastKey === 'd' &&
-    player.health > 0 &&
-    countdown < 0
-  ) {
+  } else if (keys.d.pressed && player.lastKey === 'd' && countdown < 0) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
     player.attackBox.offset.x = 50;
   } else {
-      if (player.isBlocking) {
-        if (player.lastKey === 'a') {
-          player.switchSprite('blockLeft');
-        } else player.switchSprite('blockRight')
-    }
+    if (player.isBlocking) {
       if (player.lastKey === 'a') {
-        player.switchSprite('idleLeft');
-      } else player.switchSprite('idleRight');
+        player.switchSprite('blockLeft');
+      } else player.switchSprite('blockRight');
     }
+    if (player.lastKey === 'a') {
+      player.switchSprite('idleLeft');
+    } else player.switchSprite('idleRight');
+  }
 
   if (
     player.velocity.y < 0 &&
@@ -397,7 +432,7 @@ function animate() {
     if (enemy.isBlocking) {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('blockRight');
-      } else enemy.switchSprite('blockLeft')
+      } else enemy.switchSprite('blockLeft');
     } else {
       if (enemy.lastKey === 'arrowright') {
         enemy.switchSprite('idleRight');
@@ -573,6 +608,8 @@ function keyDown(event) {
         });
       }
       break;
+  }
+  switch (event.key.toLowerCase()) {
     case 'arrowright':
       keys.ArrowRight.pressed = true;
       enemy.lastKey = 'arrowright';
@@ -646,7 +683,6 @@ function keyUp(event) {
       keys.n.pressed = false;
       break;
   }
-
   switch (event.key.toLowerCase()) {
     case 'arrowright':
       keys.ArrowRight.pressed = false;
