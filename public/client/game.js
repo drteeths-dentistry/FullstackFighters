@@ -19,8 +19,6 @@ const ghostBtn = document.querySelector('#ghostBtn');
 const readyBtn = document.querySelector('#ready');
 const submitBtn = document.querySelector('#submitBtn');
 
-console.log(socket)
-
 actionBtn.addEventListener('click', () => {
   socket.emit('startGame');
 });
@@ -58,6 +56,10 @@ socket.on('startGame', (roomName) => {
   actionButton();
 });
 
+socket.on('joinGame', (roomName) => {
+  document.querySelector('#roomName').innerHTML = roomName;
+});
+
 socket.on('kingSelect', () => {
   pickKing();
 });
@@ -70,7 +72,10 @@ socket.on('ready', () => {
   fightReady();
   decreaseTimer();
   setInterval(function () {
-    socket.emit('animate');
+    socket.emit('animate', {
+      player,
+      enemy
+    });
   }, 1000 / dataTickRate);
 });
 
@@ -331,23 +336,23 @@ const keys = {
 };
 
 function animate(newPlayer, newEnemy) {
-  // player.position = newPlayer.position.x;
-  // player.position = newPlayer.position.y;
-  // player.velocity.x = newPlayer.velocity.x;
-  // player.velocity.y = newPlayer.velocity.y;
-  // player.attackBox.offset.x = newPlayer.attackBox.offset.x;
-  // player.attackBox.offset.y = newPlayer.attackBox.offset.y;
-  // player.attackBox.width = newPlayer.attackBox.width;
-  // player.attackBox.height = newPlayer.attackBox.height;
+  player.position = newPlayer.position.x;
+  player.position = newPlayer.position.y;
+  player.velocity.x = newPlayer.velocity.x;
+  player.velocity.y = newPlayer.velocity.y;
+  player.attackBox.offset.x = newPlayer.attackBox.offset.x;
+  player.attackBox.offset.y = newPlayer.attackBox.offset.y;
+  player.attackBox.width = newPlayer.attackBox.width;
+  player.attackBox.height = newPlayer.attackBox.height;
 
-  // enemy.position.x = newEnemy.position.x;
-  // enemy.position.y = newEnemy.position.y;
-  // enemy.velocity.x = newEnemy.velocity.x;
-  // enemy.velocity.y = newEnemy.velocity.y;
-  // enemy.attackBox.offset.x = newEnemy.attackBox.offset.x;
-  // enemy.attackBox.offset.y = newEnemy.attackBox.offset.y;
-  // enemy.attackBox.width = newEnemy.attackBox.width;
-  // enemy.attackBox.height = newEnemy.attackBox.height;
+  enemy.position.x = newEnemy.position.x;
+  enemy.position.y = newEnemy.position.y;
+  enemy.velocity.x = newEnemy.velocity.x;
+  enemy.velocity.y = newEnemy.velocity.y;
+  enemy.attackBox.offset.x = newEnemy.attackBox.offset.x;
+  enemy.attackBox.offset.y = newEnemy.attackBox.offset.y;
+  enemy.attackBox.width = newEnemy.attackBox.width;
+  enemy.attackBox.height = newEnemy.attackBox.height;
 
   background.update();
   player.update();

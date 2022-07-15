@@ -12,6 +12,17 @@ let io = socketIO(server);
 const state = {};
 const clientRooms = {};
 
+const findRoom = (rc) => {
+  let output = [];
+  for (let socketId in clientRooms) {
+    let roomName = clientRooms[socketId];
+    if (roomName === rc) {
+      output.push(socketId);
+    }
+  }
+  return output;
+};
+
 app.use(express.static(publicPath));
 
 server.listen(port, () => {
@@ -29,38 +40,65 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinGame', (roomName) => {
-    console.log(clientRooms);
     clientRooms[socket.id] = roomName.rc;
     socket.join(roomName.rc);
-    console.log(clientRooms);
+    io.emit('joinGame', roomName.rc);
   });
 
   socket.on('kingSelect', () => {
-    io.emit('kingSelect');
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('kingSelect');
+    });
   });
 
   socket.on('ghostSelect', () => {
-    io.emit('ghostSelect');
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('ghostSelect');
+    });
   });
 
   socket.on('ready', () => {
-    io.emit('ready');
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('ready');
+    });
   });
 
   socket.on('replay', () => {
-    io.emit('replay');
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('replay');
+    });
   });
 
   socket.on('keydown', (data) => {
-    io.emit('keydown', data);
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('keydown', data);
+    });
   });
 
   socket.on('keyup', (data) => {
-    io.emit('keyup', data);
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('keyup', data);
+    });
   });
 
-  socket.on('animate', () => {
-    io.emit('animate');
+  socket.on('animate', (data) => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('animate', data);
+    });
   });
 
   socket.on('disconnect', () => {
