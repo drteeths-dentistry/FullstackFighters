@@ -340,6 +340,15 @@ const keys = {
   },
 };
 
+const tensorFlowToKeyBoard = {
+  'Left' : 'a',
+  'Right' : 'd',
+  'Jump' : 'w',
+  'Attack' : ' ',
+  'SpecialAttack' : 'x',
+  'Block' : 'j',
+}
+
 //self explanatory
 // decreaseTimer();
 
@@ -358,11 +367,13 @@ async function animate() {
 
   // Getting the top move from tensorFLow
   let tfTopMove = document.getElementById('topMove').innerHTML;
-  socket.emit('tensor', { tfTopMove });
 
-  socket.on('tensor', (data) => {
-    tfTopMove = data.tfTopMove;
-  });
+  if(tfTopMove !== '') {
+    console.log(tensorFlowToKeyBoard[tfTopMove.toString()])
+    socket.emit('keydown', {
+      key: tensorFlowToKeyBoard[tfTopMove],
+    });
+  }
 
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
@@ -375,8 +386,7 @@ async function animate() {
     (keys.a.pressed &&
       player.lastKey === 'a' &&
       player.health > 0 &&
-      countdown < 0) ||
-    tfTopMove === 'Left'
+      countdown < 0)
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
@@ -385,8 +395,7 @@ async function animate() {
     (keys.d.pressed &&
       player.lastKey === 'd' &&
       player.health > 0 &&
-      countdown < 0) ||
-    tfTopMove === 'Right'
+      countdown < 0)
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
@@ -407,12 +416,7 @@ async function animate() {
       player.health > 0 &&
       countdown < 0 &&
       player.velocity.x >= 0 &&
-      player.lastKey === 'w') ||
-    (tfTopMove === 'Jump' &&
-      player.velocity.y === 0 &&
-      player.health > 0 &&
-      countdown < 0 &&
-      player.velocity.x >= 0)
+      player.lastKey === 'w')
   ) {
     player.velocity.y = -9;
     player.switchSprite('jump');
@@ -495,20 +499,16 @@ async function animate() {
     player.velocity.y === 0 &&
     player.velocity.x === 0
   ) {
-    console.log('Attacking', player.isAttacking);
     player.block();
     checkBlock = false;
-    console.log('During BLOCK');
 
     setTimeout(() => {
       player.isBlocking = !player.isBlocking;
       player.switchSprite('idle');
-      console.log('IDLE');
     }, 4000);
 
     setTimeout(() => {
       checkBlock = true;
-      console.log('RESET');
     }, 8000);
   }
 
@@ -715,6 +715,9 @@ socket.on('keyup', (data) => {
 });
 
 function keyDown(event) {
+  if(event === undefined){
+    return
+  }
   switch (event.key.toLowerCase()) {
     case 'd':
       keys.d.pressed = true;
@@ -827,6 +830,9 @@ function keyDown(event) {
 }
 
 function keyUp(event) {
+  if(event === undefined){
+    return
+  }
   if (this.dead) {
     return;
   }
