@@ -335,7 +335,8 @@ async function animate() {
     } else {
       if (player.lastKey === 'a') {
         player.switchSprite('idleLeft');
-      } else player.switchSprite('idleRight');
+      }
+      // else player.switchSprite('idleRight');
     }
   }
   //TensorFlow - Jump & Block
@@ -433,9 +434,18 @@ async function animate() {
     player.velocity.y === 0 &&
     player.velocity.x === 0
   ) {
+    // player.velocity.y === 0;
+    // player.velocity.x === 0;
+    // if (player.isAttacking) {
+    console.log('Attacking', player.isAttacking);
+    //   player.isBlocking = !player.isBlocking;
+    //   player.switchSprite('idle');
+    //   return;
+    // }
     player.block();
     checkBlock = false;
     console.log('During BLOCK');
+
     setTimeout(() => {
       player.isBlocking = !player.isBlocking;
       player.switchSprite('idle');
