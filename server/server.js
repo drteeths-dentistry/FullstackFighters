@@ -99,6 +99,13 @@ io.on('connection', (socket) => {
       io.to(room).emit('animate', JSON.stringify(data));
     });
   });
+  socket.on('tensor', (data) => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('tensor', data);
+    });
+  });
 
   socket.on('disconnect', () => {
     console.log('A user has disconnected.');

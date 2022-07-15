@@ -355,7 +355,14 @@ async function animate() {
   background.update();
   player.update();
   enemy.update();
+
+  // Getting the top move from tensorFLow
   let tfTopMove = document.getElementById('topMove').innerHTML;
+  socket.emit('tensor', { tfTopMove });
+
+  socket.on('tensor', (data) => {
+    tfTopMove = data.tfTopMove;
+  });
 
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
@@ -488,14 +495,7 @@ async function animate() {
     player.velocity.y === 0 &&
     player.velocity.x === 0
   ) {
-    // player.velocity.y === 0;
-    // player.velocity.x === 0;
-    // if (player.isAttacking) {
     console.log('Attacking', player.isAttacking);
-    //   player.isBlocking = !player.isBlocking;
-    //   player.switchSprite('idle');
-    //   return;
-    // }
     player.block();
     checkBlock = false;
     console.log('During BLOCK');
