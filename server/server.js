@@ -92,11 +92,11 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('animate', (data) => {
+  socket.on('animate', () => {
     let rc = clientRooms[socket.id];
     let rooms = findRoom(rc);
     rooms.forEach((room) => {
-      io.to(room).emit('animate', JSON.stringify(data));
+      io.to(room).emit('animate');
     });
   });
   socket.on('tensor', (data) => {

@@ -79,10 +79,8 @@ socket.on('ready', () => {
   }, 1000 / dataTickRate);
 });
 
-socket.on('animate', (data) => {
-  let playerdata = JSON.parse(data).player;
-  let enemydata = JSON.parse(data).enemy;
-  animate(playerdata, enemydata);
+socket.on('animate', () => {
+  animate();
 });
 
 socket.on('replay', () => {
@@ -340,13 +338,22 @@ const keys = {
   },
 };
 
-const tensorFlowToKeyBoard = {
+const kingsTensorFlowToKeyBoard = {
   'Left' : 'a',
   'Right' : 'd',
   'Jump' : 'w',
   'Attack' : ' ',
   'SpecialAttack' : 'x',
   'Block' : 'j',
+}
+
+const ghostsTensorFlowToKeyBoard = {
+  'Left' : 'arrowleft',
+  'Right' : 'arrowright',
+  'Jump' : 'arrowup',
+  'Attack' : 'arrowdown',
+  'SpecialAttack' : 'm',
+  'Block' : 'n',
 }
 
 //self explanatory
@@ -368,11 +375,23 @@ async function animate() {
   // Getting the top move from tensorFLow
   let tfTopMove = document.getElementById('topMove').innerHTML;
 
-  if(tfTopMove !== '') {
-    console.log(tensorFlowToKeyBoard[tfTopMove.toString()])
+  if((tfTopMove !== '') && isKing) {
     socket.emit('keydown', {
-      key: tensorFlowToKeyBoard[tfTopMove],
+      key: kingsTensorFlowToKeyBoard[tfTopMove],
     });
+    console.log(kingsTensorFlowToKeyBoard[tfTopMove])
+    // socket.emit('keyup', {
+    //   key: kingsTensorFlowToKeyBoard[tfTopMove],
+    // });
+  }
+  if((tfTopMove !== '') && isGhost) {
+    socket.emit('keydown', {
+      key: ghostsTensorFlowToKeyBoard[tfTopMove],
+    });
+    console.log(ghostsTensorFlowToKeyBoard[tfTopMove])
+    // socket.emit('keyup', {
+    //   key: ghostsTensorFlowToKeyBoard[tfTopMove],
+    // });
   }
 
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -715,7 +734,7 @@ socket.on('keyup', (data) => {
 });
 
 function keyDown(event) {
-  if(event === undefined){
+  if(event.key === undefined){
     return
   }
   switch (event.key.toLowerCase()) {
@@ -830,7 +849,7 @@ function keyDown(event) {
 }
 
 function keyUp(event) {
-  if(event === undefined){
+  if(event.key === undefined){
     return
   }
   if (this.dead) {
