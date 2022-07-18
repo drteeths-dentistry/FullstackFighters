@@ -202,3 +202,22 @@
   display: flex;
   flex-direction: row;
 }
+
+.column {
+  width: 33.33%;
+  padding: 10px;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  display:inline-block;
+  ;
+}
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+  width: 200px;
+  height: 200px;
+  text-align: center;
+  
+}
