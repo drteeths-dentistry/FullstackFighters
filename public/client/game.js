@@ -342,6 +342,7 @@ const keys = {
 let attackCounter = 0;
 let enemyAttackCounter = 0;
 let checkBlock = true;
+let checkEnemyBlock = true;
 
 let jDown = false;
 let nDown = false;
@@ -643,6 +644,30 @@ async function animate() {
     gsap.to('#enemySABar', {
       width: '0%',
     });
+  }
+
+  // Tensor Flow - Blocking - Enemy
+  if (
+    tfTopMoveGhost === 'Block' &&
+    checkEnemyBlock === true &&
+    enemy.velocity.y === 0 &&
+    enemy.velocity.x === 0
+  ) {
+    console.log('Attacking', enemy.isAttacking);
+    enemy.block();
+    checkEnemyBlock = false;
+    console.log('During BLOCK');
+
+    setTimeout(() => {
+      enemy.isBlocking = !enemy.isBlocking;
+      enemy.switchSprite('idle');
+      console.log('IDLE');
+    }, 4000);
+
+    setTimeout(() => {
+      checkEnemyBlock = true;
+      console.log('RESET');
+    }, 8000);
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
