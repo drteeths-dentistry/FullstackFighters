@@ -99,11 +99,18 @@ io.on('connection', (socket) => {
       io.to(room).emit('animate');
     });
   });
-  socket.on('tensor', (data) => {
+  socket.on('tensorKing', (data) => {
     let rc = clientRooms[socket.id];
     let rooms = findRoom(rc);
     rooms.forEach((room) => {
-      io.to(room).emit('tensor', data);
+      io.to(room).emit('tensorKing', data);
+    });
+  });
+  socket.on('tensorGhost', (data) => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('tensorGhost', data);
     });
   });
 

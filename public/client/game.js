@@ -72,10 +72,7 @@ socket.on('ready', () => {
   fightReady();
   decreaseTimer();
   setInterval(function () {
-    socket.emit('animate', {
-      player,
-      enemy,
-    });
+    socket.emit('animate');
   }, 1000 / dataTickRate);
 });
 
@@ -338,24 +335,6 @@ const keys = {
   },
 };
 
-const kingsTensorFlowToKeyBoard = {
-  'Left' : 'a',
-  'Right' : 'd',
-  'Jump' : 'w',
-  'Attack' : ' ',
-  'SpecialAttack' : 'x',
-  'Block' : 'j',
-}
-
-const ghostsTensorFlowToKeyBoard = {
-  'Left' : 'arrowleft',
-  'Right' : 'arrowright',
-  'Jump' : 'arrowup',
-  'Attack' : 'arrowdown',
-  'SpecialAttack' : 'm',
-  'Block' : 'n',
-}
-
 //self explanatory
 // decreaseTimer();
 
@@ -367,31 +346,33 @@ let checkBlock = true;
 let jDown = false;
 let nDown = false;
 
+var tfTopMoveKing;
+var tfTopMoveGhost;
+
 async function animate() {
   background.update();
   player.update();
   enemy.update();
 
   // Getting the top move from tensorFLow
-  let tfTopMove = document.getElementById('topMove').innerHTML;
-
-  if((tfTopMove !== '') && isKing) {
-    socket.emit('keydown', {
-      key: kingsTensorFlowToKeyBoard[tfTopMove],
-    });
-    console.log(kingsTensorFlowToKeyBoard[tfTopMove])
-    // socket.emit('keyup', {
-    //   key: kingsTensorFlowToKeyBoard[tfTopMove],
-    // });
+  if (isKing) {
+    tfTopMoveKing = document.getElementById('topMove').innerHTML
+    socket.emit('tensorKing', {
+      tfTopMoveKing
+    })
+    socket.on('tensorGhost', (data) => {
+      tfTopMoveGhost = data.tfTopMoveGhost
+    })
   }
-  if((tfTopMove !== '') && isGhost) {
-    socket.emit('keydown', {
-      key: ghostsTensorFlowToKeyBoard[tfTopMove],
-    });
-    console.log(ghostsTensorFlowToKeyBoard[tfTopMove])
-    // socket.emit('keyup', {
-    //   key: ghostsTensorFlowToKeyBoard[tfTopMove],
-    // });
+
+  if (isGhost) {
+    tfTopMoveGhost = document.getElementById('topMove').innerHTML
+    socket.emit('tensorGhost', {
+      tfTopMoveGhost
+    })
+    socket.on('tensorKing', (data) => {
+      tfTopMoveKing = data.tfTopMoveKing
+    })
   }
 
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -405,7 +386,8 @@ async function animate() {
     (keys.a.pressed &&
       player.lastKey === 'a' &&
       player.health > 0 &&
-      countdown < 0)
+      countdown < 0) ||
+      tfTopMoveKing === 'Left'
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
@@ -414,7 +396,8 @@ async function animate() {
     (keys.d.pressed &&
       player.lastKey === 'd' &&
       player.health > 0 &&
-      countdown < 0)
+      countdown < 0) ||
+      tfTopMoveKing === 'Right'
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
@@ -435,7 +418,12 @@ async function animate() {
       player.health > 0 &&
       countdown < 0 &&
       player.velocity.x >= 0 &&
-      player.lastKey === 'w')
+      player.lastKey === 'w') ||
+    (tfTopMoveKing === 'Jump' &&
+      player.velocity.y === 0 &&
+      player.health > 0 &&
+      countdown < 0 &&
+      player.velocity.x >= 0)
   ) {
     player.velocity.y = -9;
     player.switchSprite('jump');
@@ -477,7 +465,7 @@ async function animate() {
   }
 
   //Tensor Flow - Regular Attack - Player
-  if (tfTopMove === 'Attack') {
+  if (tfTopMoveKing === 'Attack') {
     attackCounter++;
     if (attackCounter < 2) {
       player.isAttacking = true;
@@ -494,7 +482,7 @@ async function animate() {
     player.health > 0 &&
     countdown < 0 &&
     player.charge >= 100 &&
-    tfTopMove === 'SpecialAttack'
+    tfTopMoveKing === 'SpecialAttack'
   ) {
     player.isSpecialAttacking = true;
     player.specialAttack();
@@ -513,21 +501,25 @@ async function animate() {
 
   // Tensor Flow Blocking - Player -----------------------------------------------BLOCKING--------------->
   if (
-    tfTopMove === 'Block' &&
+    tfTopMoveKing === 'Block' &&
     checkBlock === true &&
     player.velocity.y === 0 &&
     player.velocity.x === 0
   ) {
+    console.log('Attacking', player.isAttacking);
     player.block();
     checkBlock = false;
+    console.log('During BLOCK');
 
     setTimeout(() => {
       player.isBlocking = !player.isBlocking;
       player.switchSprite('idle');
+      console.log('IDLE');
     }, 4000);
 
     setTimeout(() => {
       checkBlock = true;
+      console.log('RESET');
     }, 8000);
   }
 
@@ -537,7 +529,7 @@ async function animate() {
     enemy.lastKey === 'arrowleft' &&
     enemy.health > 0 &&
     countdown < 0
-    // tfTopMove === 'Left'
+    || tfTopMoveGhost === 'Left'
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
@@ -547,7 +539,7 @@ async function animate() {
     enemy.lastKey === 'arrowright' &&
     enemy.health > 0 &&
     countdown < 0
-    // tfTopMove === 'Right'
+    || tfTopMoveGhost === 'Right'
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
@@ -586,7 +578,7 @@ async function animate() {
     enemy.lastKey === 'n' &&
     enemy.health > 0 &&
     countdown < 0
-    // tfTopMove === 'Block'
+    || tfTopMoveGhost === 'Block'
   ) {
     enemy.velocity.x = 0;
     enemy.velocity.y = 0;
@@ -598,12 +590,12 @@ async function animate() {
     enemy.health > 0 &&
     countdown < 0 &&
     enemy.velocity.x <= 0 &&
-    enemy.lastKey === 'arrowup'
-    // (tfTopMove === 'Jump' &&
-    //   enemy.velocity.y === 0 &&
-    //   enemy.health > 0 &&
-    //   countdown < 0 &&
-    //   enemy.velocity.x >= 0)
+    enemy.lastKey === 'arrowup' ||
+    (tfTopMoveGhost === 'Jump' &&
+      enemy.velocity.y === 0 &&
+      enemy.health > 0 &&
+      countdown < 0 &&
+      enemy.velocity.x >= 0)
   ) {
     enemy.velocity.y = -9;
     enemy.switchSprite('jump');
@@ -618,40 +610,40 @@ async function animate() {
   }
 
   // //Tensor Flow - Regular Attack -Enemy
-  // if (tfTopMove === 'Attack') {
-  //   enemyAttackCounter++;
-  //   if (enemyAttackCounter < 2) {
-  //     console.log('ENEMY ATTACK');
-  //     enemy.isAttacking = true;
-  //     enemy.attack();
-  //     enemy.framesCurrent = 2;
-  //   }
-  //   // If we need to attack more decrease number below
-  //   if (enemyAttackCounter > 35) {
-  //     enemyAttackCounter = 0;
-  //   }
-  // }
-  // // Tensor Flow - Special Attack -Enemy
-  // if (
-  //   enemy.health > 0 &&
-  //   countdown < 0 &&
-  //   enemy.charge >= 100 &&
-  //   tfTopMove === 'SpecialAttack'
-  // ) {
-  //   enemy.isSpecialAttacking = true;
-  //   enemy.specialAttack();
-  //   if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
-  //     if (enemy.isSpecialAttacking === true) {
-  //       player.takeHit(22);
-  //       enemy.attack();
-  //     }
-  //   }
-  //   enemy.charge = 0;
-  //   enemy.isSpecialAttacking = false;
-  //   gsap.to('#enemySABar', {
-  //     width: '0%',
-  //   });
-  // }
+  if (tfTopMoveGhost === 'Attack') {
+    enemyAttackCounter++;
+    if (enemyAttackCounter < 2) {
+      console.log('ENEMY ATTACK');
+      enemy.isAttacking = true;
+      enemy.attack();
+      enemy.framesCurrent = 2;
+    }
+    // If we need to attack more decrease number below
+    if (enemyAttackCounter > 35) {
+      enemyAttackCounter = 0;
+    }
+  }
+  // Tensor Flow - Special Attack -Enemy
+  if (
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.charge >= 100 &&
+    tfTopMoveGhost === 'SpecialAttack'
+  ) {
+    enemy.isSpecialAttacking = true;
+    enemy.specialAttack();
+    if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+      if (enemy.isSpecialAttacking === true) {
+        player.takeHit(22);
+        enemy.attack();
+      }
+    }
+    enemy.charge = 0;
+    enemy.isSpecialAttacking = false;
+    gsap.to('#enemySABar', {
+      width: '0%',
+    });
+  }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (
@@ -734,9 +726,6 @@ socket.on('keyup', (data) => {
 });
 
 function keyDown(event) {
-  if(event.key === undefined){
-    return
-  }
   switch (event.key.toLowerCase()) {
     case 'd':
       keys.d.pressed = true;
@@ -849,9 +838,6 @@ function keyDown(event) {
 }
 
 function keyUp(event) {
-  if(event.key === undefined){
-    return
-  }
   if (this.dead) {
     return;
   }
