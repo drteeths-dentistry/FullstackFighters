@@ -112,6 +112,7 @@ function pickGhost() {
 function fightReady() {
   document.querySelector('#pickplayer').style.display = 'none';
   document.querySelector('#gameplay').style.display = 'inline-block';
+  document.querySelector('#tm').style.display = '';
   // document.querySelector('#audio').play();
 }
 
