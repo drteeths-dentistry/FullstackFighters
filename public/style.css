@@ -184,21 +184,34 @@
   flex-wrap: wrap;
   justify-content: center;
   height: fit-content;
+  margin: 0px 0px 40px 0px;
+}
+.imageCard {
+  display: flex;
+  flex-direction: row;
+}
+.imageCardText {
+  align-self: center;
+}
+.innerImageCard {
+  border-radius: 15px;
+  border: solid 2px #ffe05d;
+  margin: 5px;
+  width: 75px;
+  height: 75px;
+}
+.charCard {
+  margin: 5px;
+  width: 75px;
+  height: 75px;
 }
 .playerCard {
   flex: 0 1 350px; /*  No stretching: */
   margin: 5px;
-  border: 2px solid red;
+  border: 2px solid #831614;
   background-color: grey;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.imageControlCard {
-  width: 10%;
-  border: 1px solid red;
-  display: flex;
-  flex-direction: row;
 }
