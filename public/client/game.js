@@ -345,15 +345,13 @@ let checkBlock = true;
 
 let jDown = false;
 let nDown = false;
-
-var tfTopMoveKing;
-var tfTopMoveGhost;
+player.lastKey = 'd'
+enemy.lastKey = 'arrowleft'
 
 async function animate() {
   background.update();
   player.update();
   enemy.update();
-
   // Getting the top move from tensorFLow
   if (isKing) {
     tfTopMoveKing = document.getElementById('topMove').innerHTML
@@ -389,6 +387,7 @@ async function animate() {
       countdown < 0) ||
       tfTopMoveKing === 'Left'
   ) {
+    player.lastKey = 'a'
     player.velocity.x = -3.5;
     player.switchSprite('runback');
     player.attackBox.offset.x = -190;
@@ -399,6 +398,7 @@ async function animate() {
       countdown < 0) ||
       tfTopMoveKing === 'Right'
   ) {
+    player.lastKey = 'd'
     player.velocity.x = 3.5;
     player.switchSprite('run');
     player.attackBox.offset.x = 50;
@@ -413,8 +413,7 @@ async function animate() {
     } else player.switchSprite('idleRight');
   }
   if (
-    // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
-    (player.velocity.y === 0 &&
+    (player.velocity.y >= 0 &&
       player.health > 0 &&
       countdown < 0 &&
       player.velocity.x >= 0 &&
@@ -531,6 +530,7 @@ async function animate() {
     countdown < 0
     || tfTopMoveGhost === 'Left'
   ) {
+    enemy.lastKey = 'arrowleft'
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
     enemy.attackBox.offset.x = -175;
@@ -541,6 +541,7 @@ async function animate() {
     countdown < 0
     || tfTopMoveGhost === 'Right'
   ) {
+    enemy.lastKey = 'arrowright'
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
     enemy.attackBox.offset.x = 50;
