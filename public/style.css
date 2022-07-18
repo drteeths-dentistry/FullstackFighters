@@ -184,11 +184,31 @@
   flex-wrap: wrap;
   justify-content: center;
   height: fit-content;
+  margin: 0px 0px 40px 0px;
+}
+.imageCard {
+  display: flex;
+  flex-direction: row;
+}
+.imageCardText {
+  align-self: center;
+}
+.innerImageCard {
+  border-radius: 15px;
+  border: solid 2px #ffe05d;
+  margin: 5px;
+  width: 75px;
+  height: 75px;
+}
+.charCard {
+  margin: 5px;
+  width: 75px;
+  height: 75px;
 }
 .playerCard {
   flex: 0 1 350px; /*  No stretching: */
   margin: 5px;
-  border: 2px solid red;
+  border: 2px solid #831614;
   background-color: grey;
   border-radius: 15px;
   display: flex;
@@ -270,22 +290,20 @@ p {
 
 .line3 {
   color: #e09690;
-
+}
 .column {
   width: 33.33%;
   padding: 10px;
   width: 150px;
   height: 150px;
   text-align: center;
-  display:inline-block;
-  ;
+  display: inline-block;
 }
 .row::after {
-  content: "";
+  content: '';
   clear: both;
   display: table;
   width: 200px;
   height: 200px;
   text-align: center;
-  
 }
