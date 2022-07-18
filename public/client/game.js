@@ -72,17 +72,12 @@ socket.on('ready', () => {
   fightReady();
   decreaseTimer();
   setInterval(function () {
-    socket.emit('animate', {
-      player,
-      enemy,
-    });
+    socket.emit('animate');
   }, 1000 / dataTickRate);
 });
 
-socket.on('animate', (data) => {
-  let playerdata = JSON.parse(data).player;
-  let enemydata = JSON.parse(data).enemy;
-  animate(playerdata, enemydata);
+socket.on('animate', () => {
+  animate();
 });
 
 socket.on('replay', () => {
@@ -351,18 +346,34 @@ let checkBlock = true;
 let jDown = false;
 let nDown = false;
 
+var tfTopMoveKing;
+var tfTopMoveGhost;
+
 async function animate() {
   background.update();
   player.update();
   enemy.update();
 
   // Getting the top move from tensorFLow
-  let tfTopMove = document.getElementById('topMove').innerHTML;
-  socket.emit('tensor', { tfTopMove });
+  if (isKing) {
+    tfTopMoveKing = document.getElementById('topMove').innerHTML
+    socket.emit('tensorKing', {
+      tfTopMoveKing
+    })
+    socket.on('tensorGhost', (data) => {
+      tfTopMoveGhost = data.tfTopMoveGhost
+    })
+  }
 
-  socket.on('tensor', (data) => {
-    tfTopMove = data.tfTopMove;
-  });
+  if (isGhost) {
+    tfTopMoveGhost = document.getElementById('topMove').innerHTML
+    socket.emit('tensorGhost', {
+      tfTopMoveGhost
+    })
+    socket.on('tensorKing', (data) => {
+      tfTopMoveKing = data.tfTopMoveKing
+    })
+  }
 
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
@@ -376,7 +387,7 @@ async function animate() {
       player.lastKey === 'a' &&
       player.health > 0 &&
       countdown < 0) ||
-    tfTopMove === 'Left'
+      tfTopMoveKing === 'Left'
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
@@ -386,7 +397,7 @@ async function animate() {
       player.lastKey === 'd' &&
       player.health > 0 &&
       countdown < 0) ||
-    tfTopMove === 'Right'
+      tfTopMoveKing === 'Right'
   ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
@@ -408,7 +419,7 @@ async function animate() {
       countdown < 0 &&
       player.velocity.x >= 0 &&
       player.lastKey === 'w') ||
-    (tfTopMove === 'Jump' &&
+    (tfTopMoveKing === 'Jump' &&
       player.velocity.y === 0 &&
       player.health > 0 &&
       countdown < 0 &&
@@ -454,7 +465,7 @@ async function animate() {
   }
 
   //Tensor Flow - Regular Attack - Player
-  if (tfTopMove === 'Attack') {
+  if (tfTopMoveKing === 'Attack') {
     attackCounter++;
     if (attackCounter < 2) {
       player.isAttacking = true;
@@ -471,7 +482,7 @@ async function animate() {
     player.health > 0 &&
     countdown < 0 &&
     player.charge >= 100 &&
-    tfTopMove === 'SpecialAttack'
+    tfTopMoveKing === 'SpecialAttack'
   ) {
     player.isSpecialAttacking = true;
     player.specialAttack();
@@ -490,7 +501,7 @@ async function animate() {
 
   // Tensor Flow Blocking - Player -----------------------------------------------BLOCKING--------------->
   if (
-    tfTopMove === 'Block' &&
+    tfTopMoveKing === 'Block' &&
     checkBlock === true &&
     player.velocity.y === 0 &&
     player.velocity.x === 0
@@ -518,7 +529,7 @@ async function animate() {
     enemy.lastKey === 'arrowleft' &&
     enemy.health > 0 &&
     countdown < 0
-    // tfTopMove === 'Left'
+    || tfTopMoveGhost === 'Left'
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
@@ -528,7 +539,7 @@ async function animate() {
     enemy.lastKey === 'arrowright' &&
     enemy.health > 0 &&
     countdown < 0
-    // tfTopMove === 'Right'
+    || tfTopMoveGhost === 'Right'
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
@@ -567,7 +578,7 @@ async function animate() {
     enemy.lastKey === 'n' &&
     enemy.health > 0 &&
     countdown < 0
-    // tfTopMove === 'Block'
+    || tfTopMoveGhost === 'Block'
   ) {
     enemy.velocity.x = 0;
     enemy.velocity.y = 0;
@@ -579,12 +590,12 @@ async function animate() {
     enemy.health > 0 &&
     countdown < 0 &&
     enemy.velocity.x <= 0 &&
-    enemy.lastKey === 'arrowup'
-    // (tfTopMove === 'Jump' &&
-    //   enemy.velocity.y === 0 &&
-    //   enemy.health > 0 &&
-    //   countdown < 0 &&
-    //   enemy.velocity.x >= 0)
+    enemy.lastKey === 'arrowup' ||
+    (tfTopMoveGhost === 'Jump' &&
+      enemy.velocity.y === 0 &&
+      enemy.health > 0 &&
+      countdown < 0 &&
+      enemy.velocity.x >= 0)
   ) {
     enemy.velocity.y = -9;
     enemy.switchSprite('jump');
@@ -599,40 +610,40 @@ async function animate() {
   }
 
   // //Tensor Flow - Regular Attack -Enemy
-  // if (tfTopMove === 'Attack') {
-  //   enemyAttackCounter++;
-  //   if (enemyAttackCounter < 2) {
-  //     console.log('ENEMY ATTACK');
-  //     enemy.isAttacking = true;
-  //     enemy.attack();
-  //     enemy.framesCurrent = 2;
-  //   }
-  //   // If we need to attack more decrease number below
-  //   if (enemyAttackCounter > 35) {
-  //     enemyAttackCounter = 0;
-  //   }
-  // }
-  // // Tensor Flow - Special Attack -Enemy
-  // if (
-  //   enemy.health > 0 &&
-  //   countdown < 0 &&
-  //   enemy.charge >= 100 &&
-  //   tfTopMove === 'SpecialAttack'
-  // ) {
-  //   enemy.isSpecialAttacking = true;
-  //   enemy.specialAttack();
-  //   if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
-  //     if (enemy.isSpecialAttacking === true) {
-  //       player.takeHit(22);
-  //       enemy.attack();
-  //     }
-  //   }
-  //   enemy.charge = 0;
-  //   enemy.isSpecialAttacking = false;
-  //   gsap.to('#enemySABar', {
-  //     width: '0%',
-  //   });
-  // }
+  if (tfTopMoveGhost === 'Attack') {
+    enemyAttackCounter++;
+    if (enemyAttackCounter < 2) {
+      console.log('ENEMY ATTACK');
+      enemy.isAttacking = true;
+      enemy.attack();
+      enemy.framesCurrent = 2;
+    }
+    // If we need to attack more decrease number below
+    if (enemyAttackCounter > 35) {
+      enemyAttackCounter = 0;
+    }
+  }
+  // Tensor Flow - Special Attack -Enemy
+  if (
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.charge >= 100 &&
+    tfTopMoveGhost === 'SpecialAttack'
+  ) {
+    enemy.isSpecialAttacking = true;
+    enemy.specialAttack();
+    if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+      if (enemy.isSpecialAttacking === true) {
+        player.takeHit(22);
+        enemy.attack();
+      }
+    }
+    enemy.charge = 0;
+    enemy.isSpecialAttacking = false;
+    gsap.to('#enemySABar', {
+      width: '0%',
+    });
+  }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (
