@@ -92,11 +92,25 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('animate', (data) => {
+  socket.on('animate', () => {
     let rc = clientRooms[socket.id];
     let rooms = findRoom(rc);
     rooms.forEach((room) => {
-      io.to(room).emit('animate', JSON.stringify(data));
+      io.to(room).emit('animate');
+    });
+  });
+  socket.on('tensorKing', (data) => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('tensorKing', data);
+    });
+  });
+  socket.on('tensorGhost', (data) => {
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('tensorGhost', data);
     });
   });
 

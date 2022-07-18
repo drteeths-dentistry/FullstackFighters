@@ -72,17 +72,12 @@ socket.on('ready', () => {
   fightReady();
   decreaseTimer();
   setInterval(function () {
-    socket.emit('animate', {
-      player,
-      enemy,
-    });
+    socket.emit('animate');
   }, 1000 / dataTickRate);
 });
 
-socket.on('animate', (data) => {
-  let playerdata = JSON.parse(data).player;
-  let enemydata = JSON.parse(data).enemy;
-  animate(playerdata, enemydata);
+socket.on('animate', () => {
+  animate();
 });
 
 socket.on('replay', () => {
@@ -340,10 +335,47 @@ const keys = {
   },
 };
 
-function animate(newPlayer, newEnemy) {
+//self explanatory
+// decreaseTimer();
+
+// Tensor Flow Variables
+let attackCounter = 0;
+let enemyAttackCounter = 0;
+let checkBlock = true;
+let checkEnemyBlock = true;
+
+let jDown = false;
+let nDown = false;
+
+var tfTopMoveKing;
+var tfTopMoveGhost;
+
+async function animate() {
   background.update();
   player.update();
   enemy.update();
+
+  // Getting the top move from tensorFLow
+  if (isKing) {
+    tfTopMoveKing = document.getElementById('topMove').innerHTML
+    socket.emit('tensorKing', {
+      tfTopMoveKing
+    })
+    socket.on('tensorGhost', (data) => {
+      tfTopMoveGhost = data.tfTopMoveGhost
+    })
+  }
+
+  if (isGhost) {
+    tfTopMoveGhost = document.getElementById('topMove').innerHTML
+    socket.emit('tensorGhost', {
+      tfTopMoveGhost
+    })
+    socket.on('tensorKing', (data) => {
+      tfTopMoveKing = data.tfTopMoveKing
+    })
+  }
+
   //lays a faint white background infront of our png, so it can make the players look more vibrant
   c.fillStyle = 'rgba(255,255,255,0.15)';
   c.fillRect(0, 0, canvas.width, canvas.height);
@@ -352,15 +384,22 @@ function animate(newPlayer, newEnemy) {
   enemy.velocity.x = 0;
   //key inputs and logic for player1, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
-    keys.a.pressed &&
-    player.lastKey === 'a' &&
-    player.health > 0 &&
-    countdown < 0
+    (keys.a.pressed &&
+      player.lastKey === 'a' &&
+      player.health > 0 &&
+      countdown < 0) ||
+      tfTopMoveKing === 'Left'
   ) {
     player.velocity.x = -3.5;
     player.switchSprite('runback');
     player.attackBox.offset.x = -190;
-  } else if (keys.d.pressed && player.lastKey === 'd' && countdown < 0) {
+  } else if (
+    (keys.d.pressed &&
+      player.lastKey === 'd' &&
+      player.health > 0 &&
+      countdown < 0) ||
+      tfTopMoveKing === 'Right'
+  ) {
     player.velocity.x = 3.5;
     player.switchSprite('run');
     player.attackBox.offset.x = 50;
@@ -374,14 +413,20 @@ function animate(newPlayer, newEnemy) {
       player.switchSprite('idleLeft');
     } else player.switchSprite('idleRight');
   }
-
   if (
-    player.velocity.y < 0 &&
-    player.health > 0 &&
-    countdown < 0 &&
-    player.velocity.x >= 0 &&
-    player.lastKey === 'd'
+    // (player.velocity.y === 0 && player.health > 0 && countdown < 0) ||
+    (player.velocity.y === 0 &&
+      player.health > 0 &&
+      countdown < 0 &&
+      player.velocity.x >= 0 &&
+      player.lastKey === 'w') ||
+    (tfTopMoveKing === 'Jump' &&
+      player.velocity.y === 0 &&
+      player.health > 0 &&
+      countdown < 0 &&
+      player.velocity.x >= 0)
   ) {
+    player.velocity.y = -9;
     player.switchSprite('jump');
   } else if (
     player.velocity.y > 0 &&
@@ -409,12 +454,83 @@ function animate(newPlayer, newEnemy) {
   ) {
     player.switchSprite('fallback');
   }
+  if (
+    keys.j.pressed &&
+    player.lastKey === 'j' &&
+    player.health > 0 &&
+    countdown < 0
+  ) {
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+    player.switchSprite('block');
+  }
+
+  //Tensor Flow - Regular Attack - Player
+  if (tfTopMoveKing === 'Attack') {
+    attackCounter++;
+    if (attackCounter < 2) {
+      player.isAttacking = true;
+      player.attack();
+      player.framesCurrent = 2;
+    }
+    // If we need to attack more decrease number below
+    if (attackCounter > 35) {
+      attackCounter = 0;
+    }
+  }
+  // Tensor Flow - Special Attack - Player
+  if (
+    player.health > 0 &&
+    countdown < 0 &&
+    player.charge >= 100 &&
+    tfTopMoveKing === 'SpecialAttack'
+  ) {
+    player.isSpecialAttacking = true;
+    player.specialAttack();
+    if (rectangularCollision({ rectangle1: player, rectangle2: enemy })) {
+      if (player.isSpecialAttacking === true) {
+        enemy.takeHit(22);
+        player.attack();
+      }
+    }
+    player.charge = 0;
+    player.isSpecialAttacking = false;
+    gsap.to('#playerSABar', {
+      width: '0%',
+    });
+  }
+
+  // Tensor Flow Blocking - Player -----------------------------------------------BLOCKING--------------->
+  if (
+    tfTopMoveKing === 'Block' &&
+    checkBlock === true &&
+    player.velocity.y === 0 &&
+    player.velocity.x === 0
+  ) {
+    console.log('Attacking', player.isAttacking);
+    player.block();
+    checkBlock = false;
+    console.log('During BLOCK');
+
+    setTimeout(() => {
+      player.isBlocking = !player.isBlocking;
+      player.switchSprite('idle');
+      console.log('IDLE');
+    }, 4000);
+
+    setTimeout(() => {
+      checkBlock = true;
+      console.log('RESET');
+    }, 8000);
+  }
+
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
     keys.ArrowLeft.pressed &&
     enemy.lastKey === 'arrowleft' &&
     enemy.health > 0 &&
     countdown < 0
+    || tfTopMoveGhost === 'Left'
   ) {
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
@@ -424,6 +540,7 @@ function animate(newPlayer, newEnemy) {
     enemy.lastKey === 'arrowright' &&
     enemy.health > 0 &&
     countdown < 0
+    || tfTopMoveGhost === 'Right'
   ) {
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
@@ -456,13 +573,32 @@ function animate(newPlayer, newEnemy) {
   ) {
     enemy.switchSprite('fallback');
   }
+
+  if (
+    keys.n.pressed &&
+    enemy.lastKey === 'n' &&
+    enemy.health > 0 &&
+    countdown < 0
+    || tfTopMoveGhost === 'Block'
+  ) {
+    enemy.velocity.x = 0;
+    enemy.velocity.y = 0;
+    enemy.switchSprite('block');
+  }
+
   if (
     enemy.velocity.y < 0 &&
     enemy.health > 0 &&
     countdown < 0 &&
     enemy.velocity.x <= 0 &&
-    enemy.lastKey === 'arrowleft'
+    enemy.lastKey === 'arrowup' ||
+    (tfTopMoveGhost === 'Jump' &&
+      enemy.velocity.y === 0 &&
+      enemy.health > 0 &&
+      countdown < 0 &&
+      enemy.velocity.x >= 0)
   ) {
+    enemy.velocity.y = -9;
     enemy.switchSprite('jump');
   } else if (
     enemy.velocity.y > 0 &&
@@ -473,6 +609,67 @@ function animate(newPlayer, newEnemy) {
   ) {
     enemy.switchSprite('fall');
   }
+
+  // //Tensor Flow - Regular Attack -Enemy
+  if (tfTopMoveGhost === 'Attack') {
+    enemyAttackCounter++;
+    if (enemyAttackCounter < 2) {
+      console.log('ENEMY ATTACK');
+      enemy.isAttacking = true;
+      enemy.attack();
+      enemy.framesCurrent = 2;
+    }
+    // If we need to attack more decrease number below
+    if (enemyAttackCounter > 35) {
+      enemyAttackCounter = 0;
+    }
+  }
+  // Tensor Flow - Special Attack -Enemy
+  if (
+    enemy.health > 0 &&
+    countdown < 0 &&
+    enemy.charge >= 100 &&
+    tfTopMoveGhost === 'SpecialAttack'
+  ) {
+    enemy.isSpecialAttacking = true;
+    enemy.specialAttack();
+    if (rectangularCollision({ rectangle1: enemy, rectangle2: player })) {
+      if (enemy.isSpecialAttacking === true) {
+        player.takeHit(22);
+        enemy.attack();
+      }
+    }
+    enemy.charge = 0;
+    enemy.isSpecialAttacking = false;
+    gsap.to('#enemySABar', {
+      width: '0%',
+    });
+  }
+
+  // Tensor Flow - Blocking - Enemy
+  if (
+    tfTopMoveGhost === 'Block' &&
+    checkEnemyBlock === true &&
+    enemy.velocity.y === 0 &&
+    enemy.velocity.x === 0
+  ) {
+    console.log('Attacking', enemy.isAttacking);
+    enemy.block();
+    checkEnemyBlock = false;
+    console.log('During BLOCK');
+
+    setTimeout(() => {
+      enemy.isBlocking = !enemy.isBlocking;
+      enemy.switchSprite('idle');
+      console.log('IDLE');
+    }, 4000);
+
+    setTimeout(() => {
+      checkEnemyBlock = true;
+      console.log('RESET');
+    }, 8000);
+  }
+
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
@@ -530,8 +727,8 @@ function animate(newPlayer, newEnemy) {
 }
 
 // all event listeners for pressing a button, can also check the last button pressed, if needed, usually updates the current key pressed
-let jDown = false;
-let nDown = false;
+// let jDown = false;
+// let nDown = false;
 
 window.addEventListener('keydown', (event) => {
   socket.emit('keydown', {
@@ -690,5 +887,91 @@ function keyUp(event) {
     case 'arrowleft':
       keys.ArrowLeft.pressed = false;
       break;
+  }
+}
+
+// More API functions here:
+// https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
+
+// the link to your model provided by Teachable Machine export panel
+const URL = '../my-pose-model/';
+let model, webcam, ctx, labelContainer, maxPredictions;
+
+async function init() {
+  const modelURL = URL + 'model.json';
+  const metadataURL = URL + 'metadata.json';
+
+  // load the model and metadata
+  // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+  // Note: the pose library adds a tmPose object to your window (window.tmPose)
+  model = await tmPose.load(modelURL, metadataURL);
+  maxPredictions = model.getTotalClasses();
+
+  // Convenience function to setup a webcam
+  const size = 200;
+  const flip = true; // whether to flip the webcam
+  webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
+  await webcam.setup(); // request access to the webcam
+  await webcam.play();
+  window.requestAnimationFrame(loop);
+
+  // append/get elements to the DOM
+  const canvas = document.getElementById('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  ctx = canvas.getContext('2d');
+  labelContainer = document.getElementById('label-container');
+  topMoveContainer = document.getElementById('topMove');
+  for (let i = 0; i < maxPredictions; i++) {
+    // and class labels
+    labelContainer.appendChild(document.createElement('div'));
+  }
+}
+
+async function loop(timestamp) {
+  webcam.update(); // update the webcam frame
+  await predict();
+
+  window.requestAnimationFrame(loop);
+}
+
+let test;
+
+async function predict() {
+  // Prediction #1: run input through posenet
+  // estimatePose can take in an image, video or canvas html element
+  const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+  // Prediction 2: run input through teachable machine classification model
+  const prediction = await model.predict(posenetOutput);
+
+  for (let i = 0; i < maxPredictions; i++) {
+    const classPrediction =
+      prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
+    labelContainer.childNodes[i].innerHTML = classPrediction;
+  }
+
+  topMove = prediction.filter((move) => {
+    return move.probability > 0.95;
+  });
+
+  // console.log(test[0] !== undefined ? test[0].className : 'Idle');
+  topMoveContainer.innerHTML =
+    topMove[0] !== undefined ? topMove[0].className : 'Idle';
+
+  // console.log('FLAG1', test[0]);
+
+  drawPose(pose);
+}
+// console.log('flaggg', test);
+
+function drawPose(pose) {
+  if (webcam.canvas) {
+    ctx.drawImage(webcam.canvas, 0, 0);
+    // draw the keypoints and skeleton
+    if (pose) {
+      const minPartConfidence = 0.5;
+      tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+      tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+    }
   }
 }
