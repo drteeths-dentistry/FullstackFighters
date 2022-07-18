@@ -1,4 +1,4 @@
-const canvas = document.querySelector('canvas');
+const canvas = document.querySelector('#gameCanvas');
 const c = canvas.getContext('2d');
 const gravity = 0.2;
 
@@ -52,12 +52,12 @@ readyBtn.addEventListener('click', () => {
 });
 
 socket.on('startGame', (roomName) => {
-  document.querySelector('#roomName').innerHTML = roomName;
+  document.querySelector('#roomName').innerHTML = `Game Room Code: ${roomName}`;
   actionButton();
 });
 
 socket.on('joinGame', (roomName) => {
-  document.querySelector('#roomName').innerHTML = roomName;
+  document.querySelector('#roomName').innerHTML = `Game Room Code: ${roomName}`;
 });
 
 socket.on('kingSelect', () => {
@@ -342,6 +342,7 @@ const keys = {
 let attackCounter = 0;
 let enemyAttackCounter = 0;
 let checkBlock = true;
+let checkEnemyBlock = true;
 
 let jDown = false;
 let nDown = false;
@@ -354,23 +355,23 @@ async function animate() {
   enemy.update();
   // Getting the top move from tensorFLow
   if (isKing) {
-    tfTopMoveKing = document.getElementById('topMove').innerHTML
+    tfTopMoveKing = document.getElementById('topMove').innerHTML;
     socket.emit('tensorKing', {
-      tfTopMoveKing
-    })
+      tfTopMoveKing,
+    });
     socket.on('tensorGhost', (data) => {
-      tfTopMoveGhost = data.tfTopMoveGhost
-    })
+      tfTopMoveGhost = data.tfTopMoveGhost;
+    });
   }
 
   if (isGhost) {
-    tfTopMoveGhost = document.getElementById('topMove').innerHTML
+    tfTopMoveGhost = document.getElementById('topMove').innerHTML;
     socket.emit('tensorGhost', {
-      tfTopMoveGhost
-    })
+      tfTopMoveGhost,
+    });
     socket.on('tensorKing', (data) => {
-      tfTopMoveKing = data.tfTopMoveKing
-    })
+      tfTopMoveKing = data.tfTopMoveKing;
+    });
   }
 
   //lays a faint white background infront of our png, so it can make the players look more vibrant
@@ -385,7 +386,7 @@ async function animate() {
       player.lastKey === 'a' &&
       player.health > 0 &&
       countdown < 0) ||
-      tfTopMoveKing === 'Left'
+    tfTopMoveKing === 'Left'
   ) {
     player.lastKey = 'a'
     player.velocity.x = -3.5;
@@ -396,7 +397,7 @@ async function animate() {
       player.lastKey === 'd' &&
       player.health > 0 &&
       countdown < 0) ||
-      tfTopMoveKing === 'Right'
+    tfTopMoveKing === 'Right'
   ) {
     player.lastKey = 'd'
     player.velocity.x = 3.5;
@@ -524,22 +525,22 @@ async function animate() {
 
   //key inputs and logic for player2, the if statements usually check that the countdown hasnt finished and the player isnt dead
   if (
-    keys.ArrowLeft.pressed &&
-    enemy.lastKey === 'arrowleft' &&
-    enemy.health > 0 &&
-    countdown < 0
-    || tfTopMoveGhost === 'Left'
+    (keys.ArrowLeft.pressed &&
+      enemy.lastKey === 'arrowleft' &&
+      enemy.health > 0 &&
+      countdown < 0) ||
+    tfTopMoveGhost === 'Left'
   ) {
     enemy.lastKey = 'arrowleft'
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
     enemy.attackBox.offset.x = -175;
   } else if (
-    keys.ArrowRight.pressed &&
-    enemy.lastKey === 'arrowright' &&
-    enemy.health > 0 &&
-    countdown < 0
-    || tfTopMoveGhost === 'Right'
+    (keys.ArrowRight.pressed &&
+      enemy.lastKey === 'arrowright' &&
+      enemy.health > 0 &&
+      countdown < 0) ||
+    tfTopMoveGhost === 'Right'
   ) {
     enemy.lastKey = 'arrowright'
     enemy.velocity.x = 3.5;
@@ -575,11 +576,11 @@ async function animate() {
   }
 
   if (
-    keys.n.pressed &&
-    enemy.lastKey === 'n' &&
-    enemy.health > 0 &&
-    countdown < 0
-    || tfTopMoveGhost === 'Block'
+    (keys.n.pressed &&
+      enemy.lastKey === 'n' &&
+      enemy.health > 0 &&
+      countdown < 0) ||
+    tfTopMoveGhost === 'Block'
   ) {
     enemy.velocity.x = 0;
     enemy.velocity.y = 0;
@@ -587,11 +588,11 @@ async function animate() {
   }
 
   if (
-    enemy.velocity.y < 0 &&
-    enemy.health > 0 &&
-    countdown < 0 &&
-    enemy.velocity.x <= 0 &&
-    enemy.lastKey === 'arrowup' ||
+    (enemy.velocity.y < 0 &&
+      enemy.health > 0 &&
+      countdown < 0 &&
+      enemy.velocity.x <= 0 &&
+      enemy.lastKey === 'arrowup') ||
     (tfTopMoveGhost === 'Jump' &&
       enemy.velocity.y === 0 &&
       enemy.health > 0 &&
@@ -644,6 +645,30 @@ async function animate() {
     gsap.to('#enemySABar', {
       width: '0%',
     });
+  }
+
+  // Tensor Flow - Blocking - Enemy
+  if (
+    tfTopMoveGhost === 'Block' &&
+    checkEnemyBlock === true &&
+    enemy.velocity.y === 0 &&
+    enemy.velocity.x === 0
+  ) {
+    console.log('Attacking', enemy.isAttacking);
+    enemy.block();
+    checkEnemyBlock = false;
+    console.log('During BLOCK');
+
+    setTimeout(() => {
+      enemy.isBlocking = !enemy.isBlocking;
+      enemy.switchSprite('idle');
+      console.log('IDLE');
+    }, 4000);
+
+    setTimeout(() => {
+      checkEnemyBlock = true;
+      console.log('RESET');
+    }, 8000);
   }
 
   //attackbox detection for player1, activates the attackbox, player2 gets staggered, and health is taken
