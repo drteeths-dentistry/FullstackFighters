@@ -215,3 +215,95 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
+.imageControlCard {
+  width: 10%;
+  border: 1px solid red;
+  display: flex;
+  flex-direction: row;
+}
+
+.fakeButtons {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  position: relative;
+  top: -12px;
+  left: -290px;
+  background-color: #ff3b47;
+  border-color: #9d252b;
+  display: inline-block;
+}
+
+.fakeMinimize {
+  left: -285px;
+  background-color: #ffc100;
+  border-color: #9d802c;
+}
+
+.fakeZoom {
+  left: -280px;
+  background-color: #00d742;
+  border-color: #049931;
+}
+
+.fakeMenu {
+  width: 700px;
+  box-sizing: border-box;
+  height: 25px;
+  background-color: #bbb;
+  margin: 0 auto;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+.fakeScreen {
+  background-color: #151515;
+  box-sizing: border-box;
+  width: 700px;
+  height: 250px;
+  margin: 0 auto;
+  padding: 20px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+p {
+  position: relative;
+  left: 50%;
+  margin-left: -8.5em;
+  text-align: left;
+  font-size: 14px;
+  white-space: normal;
+  overflow: hidden;
+  width: 0;
+}
+
+.line1 {
+  color: #9cd9f0;
+}
+
+.line2 {
+  color: #cdee69;
+}
+
+.line3 {
+  color: #e09690;
+}
+.column {
+  width: 33.33%;
+  padding: 10px;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  display: inline-block;
+}
+.row::after {
+  content: '';
+  clear: both;
+  display: table;
+  width: 200px;
+  height: 200px;
+  text-align: center;
+}
