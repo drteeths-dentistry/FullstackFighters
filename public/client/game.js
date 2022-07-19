@@ -53,19 +53,25 @@ readyBtn.addEventListener('click', () => {
 
 socket.on('startGame', (roomName) => {
   document.querySelector('#roomName').innerHTML = `Game Room Code: ${roomName}`;
+  document.querySelector('#cline1').innerHTML =
+    'A player created and has joined  a room';
   actionButton();
 });
 
 socket.on('joinGame', (roomName) => {
   document.querySelector('#roomName').innerHTML = `Game Room Code: ${roomName}`;
+  document.querySelector('#cline2').innerHTML =
+    'A new player has joined a room';
 });
 
 socket.on('kingSelect', () => {
   pickKing();
+  document.querySelector('#cline3').innerHTML = 'King has been picked !';
 });
 
 socket.on('ghostSelect', () => {
   pickGhost();
+  document.querySelector('#cline4').innerHTML = 'Ghost has been picked !';
 });
 
 socket.on('ready', () => {
@@ -346,8 +352,8 @@ let checkEnemyBlock = true;
 
 let jDown = false;
 let nDown = false;
-player.lastKey = 'd'
-enemy.lastKey = 'arrowleft'
+player.lastKey = 'd';
+enemy.lastKey = 'arrowleft';
 
 async function animate() {
   background.update();
@@ -388,7 +394,7 @@ async function animate() {
       countdown < 0) ||
     tfTopMoveKing === 'Left'
   ) {
-    player.lastKey = 'a'
+    player.lastKey = 'a';
     player.velocity.x = -3.5;
     player.switchSprite('runback');
     player.attackBox.offset.x = -190;
@@ -399,7 +405,7 @@ async function animate() {
       countdown < 0) ||
     tfTopMoveKing === 'Right'
   ) {
-    player.lastKey = 'd'
+    player.lastKey = 'd';
     player.velocity.x = 3.5;
     player.switchSprite('run');
     player.attackBox.offset.x = 50;
@@ -531,7 +537,7 @@ async function animate() {
       countdown < 0) ||
     tfTopMoveGhost === 'Left'
   ) {
-    enemy.lastKey = 'arrowleft'
+    enemy.lastKey = 'arrowleft';
     enemy.velocity.x = -3.5;
     enemy.switchSprite('run');
     enemy.attackBox.offset.x = -175;
@@ -542,7 +548,7 @@ async function animate() {
       countdown < 0) ||
     tfTopMoveGhost === 'Right'
   ) {
-    enemy.lastKey = 'arrowright'
+    enemy.lastKey = 'arrowright';
     enemy.velocity.x = 3.5;
     enemy.switchSprite('moveBack');
     enemy.attackBox.offset.x = 50;

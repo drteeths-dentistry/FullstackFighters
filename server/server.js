@@ -42,6 +42,11 @@ io.on('connection', (socket) => {
     clientRooms[socket.id] = roomName.rc;
     socket.join(roomName.rc);
     io.to(socket.id).emit('joinGame', roomName.rc);
+    let rc = clientRooms[socket.id];
+    let rooms = findRoom(rc);
+    rooms.forEach((room) => {
+      io.to(room).emit('joinGame', roomName.rc);
+    });
   });
 
   socket.on('kingSelect', () => {

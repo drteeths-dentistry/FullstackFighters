@@ -121,42 +121,6 @@
     0 13px 1px 6px rgba(0, 0, 0, 0.3);
 }
 
-.red-button {
-  text-shadow: 1px 1px pink, -1px -1px maroon;
-  line-height: 1.5em;
-  text-align: center;
-  display: inline-block;
-  width: 1.5em;
-  -webkit-border-radius: 0.75em;
-  -moz-border-radius: 0.75em;
-  -o-border-radius: 0.75em;
-  border-radius: 0.75em;
-  background-color: red;
-  -webkit-box-shadow: 0 0.2em maroon;
-  -moz-box-shadow: 0 0.2em maroon;
-  -o-box-shadow: 0 0.2em maroon;
-  box-shadow: 0 0.2em maroon;
-  color: red;
-  margin: 5px;
-  background-color: red;
-  background-image: -o-linear-gradient(left top, pink 3%, red 22%, maroon 99%);
-  background-image: -moz-linear-gradient(
-    left top,
-    pink 3%,
-    red 22%,
-    maroon 99%
-  );
-  background-image: -webkit-linear-gradient(
-    left top,
-    pink 3%,
-    red 22%,
-    maroon 99%
-  );
-  background-image: linear-gradient(left top, pink 3%, red 22%, maroon 99%);
-  cursor: pointer;
-  padding-left: 5px;
-}
-
 .btn {
   text-align: center;
   display: inline-block;
@@ -269,27 +233,24 @@
   border-bottom-right-radius: 5px;
 }
 
-p {
-  position: relative;
-  left: 50%;
-  margin-left: -8.5em;
-  text-align: left;
-  font-size: 14px;
-  white-space: normal;
-  overflow: hidden;
-  width: 0;
-}
-
 .line1 {
   color: #9cd9f0;
+  font-size: 12px;
 }
 
 .line2 {
   color: #cdee69;
+  font-size: 12px;
 }
 
 .line3 {
   color: #e09690;
+  font-size: 12px;
+}
+
+.line4 {
+  color: lightslategray;
+  font-size: 12px;
 }
 .column {
   width: 33.33%;
@@ -307,3 +268,4 @@ p {
   height: 200px;
   text-align: center;
 }
+
