@@ -1,9 +1,9 @@
 # Fullstack Fighters
-<em>Multiplayer fighting game with socket.io room feature and Teachable machine with webcam</em>
+<em>Multiplayer fighting game with socket.io room feature</em>
 
 ---
 ## Fullstack Fighters
-
+Fighting game with 2 characters: King and Ghost. You will be able to control with a keyboard or a Teachable machine with webcam powered by Tensorflow JS library. Create a room or Join to specific room with unique code. Pick a one characters and fight!!
 
 
 ## Key Features :key:
