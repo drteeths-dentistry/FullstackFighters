@@ -54,8 +54,26 @@
         src="https://i.pinimg.com/originals/f8/15/eb/f815eb14aed1bfaa9a1b3104346e35c9.gif"
         style="width: 70%; margin-top: 50px"
       />
-      <div>
-        <button type="button" id="actionbtn" class="btn">action</button>
+      <div style="display: flex; flex-direction: row; justify-content: center">
+        <div>
+          <button type="button" id="actionbtn" class="btn">
+            Create a game
+          </button>
+        </div>
+        <div style="color: white">
+          OR
+          <input
+            type="text"
+            id="joinInput"
+            class="joinbtn"
+            placeholder="Enter a roomcode"
+            style="padding: 10px; margin-top: 30px"
+            value=""
+          />
+          <button id="submitBtn" style="padding: 10px" onclick="handlesubmit()">
+            Submit
+          </button>
+        </div>
       </div>
     </div>
     <!-- pick player -->
@@ -70,238 +88,335 @@
         font-size: 30px;
       "
     >
-      Choose your fighters !!
-      <div>
-        <button type="button" id="kingBtn" class="btn">King</button>
+      Save the world ? or Destroy the world !
+      <div id="roomName" style="padding: 15px; color: red"></div>
+      <div class="cardRow">
+        <div
+          class="playerCard"
+          id="kingBtn"
+          style="background-color: goldenrod; border: 2px solid black"
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              cursor: pointer;
+            "
+          >
+            <img
+              src="./img/kingSingle.png"
+              style="width: 180px; height: 180px"
+            />
+            <div style="margin-top: 70px">KING</div>
+          </div>
+        </div>
+        <div
+          class="playerCard"
+          id="ghostBtn"
+          style="background-color: #02075d; border: 2px solid black"
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              cursor: pointer;
+            "
+          >
+            <img
+              src="./img/ghostSingle.png"
+              style="width: 180px; height: 180px"
+            />
+            <div id="ghostText" style="margin-top: 70px">Ghost</div>
+          </div>
+        </div>
       </div>
       <div>
-        <button type="button" id="ghostBtn" class="btn">Ghost</button>
+        <button type="button" id="ready" class="btn" style="display: none">
+          Ready to Fight
+        </button>
+      </div>
+      <div style="padding: 15px">
+        <div class="fakeMenu">
+          <div class="fakeButtons fakeClose"></div>
+          <div class="fakeButtons fakeMinimize"></div>
+          <div class="fakeButtons fakeZoom"></div>
+        </div>
+        <div class="fakeScreen">
+          <p class="line1" id="cline1"></p>
+          <p class="line2" id="cline2"></p>
+          <p class="line3" id="cline3"></p>
+          <p class="line4" id="cline4"></p>
+        </div>
       </div>
     </div>
     <!-- gamepage -->
     <div
-      id="gameplay"
-      style="position: relative; display: none; margin-top: 30px"
+      style="
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding-left: 150px;
+      "
     >
       <div
-        style="
-          position: absolute;
-          display: flex;
-          width: 100%;
-          align-items: center;
-          padding: 20px;
-          margin-top: 15px;
-        "
+        id="gameplay"
+        style="position: relative; display: none; margin-top: 30px"
       >
         <div
           style="
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            border-top: 4px solid white;
-            border-bottom: 4px solid white;
-            border-left: 4px solid white;
-          "
-        >
-          <div style="background-color: red; height: 30px; width: 100%"></div>
-          <div
-            id="playerHealth"
-            style="
-              position: absolute;
-              background: #818cf8;
-              top: 0;
-              right: 0;
-              width: 100%;
-              height: 100%;
-            "
-          ></div>
-        </div>
-        <div
-          id="playerSABarContainer"
-          style="
             position: absolute;
-            background: black;
-            bottom: 0;
-            left: 5%;
-            width: 45%;
-            max-width: 400px;
-            height: 15%;
-            border-top: 2px solid white;
-            border-bottom: 2px solid white;
-            border-left: 2px solid white;
-            border-right: 2px solid white;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            padding: 20px;
+            margin-top: 15px;
           "
         >
           <div
-            id="playerSABar"
+            style="
+              position: relative;
+              width: 100%;
+              display: flex;
+              justify-content: flex-end;
+              border-top: 4px solid white;
+              border-bottom: 4px solid white;
+              border-left: 4px solid white;
+            "
+          >
+            <div style="background-color: red; height: 30px; width: 100%"></div>
+            <div
+              id="playerHealth"
+              style="
+                position: absolute;
+                background: #818cf8;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+              "
+            ></div>
+          </div>
+          <div
+            id="playerSABarContainer"
             style="
               position: absolute;
-              background: #fbbf24;
-              top: 0;
-              right: 0;
-              width: 0%;
-              max-width: 396px;
-              height: 100%;
+              background: black;
+              bottom: 0;
+              left: 5%;
+              width: 45%;
+              max-width: 400px;
+              height: 15%;
+              border-top: 2px solid white;
+              border-bottom: 2px solid white;
+              border-left: 2px solid white;
+              border-right: 2px solid white;
             "
-          ></div>
+          >
+            <div
+              id="playerSABar"
+              style="
+                position: absolute;
+                background: #fbbf24;
+                top: 0;
+                right: 0;
+                width: 0%;
+                max-width: 396px;
+                height: 100%;
+              "
+            ></div>
+          </div>
+
+          <div
+            id="timer"
+            style="
+              background-color: black;
+              width: 100px;
+              height: 50px;
+              flex-shrink: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              border: 4px solid white;
+            "
+          >
+            90
+          </div>
+
+          <div
+            style="
+              position: relative;
+              width: 100%;
+              border-top: 4px solid white;
+              border-bottom: 4px solid white;
+              border-right: 4px solid white;
+            "
+          >
+            <div style="background-color: red; height: 30px"></div>
+            <div
+              id="enemyHealth"
+              style="
+                position: absolute;
+                background: #818cf8;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+              "
+            ></div>
+          </div>
+
+          <div
+            id="enemySABarContainer"
+            style="
+              position: absolute;
+              background: black;
+              bottom: 0;
+              right: 5%;
+              width: 45%;
+              max-width: 400px;
+              height: 15%;
+              border-top: 2px solid white;
+              border-bottom: 2px solid white;
+              border-left: 2px solid white;
+              border-right: 2px solid white;
+            "
+          >
+            <div
+              id="enemySABar"
+              style="
+                position: absolute;
+                background: #fbbf24;
+                top: 0;
+                left: 0;
+                width: 0%;
+                max-width: 396px;
+                height: 100%;
+              "
+            ></div>
+          </div>
         </div>
 
         <div
-          id="timer"
+          id="displayText"
           style="
-            background-color: black;
-            width: 100px;
-            height: 50px;
-            flex-shrink: 0;
-            display: flex;
+            position: absolute;
+            color: white;
             align-items: center;
             justify-content: center;
-            color: white;
-            border: 4px solid white;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: none;
+            font-size: 60px;
+            -webkit-text-stroke: 2px black;
           "
-        >
-          90
-        </div>
-
+        ></div>
         <div
-          style="
-            position: relative;
-            width: 100%;
-            border-top: 4px solid white;
-            border-bottom: 4px solid white;
-            border-right: 4px solid white;
-          "
-        >
-          <div style="background-color: red; height: 30px"></div>
-          <div
-            id="enemyHealth"
-            style="
-              position: absolute;
-              background: #818cf8;
-              top: 0;
-              bottom: 0;
-              left: 0;
-              right: 0;
-            "
-          ></div>
-        </div>
-
-        <div
-          id="enemySABarContainer"
+          id="displaybtn"
           style="
             position: absolute;
-            background: black;
+            color: white;
+            align-items: center;
+            justify-content: center;
+            top: 0;
             bottom: 0;
-            right: 5%;
-            width: 45%;
-            max-width: 400px;
-            height: 15%;
-            border-top: 2px solid white;
-            border-bottom: 2px solid white;
-            border-left: 2px solid white;
-            border-right: 2px solid white;
+            left: 0;
+            right: 0;
+            display: fixed;
+            font-size: 60px;
+            -webkit-text-stroke: 2px black;
           "
-        >
-          <div
-            id="enemySABar"
+        ></div>
+        <div>
+          <audio id="audio" src="./audio/backgroundMusic.mp3"></audio>
+          <button
+            class="material-symbols-rounded"
+            id="audiobutton"
             style="
-              position: absolute;
-              background: #fbbf24;
-              top: 0;
-              left: 0;
-              width: 0%;
-              max-width: 396px;
-              height: 100%;
+              position: relative;
+              right: -420px;
+              bottom: -550px;
+              cursor: pointer;
+              border: none;
+              background-color: Transparent;
+              color: white;
             "
-          ></div>
+            onclick="ppAudio(), this.blur()"
+          >
+            pause
+          </button>
+          <button
+            class="material-symbols-rounded"
+            id="volume_down"
+            style="
+              position: relative;
+              right: -425px;
+              bottom: -550px;
+              cursor: pointer;
+              border: none;
+              background-color: Transparent;
+              color: white;
+            "
+            onclick="volDown(), this.blur()"
+          >
+            volume_down
+          </button>
+          <button
+            class="material-symbols-rounded"
+            id="volume_up"
+            style="
+              position: relative;
+              right: -430px;
+              bottom: -550px;
+              cursor: pointer;
+              border: none;
+              background-color: Transparent;
+              color: white;
+            "
+            onclick="volUp(), this.blur()"
+          >
+            volume_up
+          </button>
         </div>
+        <canvas id="gameCanvas"></canvas>
       </div>
-
       <div
-        id="displayText"
+        id="tm"
         style="
-          position: absolute;
-          color: white;
-          align-items: center;
-          justify-content: center;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
+          position: relative;
           display: none;
-          font-size: 60px;
-          -webkit-text-stroke: 2px black;
-        "
-      ></div>
-      <div
-        id="displaybtn"
-        style="
-          position: absolute;
+          margin: 100px 30px 30px;
           color: white;
-          align-items: center;
-          justify-content: center;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          display: fixed;
-          font-size: 60px;
-          -webkit-text-stroke: 2px black;
+          border: 2px dotted white;
         "
-      ></div>
-      <div>
-        <audio id="audio" src="./audio/backgroundMusic.mp3"></audio>
+      >
+        <div style="padding: 10px">Body Controller</div>
         <button
-          class="material-symbols-rounded"
-          id="audiobutton"
-          style="
-            position: relative;
-            right: -420px;
-            bottom: -550px;
-            cursor: pointer;
-            border: none;
-            background-color: Transparent;
-            color: white;
-          "
-          onclick="ppAudio(), this.blur()"
+          class="btn"
+          type="button"
+          onclick="init()"
+          style="padding: 10px; font-size: 12px"
         >
-          pause
+          Open Teachable Machine
         </button>
-        <button
-          class="material-symbols-rounded"
-          id="volume_down"
+        <div style="padding: 10px"><canvas id="canvas"></canvas></div>
+        <div
+          id="topMove"
           style="
-            position: relative;
-            right: -425px;
-            bottom: -550px;
-            cursor: pointer;
-            border: none;
-            background-color: Transparent;
-            color: white;
+            padding: 10px;
+            font-size: 25px;
+            font-weight: bolder;
+            color: goldenrod;
           "
-          onclick="volDown(), this.blur()"
-        >
-          volume_down
-        </button>
-        <button
-          class="material-symbols-rounded"
-          id="volume_up"
-          style="
-            position: relative;
-            right: -430px;
-            bottom: -550px;
-            cursor: pointer;
-            border: none;
-            background-color: Transparent;
-            color: white;
-          "
-          onclick="volUp(), this.blur()"
-        >
-          volume_up
-        </button>
+        ></div>
+        <div id="label-container" style="padding: 10px; text-align: left"></div>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
       </div>
-      <canvas></canvas>
     </div>
     <div>
       <button type="button" id="playagainbtn" class="btn" style="display: none">

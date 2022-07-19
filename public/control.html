@@ -46,27 +46,192 @@
       <a class="game-button green" href="./devInfo.html">Devs</a>
     </nav>
     <div style="margin: 40px; padding: 40px; color: white">
-      This is Control Page
+      How to play our game:
     </div>
     <div>
-      <button class="red-button" style="font-size: 30px">W</button>Player Jump
+      <div class="cardRow">
+        <div class="playerCard" style="border: 2px solid #11517c">
+          <div class="imageCard">
+            <img
+              class="charCard"
+              src="./img/controls/kingSingle.png"
+              alt="example of idle"
+            />
+            <p class="imageCardText" style="color: white">King Controls:</p>
+          </div>
+          <div>
+            <button
+              class="game-button blue"
+              style="font-size: 20px; color: white"
+            >
+              W</button
+            >Jump
+          </div>
+          <div>
+            <button
+              class="game-button blue"
+              style="font-size: 20px; color: white"
+            >
+              D</button
+            >Move Forward
+          </div>
+          <div>
+            <button
+              class="game-button blue"
+              style="font-size: 20px; color: white"
+            >
+              A</button
+            >Move Backward
+          </div>
+          <div>
+            <button
+              class="game-button blue"
+              style="font-size: 20px; color: white"
+            >
+              Space</button
+            >Attack
+          </div>
+          <div>
+            <button
+              class="game-button blue"
+              style="font-size: 20px; color: white"
+            >
+              X</button
+            >Special Attack
+          </div>
+          <div>
+            <button
+              class="game-button blue"
+              style="font-size: 20px; color: white"
+            >
+              J</button
+            >Blocking
+          </div>
+        </div>
+        <div class="playerCard">
+          <div class="imageCard">
+            <img
+              class="charCard"
+              src="./img/controls/ghostSingle.png"
+              alt="example of idle"
+            />
+            <p class="imageCardText" style="color: white">Ghost Controls:</p>
+          </div>
+          <div>
+            <button
+              class="game-button red"
+              style="font-size: 20px; color: white"
+            >
+              ⬆</button
+            >Jump
+          </div>
+          <div>
+            <button
+              class="game-button red"
+              style="font-size: 20px; color: white"
+            >
+              ⬅</button
+            >Move Forward
+          </div>
+          <div>
+            <button
+              class="game-button red"
+              style="font-size: 20px; color: white"
+            >
+              ➡</button
+            >Move Backward
+          </div>
+          <div>
+            <button
+              class="game-button red"
+              style="font-size: 20px; color: white"
+            >
+              ⬇</button
+            >Attack
+          </div>
+          <div>
+            <button
+              class="game-button red"
+              style="font-size: 20px; color: white"
+            >
+              M</button
+            >Special Attack
+          </div>
+          <div>
+            <button
+              class="game-button red"
+              style="font-size: 20px; color: white"
+            >
+              N</button
+            >Blocking
+          </div>
+        </div>
+        <div class="playerCard" style="border: 2px solid #75411f">
+          <div style="margin: 20px; padding: 10px; color: white">
+            Webcam Controls:
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/idleExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Idle</p>
+            </div>
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/jumpExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Jump</p>
+            </div>
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/leftExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Left</p>
+            </div>
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/rightExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Right</p>
+            </div>
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/attackExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Attack</p>
+            </div>
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/specialAttackExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Special Attack</p>
+            </div>
+            <div class="imageCard">
+              <img
+                class="innerImageCard"
+                src="./img/controls/blockExample.png"
+                alt="example of idle"
+              />
+              <p class="imageCardText">Block</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-      <button class="red-button" style="font-size: 30px">D</button>Player Move
-      Forward
-    </div>
-    <div>
-      <button class="red-button" style="font-size: 30px">A</button>Player Move
-      Backward
-    </div>
-    <div>
-      <button class="red-button" style="font-size: 30px">X</button>Player
-      Special Attack
-    </div>
-    <div>
-      <button class="red-button" style="font-size: 30px">J</button>Player
-      Blocking
-    </div>
+
     <footer
       style="
         position: fixed;
@@ -82,6 +247,5 @@
     >
       © Copyright Drteeths-Dentistry-2204 FSA-Capstone
     </footer>
-     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

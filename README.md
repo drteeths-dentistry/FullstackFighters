@@ -1,29 +1,35 @@
-# FullstackFighters
+# Fullstack Fighters
 
-Our goal is to build a dual player fighting game implementing machine learning to allow for an interactive fighting experience.
+<em>Multiplayer fighting game with socket.io room feature</em>
 
-1.npm install
+---
 
-2.npm start
+## Fullstack Fighters
 
-3.running on localhost:7777/
+Fighting game with 2 characters: King and Ghost. You will be able to control with a keyboard or a Teachable machine with webcam powered by Tensorflow JS library. Create a room or join to specific room with unique code. Pick one characters and fight!! Control the game avatar with teachable machine for workout purpose :-)
 
-4.Enjoy
+## Key Features :key:
 
-# Controls
+- Create a unique room for certain 2 players and join
+- Playing with a keyboard or a teachable machine with webcam : tensorflow JS library
+- Built on plain HTML5, CSS, and Javascript
 
-King:
-Up: "w"
-Left: "a"
-Right: "d"
-Attack: "space"
-Special Attack: "x"
-Shield: "j"
+## Tech Stack :books:
 
-Ghost:
-Up: "arrow up"
-Left: "arrow left"
-Right: "arrow right"
-Attack: "arrow down"
-Special Attack: "m"
-Shield: "n"
+| Front End  | Back End  |       Libraries/Frameworks       |
+| :--------: | :-------: | :------------------------------: |
+| JAVASCRIPT |  Express  | Teachable machine(Tensorflow JS) |
+|    HTML    | Socket.io |                                  |
+|    CSS     |           |                                  |
+
+## Setup :rocket:
+
+If you want to explore our game, feel free to clone our repo! After cloning, please enter the following commands:
+
+```
+npm install
+npm start
+
+Runs the app in the development mode.
+Open [http://localhost:7777](http://localhost:7777) to view it in your browser.
+```
