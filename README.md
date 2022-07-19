@@ -3,7 +3,7 @@
 
 ---
 ## Fullstack Fighters
-Bullseye is an eCommerce website for snacks and a clone of a very popular store. Shop around for snacks based on your current craving. Don't want to checkout right away? No problem! Create an account and add items to your cart. Sign in again later when you're ready to purchase!
+
 
 
 ## Key Features :key:
