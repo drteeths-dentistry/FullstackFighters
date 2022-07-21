@@ -7,7 +7,12 @@
 ## Fullstack Fighters
 
 Fighting game with 2 characters: King and Ghost. You will be able to control with a keyboard or a Teachable machine with webcam powered by Tensorflow JS library. Create a room or join to specific room with unique code. Pick one characters and fight!! Control the game avatar with teachable machine for workout purpose :-)
+
+Link to our game:
 https://fullstackfighters.herokuapp.com/
+
+Video walkthrough:
+https://youtu.be/SiVOXob4JpE
 
 Fighting game with 2 characters: King and Ghost. You will be able to control with a keyboard or a Teachable machine with webcam powered by Tensorflow JS library. Create a room or join to specific room with unique code. Pick one characters and fight!! Control the game avatar with teachable machine for workout purpose :-)
 
